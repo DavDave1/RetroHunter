@@ -1,0 +1,118 @@
+<UserControl
+    x:Class="RaSetMaker.Views.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classicControls="clr-namespace:Classic.CommonControls;assembly=Classic.CommonControls.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:RaSetMaker.Models"
+    xmlns:vm="clr-namespace:RaSetMaker.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    x:DataType="vm:MainViewModel"
+    mc:Ignorable="d">
+    <Design.DataContext>
+        <!--
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+        -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <DockPanel LastChildFill="True">
+        <classicControls:ToolBar
+            Margin="5"
+            DockPanel.Dock="Top"
+            Size="Large"
+            TextPlacement="Down">
+            <classicControls:ToolBarButton
+                Command="{Binding OpenDatabaseCommand}"
+                LargeIcon="/Assets/open-file.png"
+                Text="Open..." />
+            <classicControls:ToolBarButton
+                Command="{Binding SaveDatabaseCommand}"
+                LargeIcon="/Assets/save.png"
+                Text="Save..." />
+            <Separator />
+            <classicControls:ToolBarButton
+                Command="{Binding ConfigureCommand}"
+                LargeIcon="/Assets/settings.png"
+                Text="Configure..." />
+            <classicControls:ToolBarButton
+                Command="{Binding FetchRaDataCommand}"
+                LargeIcon="/Assets/fetch-systems.png"
+                Text="Fetch Data" />
+            <classicControls:ToolBarButton
+                Command="{Binding GenerateSetsCommand}"
+                LargeIcon="/Assets/drum.png"
+                Text="Generate..." />
+        </classicControls:ToolBar>
+
+        <!--  Status bar  -->
+        <Grid
+            Margin="0,10,0,0"
+            DockPanel.Dock="Bottom"
+            RowDefinitions="Auto, *">
+            <Separator />
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="10">
+                <TextBlock VerticalAlignment="Center" Text="{Binding StatusMessage}" />
+                <ProgressBar
+                    Width="80"
+                    IsIndeterminate="{Binding ProgressIndeterminate}"
+                    Value="{Binding ProgressValue}" />
+            </StackPanel>
+        </Grid>
+
+
+        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, *">
+            <Separator Grid.ColumnSpan="2" />
+            <TextBlock
+                Grid.Row="1"
+                Margin="0,10,0,10"
+                FontWeight="Bold"
+                Text="Systems" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="0,10,0,10"
+                FontWeight="Bold"
+                Text="Games" />
+
+            <TreeView
+                Grid.Row="2"
+                ItemsSource="{Binding CompanyList}"
+                SelectedItem="{Binding SelectedSystem}"
+                SelectionMode="Single">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <CheckBox Margin="0,1,0,2" IsChecked="{Binding IsChecked}" />
+                            <TextBlock Foreground="{Binding ForegroundColor}" Text="{Binding Title}" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+
+            <TreeView
+                Grid.Row="2"
+                Grid.Column="1"
+                ItemsSource="{Binding GamesList}"
+                SelectionMode="Multiple">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <CheckBox Margin="0,1,0,2" IsChecked="{Binding IsChecked}" />
+                            <TextBlock Foreground="{Binding ForegroundColor}" Text="{Binding Title}" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+
+        </Grid>
+    </DockPanel>
+
+</UserControl>
