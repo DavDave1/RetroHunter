@@ -135,7 +135,7 @@ namespace RaSetMaker.Services
             var addedRoms = 0;
             foreach (var system in context.GetCheckedSystems().Where(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter).Any()))
             {
-                var outSubdir = system.DirNames.GetValueOrDefault(dirStyle);
+                var gameSystemDir = system.DirNames.GetValueOrDefault(dirStyle);
 
                 // Create matcher for system
                 var matcher = RomMatcherFactory.Create(system);
@@ -149,6 +149,11 @@ namespace RaSetMaker.Services
 
                 foreach (var file in inFiles)
                 {
+                    if (!file.Exists)
+                    {
+                        continue;
+                    }
+
                     if (cancellationToken.IsCancellationRequested)
                     {
                         progressInfo.currentSystem = "Operation cancelled by user";
@@ -162,18 +167,29 @@ namespace RaSetMaker.Services
                     progressInfo.currentFile = file.FullName;
                     progress.Report(progressInfo);
 
-                    var rom = matcher.FindRom(file);
+                    var (rom, romFiles) = matcher.FindRom(file);
+
 
                     // If rom was found, move it to proper outut subdir and update rom file path
                     if (rom != null)
                     {
-                        var outFilePath = $"{outDirInfo.FullName}{outSubdir}\\{file.Name}";
+                        // If rom has multiple files, create subdir for them
+                        var romSubdir = romFiles.Count > 0 ? Path.GetFileNameWithoutExtension(romFiles[0]) : "";
 
-                        file.MoveTo(outFilePath, true);
-                        rom.FilePath = outFilePath;
+                        // Rom path points to either single file or subdir if multiple
+                        var romFilepath = romFiles.Count > 0 ?
+                            $"{outDirInfo.FullName}{gameSystemDir}\\{romSubdir}" :
+                            $"{outDirInfo.FullName}{gameSystemDir}\\{Path.GetFileName(romFiles[0])}";
 
-                        movedFiles.Add(file);
+                        foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
+                        {
+                            var outFilePath = $"{outDirInfo.FullName}{gameSystemDir}\\{romSubdir}\\{romFile.Name}";
 
+                            romFile.MoveTo(outFilePath, true);
+                            movedFiles.Add(file);
+                        }
+
+                        rom.FilePath = romFilepath;
                         addedRoms++;
                     }
 

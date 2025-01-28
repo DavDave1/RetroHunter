@@ -8,7 +8,7 @@ namespace RaSetMaker.Utils.Matchers
 {
     public class ArduboyMatcher(GameSystem system) : Md5Matcher(system)
     {
-        public override Rom? FindRom(FileInfo file)
+        public override (Rom?, List<string>) FindRom(FileInfo file)
         {
             _romSize = GetFileSize(file);
             return base.FindRom(file);

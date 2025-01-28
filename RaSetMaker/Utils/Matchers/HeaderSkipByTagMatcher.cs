@@ -13,12 +13,12 @@ namespace RaSetMaker.Utils.Matchers
 
         public abstract List<byte[]> HeaderTags { get; }
 
-        public override Rom? FindRom(FileInfo file)
+        public override (Rom?, List<string>) FindRom(FileInfo file)
         {
             var (fileStream, extension) = Open(file);
             if (fileStream == null)
             {
-                return null;
+                return (null, [file.FullName]);
             }
 
             bool hasHeader = CheckHeader(fileStream);
@@ -41,7 +41,7 @@ namespace RaSetMaker.Utils.Matchers
 
             var rom = MatchRomByHash(hash);
 
-            return rom;
+            return (rom, [file.FullName]);
         }
 
         private bool CheckHeader(Stream fileStream)

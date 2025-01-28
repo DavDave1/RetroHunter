@@ -8,7 +8,7 @@ namespace RaSetMaker.Utils.Matchers
 {
     public abstract class MatcherBase(GameSystem system)
     {
-        public abstract Rom? FindRom(FileInfo file);
+        public abstract (Rom?, List<string>) FindRom(FileInfo file);
 
         protected Rom? MatchRomByHash(string hash)
         {
@@ -87,7 +87,7 @@ namespace RaSetMaker.Utils.Matchers
 
             return (_openStream, extension);
         }
-        private static bool IsCompressed(FileInfo file) => file.Extension == ".zip";
+        private static bool IsCompressed(FileInfo file) => file.Extension == ".zip" || file.Extension == ".7z";
 
         private static Dictionary<string, string> _archivesInnerExtensionCache = [];
 

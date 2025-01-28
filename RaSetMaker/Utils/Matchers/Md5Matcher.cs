@@ -8,7 +8,7 @@ namespace RaSetMaker.Utils.Matchers
 {
     public class Md5Matcher(GameSystem system) : MatcherBase(system)
     {
-        public override Rom? FindRom(FileInfo file)
+        public override (Rom?, List<string>) FindRom(FileInfo file)
         {
             var hash = _hashesCache.GetValueOrDefault(file.FullName);
 
@@ -17,7 +17,7 @@ namespace RaSetMaker.Utils.Matchers
                 var (fileStream, extension) = Open(file);
                 if (fileStream == null)
                 {
-                    return null;
+                    return (null, [file.FullName]);
                 }
                 hash = ComputeHash(fileStream, extension);
                 Close();
@@ -30,7 +30,7 @@ namespace RaSetMaker.Utils.Matchers
                 _hashesCache[file.FullName] = hash;
             }
 
-            return rom;
+            return (rom, [file.FullName]);
         }
 
         protected virtual bool CacheHash { get; } = true;

@@ -16,8 +16,8 @@ namespace RaSetMaker.Tests.MatchersTests
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));
 
-            Assert.NotNull(foundRom);
-            Assert.Equal(expectedHash, foundRom.Hash);
+            Assert.NotNull(foundRom.Item1);
+            Assert.Equal(expectedHash, foundRom.Item1.Hash);
 
         }
     }

@@ -1,13 +1,14 @@
 ﻿using RaSetMaker.Models;
+using System.Collections.Generic;
 using System.IO;
 
 namespace RaSetMaker.Utils.Matchers
 {
     public class NullMatcher(GameSystem system) : MatcherBase(system)
     {
-        public override Rom? FindRom(FileInfo file)
+        public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            return null;
+            return (null, [file.FullName]);
         }
     }
 }
