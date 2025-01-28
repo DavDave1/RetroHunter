@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DiscReader\DiskReader.csproj" />
     <ProjectReference Include="..\RaSetMaker\RaSetMaker.csproj" />
   </ItemGroup>
 
