@@ -30,9 +30,9 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.Dreamcast, typeof(NullMatcher) },
                 { RomMatcherType.Saturn, typeof(NullMatcher) },
                 { RomMatcherType.SegaCD, typeof(NullMatcher) },
-                { RomMatcherType.Ps1, typeof(NullMatcher) },
+                { RomMatcherType.Ps1, typeof(Ps1Matcher) },
                 { RomMatcherType.Ps2, typeof(NullMatcher) },
-                { RomMatcherType.Psp, typeof(NullMatcher) },
+                { RomMatcherType.Psp, typeof(PspMatcher) },
             };
         }
 

@@ -193,7 +193,7 @@ namespace RaSetMaker.Models
                 "PlayStation Portable", 
                 RomMatcherType.Psp, 
                 new() { { DirStructureStyle.Retroachievements, "PlayStation Portable" }, { DirStructureStyle.EmuDeck, "psp" } },
-                [".cue", ".chd", ".iso"]));
+                [".chd", ".iso"]));
 
             Systems.Add(new(
                 GameSystemCompany.Atari, 
