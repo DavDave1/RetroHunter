@@ -1,0 +1,3 @@
+[submodule "libchdr"]
+	path = libchdr
+	url = git@github.com:rtissera/libchdr.git

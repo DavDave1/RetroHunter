@@ -29,5 +29,13 @@ namespace RaSetMaker.Tests.DiskReaderTests
             Assert.True(disk.Load(filePath));
         }
 
+        [Theory]
+        [InlineData("../../../TestRoms/007 Racing (USA).chd")]
+        public void ReadChdImage(string filePath)
+        {
+            Iso9660Image disk = new();
+            Assert.True(disk.Load(filePath));
+        }
+
     }
 }

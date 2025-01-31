@@ -23,6 +23,48 @@ namespace DiskReader
         }
     }
 
+    public class Track
+    {
+        public class TrackIndex
+        {
+            public int nr;
+            public int hh;
+            public int mm;
+            public int ss;
+        }
+
+        public enum ETrackType
+        {
+            Mode1,
+            Mode1Raw,
+            Mode2,
+            Mode2Raw,
+            Mode2Form1,
+            Mode2Form2,
+            Mode2FormMix,
+            Audio
+        }
+
+        public string FilePath { get; set; } = "";
+
+        public int TrackNr { get; set; }
+
+        public int SectorSize { get; set; }
+
+        public int TrackSize { get; set; }
+
+        public int SectorHeaderSize =>
+            TrackType switch
+            {
+                ETrackType.Mode1 or ETrackType.Mode1Raw => 16,
+                ETrackType.Mode2 or ETrackType.Mode2Raw => 24,
+                _ => throw new Exception("Unknown track header size")
+            };
+
+        public ETrackType TrackType { get; set; }
+        public List<TrackIndex> Indices { get; set; } = [];
+    }
+
     public enum VolumeDescriptorType
     {
         BootRecord = 0,
@@ -88,7 +130,7 @@ namespace DiskReader
     {
         public byte RecordLength;
         public byte ExtendedAttributeRecordLength;
-        public int Location;
+        public uint Location;
         public int DataLength;
         public byte InterleavedFileUnitSize;
         public byte InterleaveGapSize;
@@ -100,7 +142,7 @@ namespace DiskReader
         {
             RecordLength = buffer[0];
             ExtendedAttributeRecordLength = buffer[1];
-            Location = Constants.Int32LsbMsbToInt(buffer[2..10]);
+            Location = (uint)Constants.Int32LsbMsbToInt(buffer[2..10]);
             DataLength = Constants.Int32LsbMsbToInt(buffer[10..18]);
             // TODO: parse date and time
             InterleavedFileUnitSize = buffer[26];

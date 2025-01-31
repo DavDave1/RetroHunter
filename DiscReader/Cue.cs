@@ -3,9 +3,8 @@ using System.Text.RegularExpressions;
 
 namespace DiskReader
 {
-    public partial class Cue
+    public class Cue
     {
-
         public List<Track> Tracks { get; private set; } = [];
     
         public bool Parse(Stream cueFileStream)
@@ -101,43 +100,5 @@ namespace DiskReader
             { LineType.Track, "TRACK" },
             { LineType.Index, "INDEX" },
         };
-
-
-
-        public class Track
-        {
-            public class TrackIndex
-            {
-                public int nr;
-                public int hh;
-                public int mm;
-                public int ss;
-            }
-
-            public enum ETrackType
-            {
-                Mode1,
-                Mode2,
-                Audio
-            }
-
-            public string FilePath { get; set; }
-            public int TrackNr { get; set; }
-
-            public int SectorSize { get; set; }
-
-            public int SectorHeaderSize =>
-                TrackType switch
-                {
-                    ETrackType.Mode2 => 24,
-                    _ => throw new Exception("Unknown track type")
-                };
-            
-            public ETrackType TrackType { get; set; }
-            public List<TrackIndex> Indices { get; set; } = [];
-        }
-
-        [GeneratedRegex("\"(.*)\"")]
-        private static partial Regex FilePathPattern();
     }
 }

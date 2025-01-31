@@ -1,11 +1,10 @@
 ﻿
 
 using DiscUtils.Iso9660;
-using System.ComponentModel.DataAnnotations;
 
 namespace DiskReader
 {
-    public class IsoReader : IDiskReader
+    public class IsoImageFileSystemProvider : IFileSystemProvider
     {
         public List<string> GetAllTrackFiles() => [_isoFile?.FullName];
 

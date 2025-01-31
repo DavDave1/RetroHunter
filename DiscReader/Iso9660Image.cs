@@ -7,22 +7,16 @@ namespace DiskReader
     {
         public bool Load(string FilePath)
         {
-            // TODO: support other image formats
-            if (Path.GetExtension(FilePath) == ".cue")
+            if (Path.GetExtension(FilePath) == ".iso")
             {
-
-                _diskReader = new BinCueReader();
-            }
-            else if (Path.GetExtension(FilePath) == ".iso")
-            {
-                _diskReader = new IsoReader();
+                _fsProvider = new IsoImageFileSystemProvider();
             }
             else
             {
-                return false;
+                _fsProvider = new RawFileSystemProvider();
             }
 
-            if (!_diskReader.Load(FilePath))
+            if (!_fsProvider.Load(FilePath))
             {
                 return false;
             }
@@ -33,15 +27,15 @@ namespace DiskReader
 
         public List<string> GetAllTrackFiles()
         {
-            return _diskReader?.GetAllTrackFiles() ?? [];
+            return _fsProvider?.GetAllTrackFiles() ?? [];
         }
 
         public byte[]? ReadFile(string filename)
         {
-            return _diskReader?.ReadFile(filename);
+            return _fsProvider?.ReadFile(filename);
         }
 
 
-        private IDiskReader? _diskReader;
+        private IFileSystemProvider? _fsProvider;
     }
 }

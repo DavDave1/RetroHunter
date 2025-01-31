@@ -1,6 +1,6 @@
 ﻿namespace DiskReader
 {
-    public interface IDiskReader
+    public interface IFileSystemProvider
     {
         bool Load(string filePath);
 
