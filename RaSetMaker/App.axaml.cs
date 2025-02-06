@@ -70,7 +70,7 @@ public partial class App : Application
     public static Window MainWindow()
     {
         var desktop = Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-        return desktop.MainWindow;
+        return desktop!.MainWindow!;
     }
 
     public static async Task ShowError(string title, string description)

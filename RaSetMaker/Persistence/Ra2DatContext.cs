@@ -61,7 +61,7 @@ namespace RaSetMaker.Persistence
 
             var serializer = new XmlSerializer(typeof(Ra2DatModel));
             var writer = new StreamWriter(FilePath);
-            serializer.Serialize(writer, _model);           
+            serializer.Serialize(writer, _model);
         }
 
         public async Task SaveChangesAsync()
@@ -76,7 +76,6 @@ namespace RaSetMaker.Persistence
                 var raSystem = raSystems.FirstOrDefault(raSys => raSys.Name == system.Name);
                 if (raSystem != null)
                 {
-                    system.RaId = raSystem.RaId;
                     system.IconUrl = raSystem.IconUrl;
                 }
             }
@@ -103,7 +102,7 @@ namespace RaSetMaker.Persistence
 
             foreach (var (rom, fileInfo) in roms)
             {
-                var expectedPath = $"{outDir.FullName}{fileInfo.Directory?.Name??""}\\{fileInfo.Name}";
+                var expectedPath = $"{outDir.FullName}{fileInfo.Directory?.Name ?? ""}\\{fileInfo.Name}";
 
                 if (new FileInfo(expectedPath).Exists == false)
                 {
