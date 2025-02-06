@@ -71,7 +71,7 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
             FinishedSuccesfully = true;
 
         }
-        catch (Exception e)
+        catch (Exception)
         {
             FinishedSuccesfully = false;
         }

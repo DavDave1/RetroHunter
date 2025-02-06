@@ -20,6 +20,11 @@ namespace RaSetMaker.Utils.Matchers
         {
             const int NDS_HEADER_SIZE = 0x160;
 
+            if (_romSize < NDS_HEADER_SIZE)
+            {
+                return "";
+            }
+
             var romData = new byte[_romSize];
             fileStream.ReadExactly(romData, 0, romData.Length);
 

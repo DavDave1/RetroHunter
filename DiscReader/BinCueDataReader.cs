@@ -102,7 +102,7 @@
 
         private long GetBinLength(string fileName) => new FileInfo(GetBinAbsolutePath(fileName)).Length;
 
-        private string GetBinAbsolutePath(string fileName) => $"{_cueFile?.Directory?.FullName}\\{fileName}";
+        private string GetBinAbsolutePath(string fileName) => $"{_cueFile?.Directory?.FullName}/{fileName}";
 
         private Stream? _track;
         private int _trackIndex;

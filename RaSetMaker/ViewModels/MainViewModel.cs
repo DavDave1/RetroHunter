@@ -47,14 +47,17 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     public MainViewModel()
     {
+        _dbContext = new();
+        _raClient = new();
     }
 
     [RelayCommand]
     private async Task OpenDatabase()
     {
-        var opts = new FilePickerOpenOptions() { 
-            AllowMultiple = false, 
-            Title = "Open RaSetMaker DB file", 
+        var opts = new FilePickerOpenOptions()
+        {
+            AllowMultiple = false,
+            Title = "Open RaSetMaker DB file",
             FileTypeFilter = [RaSetMakerDb],
             SuggestedFileName = "RaSetMaker.xml",
 
@@ -86,10 +89,12 @@ public partial class MainViewModel : ViewModelBase
 
             var dbFile = await App.CurrentWindow().StorageProvider.SaveFilePickerAsync(opts);
 
-            if (dbFile != null)
+            if (dbFile == null)
             {
-                _dbContext.FilePath = dbFile.Path.AbsolutePath;
+                return;
             }
+
+            _dbContext.FilePath = dbFile.Path.AbsolutePath;
         }
 
         await _dbContext.SaveChangesAsync();
@@ -112,7 +117,7 @@ public partial class MainViewModel : ViewModelBase
 
         LoadModel();
     }
-    
+
 
     [RelayCommand]
     public async Task FetchRaData()
@@ -121,14 +126,11 @@ public partial class MainViewModel : ViewModelBase
 
         try
         {
-            var raSystems = await _raClient.FetchSystems();
-            _dbContext.SyncSystems(raSystems);
-
             var now = DateTime.UtcNow;
             var systems = _dbContext.GetSystems().Where(s => now.Subtract(s.LastUpdate).Days >= 7).ToList();
             progress.SetCount(systems.Count);
 
-            foreach(var system in systems)
+            foreach (var system in systems)
             {
                 progress.SetMessage($"Fetching games for {system.Name}...");
 
@@ -162,7 +164,7 @@ public partial class MainViewModel : ViewModelBase
 
         if (vm.FinishedSuccesfully)
         {
-            await App.ShowInfo("Rom Set Generation Complete", 
+            await App.ShowInfo("Rom Set Generation Complete",
                 $"removed {vm.Result.RemovedRoms} roms and added {vm.Result.AddedRoms} roms");
 
         }
@@ -198,12 +200,12 @@ public partial class MainViewModel : ViewModelBase
     private readonly Ra2DatContext _dbContext;
     private readonly RaClient _raClient;
 
-    private static readonly FilePickerFileType RaSetMakerDb = new("RaSetMaker DB") 
-        {
-            Patterns = new[] { "*.xml"},
-            AppleUniformTypeIdentifiers = new[] { "public.xml" },
-            MimeTypes = new[] { "xml/*" }
-        };
+    private static readonly FilePickerFileType RaSetMakerDb = new("RaSetMaker DB")
+    {
+        Patterns = new[] { "*.xml" },
+        AppleUniformTypeIdentifiers = new[] { "public.xml" },
+        MimeTypes = new[] { "xml/*" }
+    };
 }
 
 internal class ScopedTaskProgress : IDisposable

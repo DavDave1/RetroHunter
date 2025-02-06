@@ -4,14 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using static RaSetMaker.Models.GameSystemData;
 
 namespace RaSetMaker.Models
 {
     public class GameSystem : ModelBase
     {
-        public int RaId { get; set; }
+        public GameSystemType GameSystemType { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        [XmlIgnore]
+        public int RaId => (int)GameSystemType;
+
+        [XmlIgnore]
+        public string Name => GameSystemType.Name();
 
         public string IconUrl { get; set; } = string.Empty;
 
@@ -19,17 +24,19 @@ namespace RaSetMaker.Models
 
         public DateTime LastUpdate { get; set; } = DateTime.UnixEpoch;
 
-        public GameSystemCompany Company { get; set; } = GameSystemCompany.Other;
-
-        public RomMatcherType MatcherType { get; set; } = RomMatcherType.Null;
-
-        public List<string> SupportedExtensions { get; set; } = [];
+        [XmlIgnore]
+        public GameSystemCompany Company => GameSystemType.Company();
 
         [XmlIgnore]
-        public Dictionary<DirStructureStyle, string> DirNames { get; set; } = [];
+        public RomMatcherType MatcherType => GameSystemType.Matcher();
 
-        public List<Game> Games { 
-            get => _games; 
+        [XmlIgnore]
+        public List<string> SupportedExtensions => GameSystemType.Extensions();
+
+
+        public List<Game> Games
+        {
+            get => _games;
             set
             {
                 _games = value;
@@ -44,23 +51,9 @@ namespace RaSetMaker.Models
         {
         }
 
-        public GameSystem(GameSystemCompany company)
+        public GameSystem(GameSystemType type)
         {
-            Company = company;
-        }
-
-        public GameSystem(
-            GameSystemCompany company, 
-            string name, 
-            RomMatcherType matcherType, 
-            Dictionary<DirStructureStyle, string> dirNames,
-            List<string> supportedExtensions) : base()
-        {
-            Company = company;
-            Name = name;
-            DirNames = dirNames;
-            MatcherType = matcherType;
-            SupportedExtensions = supportedExtensions;
+            GameSystemType = type;
         }
 
         public IEnumerable<Game> GetGamesMatchingFilter(List<GameType> allowedTypes)
@@ -68,20 +61,7 @@ namespace RaSetMaker.Models
             return Games.Where(g => g.GameTypes.Count == 0 || g.GameTypes.Intersect(allowedTypes).Any());
         }
 
-        #region serialization proxy
-        [XmlElement("DirNames")]
-        public SerializableDictionary<DirStructureStyle, string> DirNamesSerializeProxy
-        {
-            get
-            {
-                return new SerializableDictionary<DirStructureStyle, string>(DirNames);
-            }
-            set
-            {
-                DirNames = value.ToDictionary();
-            }
-        }
-        #endregion
+        public string GetDirName(DirStructureStyle style) => GameSystemType.FolderName(style);
 
         private List<Game> _games = [];
     }

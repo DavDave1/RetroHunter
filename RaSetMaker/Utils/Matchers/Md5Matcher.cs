@@ -14,7 +14,7 @@ namespace RaSetMaker.Utils.Matchers
 
             if (string.IsNullOrEmpty(hash))
             {
-                var (fileStream, extension) = Open(file);
+                var (fileStream, extension) = Open(file, true);
                 if (fileStream == null)
                 {
                     return (null, [file.FullName]);

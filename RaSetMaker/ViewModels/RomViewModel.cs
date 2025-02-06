@@ -17,7 +17,7 @@ namespace RaSetMaker.ViewModels
 
         private FileInfo? _fileInfo = rom.FilePath == string.Empty ? null : new FileInfo(rom.FilePath);
 
-        private string RomName => IsRomValid() ? _fileInfo.Name : Rom.Name;
+        private string RomName => IsRomValid() ? _fileInfo!.Name : Rom.Name;
 
     }
 }

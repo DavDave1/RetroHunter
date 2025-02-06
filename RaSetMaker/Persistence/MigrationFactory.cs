@@ -10,9 +10,9 @@ namespace RaSetMaker.Persistence
 
         static MigrationFactory()
         {
-            _migrations[typeof(Migration_FixSnesExtensions)] = new Migration_FixSnesExtensions(); 
             _migrations[typeof(Migration_DeduplicateGames)] = new Migration_DeduplicateGames();
             _migrations[typeof(Migration_DetectSubset)] = new Migration_DetectSubset();
+            _migrations[typeof(Migration_MakeRomPathRelative)] = new Migration_MakeRomPathRelative();
 
         }
 

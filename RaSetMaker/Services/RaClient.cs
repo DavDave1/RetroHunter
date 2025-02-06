@@ -21,26 +21,6 @@ namespace RaSetMaker.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<List<GameSystem>> FetchSystems()
-        {
-            var response = await _client.GetAsync(GetSystemsUri());
-
-            if (response.IsSuccessStatusCode)
-            {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var raSystems = await JsonSerializer.DeserializeAsync<List<RaGameSystem>>(stream)?? [];
-
-                return raSystems.Select(s => new GameSystem
-                {
-                    Name = s.Name,
-                    IconUrl = s.IconUrl,
-                    RaId = s.ID
-                }).ToList();
-            }
-
-            throw new Exception("Failed to fetch systems");
-        }
-
         public async Task<List<Game>> FetchGames(GameSystem gameSystem)
         {
             if (gameSystem.RaId == 0)
