@@ -32,7 +32,7 @@ namespace RaSetMaker.Tests.MatchersTests
 
             var matcher = RomMatcherFactory.Create(sys);
 
-            var foundRom = matcher.FindRom(new FileInfo(filePath));
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
             Assert.Null(foundRom);
         }

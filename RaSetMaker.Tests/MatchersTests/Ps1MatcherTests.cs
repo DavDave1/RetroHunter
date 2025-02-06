@@ -22,7 +22,7 @@ namespace RaSetMaker.Tests.MatchersTests
         }
 
         [Theory]
-        [InlineData("../../../TestRoms/007 Racing (USA).chd", "3620a316e7ce463e604d91540840df62")]
+        [InlineData("../../../TestRoms/ps1/007 Racing (USA).chd", "3620a316e7ce463e604d91540840df62")]
         public void CompressedRomMatchesHash(string filePath, string expectedHash)
         {
             var sys = GetGameSystemByName("PlayStation");
