@@ -25,7 +25,7 @@ namespace RaSetMaker.Services
         {
             if (gameSystem.RaId == 0)
             {
-                throw new Exception($"Retroachivement ID for System {gameSystem.Name} is not valid");
+                throw new Exception($"Retroachievement ID for System {gameSystem.Name} is not valid");
             }
 
             var response = await _client.GetAsync(GetGamesUri(gameSystem.RaId));
@@ -44,7 +44,7 @@ namespace RaSetMaker.Services
         {
             if (game.RaId == 0)
             {
-                throw new Exception($"Retroachivement ID for Game {game.Name} is not valid");
+                throw new Exception($"Retroachievement ID for Game {game.Name} is not valid");
             }
 
             var response = await _client.GetAsync(GetRomsUri(game.RaId));
