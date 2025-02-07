@@ -101,3 +101,4 @@ RaSetMaker includes the [libchdr](https://github.com/rtissera/libchdr) C library
 ### Extra features
 - [ ] Support downloading and applying patches
 - [ ] Display RA user profile summary
+- [ ] Implement github actions to build, test and release
