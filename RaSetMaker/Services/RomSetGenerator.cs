@@ -1,4 +1,5 @@
-﻿using RaSetMaker.Persistence;
+﻿using RaSetMaker.Models;
+using RaSetMaker.Persistence;
 using RaSetMaker.Utils;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace RaSetMaker.Services
                 .SelectMany(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter))
                 .SelectMany(g => g.Roms)
                 .Where(r => r.IsValid)
-                .Select(r => Path.GetFullPath(r.FilePath))
+                .Select(r => Path.Combine(outDirInfo.FullName, r.FilePath))
                 .ToImmutableHashSet();
 
             // Iterate output dir recursively and move all files not linked to Roms to input
@@ -178,9 +179,10 @@ namespace RaSetMaker.Services
                         var romSubdir = romFiles.Count > 1 ? Path.GetFileNameWithoutExtension(romFiles[0]) : "";
 
                         // Rom path points to either single file or subdir if multiple
-                        var romFilepath = romFiles.Count > 0 ?
-                            $"{outDirInfo.FullName}{gameSystemDir}/{romSubdir}" :
-                            $"{outDirInfo.FullName}{gameSystemDir}/{Path.GetFileName(romFiles[0])}";
+                        // Path is relative to rom set output dir
+                        var romFilepath = romFiles.Count > 1 ?
+                            $"{gameSystemDir}/{romSubdir}" :
+                            $"{gameSystemDir}/{Path.GetFileName(romFiles[0])}";
 
                         foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
                         {
@@ -190,7 +192,7 @@ namespace RaSetMaker.Services
                             movedFiles.Add(file);
                         }
 
-                        rom.FilePath = Path.GetRelativePath(outDirInfo.FullName, romFilepath);
+                        rom.FilePath = romFilepath;
                         addedRoms++;
                     }
 
@@ -201,6 +203,11 @@ namespace RaSetMaker.Services
 
                 progressInfo.totalProgress += totalProgressStep;
             }
+
+            progressInfo.totalProgress = 100;
+            progressInfo.systemProgress = 100;
+            progressInfo.currentSystem = "Done";
+            progress.Report(progressInfo);
 
             return addedRoms;
         }

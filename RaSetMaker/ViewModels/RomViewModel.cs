@@ -4,7 +4,7 @@ using System.IO;
 
 namespace RaSetMaker.ViewModels
 {
-    public partial class RomViewModel(Rom rom) : TreeViewItemModel
+    public partial class RomViewModel(Rom rom, UserConfig userConfig) : TreeViewItemModel
     {
         public override string Title => $"{RomName} ({Rom.Hash})";
 
@@ -15,7 +15,7 @@ namespace RaSetMaker.ViewModels
 
         public bool IsRomValid() => _fileInfo != null && _fileInfo.Exists;
 
-        private FileInfo? _fileInfo = rom.FilePath == string.Empty ? null : new FileInfo(rom.FilePath);
+        private FileInfo? _fileInfo = rom.FilePath == string.Empty ? null : new FileInfo(Path.Combine(userConfig.OutputRomsDirectory, rom.FilePath));
 
         private string RomName => IsRomValid() ? _fileInfo!.Name : Rom.Name;
 

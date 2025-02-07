@@ -7,16 +7,16 @@ namespace RaSetMaker.ViewModels
     {
         public override string Title => Game.GameTypes.Count == 0 ? Game.Name : $"{Game.Name} {GameTypesToString()}";
 
-        public override string ForegroundColor => ValidRomsCount == 0 ? "DarkRed" : "Black"; 
+        public override string ForegroundColor => ValidRomsCount == 0 ? "DarkRed" : "Black";
 
         public Game Game { get; private set; }
 
         public int ValidRomsCount { get; private set; }
 
-        public GameViewModel(Game game)
+        public GameViewModel(Game game, UserConfig userConfig)
         {
             Game = game;
-            var romViewModels = Game.Roms.Select(r => new RomViewModel(r)).ToList();
+            var romViewModels = Game.Roms.Select(r => new RomViewModel(r, userConfig)).ToList();
             ValidRomsCount = romViewModels.Sum(rvm => rvm.IsRomValid() ? 1 : 0);
             Children = romViewModels.Select(r => (TreeViewItemModel)r).ToList();
         }

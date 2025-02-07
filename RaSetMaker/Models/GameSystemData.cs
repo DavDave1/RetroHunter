@@ -312,7 +312,7 @@ public static class GameSystemData
             GameSystemType.GameBoyAdvance => [".gba"],
             GameSystemType.Nes => [".nes", ".fds"],
             GameSystemType.SuperNintendo => [".sfc", ".smc"],
-            GameSystemType.Nintendo64 => [".d64", ".ndd", ".n64", ".v64", ".z"],
+            GameSystemType.Nintendo64 => [".d64", ".ndd", ".n64", ".v64", ".z64"],
             GameSystemType.GameCube => [".iso"],
             GameSystemType.NintendoDS or
             GameSystemType.NintendoDSi => [".nds"],

@@ -21,7 +21,7 @@ namespace RaSetMaker.ViewModels
             _gameSystem = gameSystem;
             _config = config;
             IsChecked = gameSystem.IsChecked;
-            Games = _gameSystem.GetGamesMatchingFilter(_config.GameTypesFilter).OrderBy(g => g.Name).Select(g => new GameViewModel(g)).ToList();
+            Games = _gameSystem.GetGamesMatchingFilter(_config.GameTypesFilter).OrderBy(g => g.Name).Select(g => new GameViewModel(g, config)).ToList();
         }
 
         protected override void OnItemChecked(bool value)

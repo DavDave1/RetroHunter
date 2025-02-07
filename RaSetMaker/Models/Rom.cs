@@ -10,21 +10,7 @@ namespace RaSetMaker.Models
 
         public string Name { get; set; } = string.Empty;
 
-        public string FilePath
-        {
-            get => _filePath;
-            set
-            {
-                if (string.IsNullOrEmpty(value) == false && new FileInfo(value).Exists)
-                {
-                    _filePath = value;
-                }
-                else
-                {
-                    _filePath = string.Empty;
-                }
-            }
-        }
+        public string FilePath { get; set; } = string.Empty;
 
         public string PatchUrl { get; set; } = string.Empty;
 
@@ -32,7 +18,7 @@ namespace RaSetMaker.Models
         public Game? Game => Parent != null ? (Game)Parent : null;
 
         [XmlIgnore]
-        public bool IsValid => _filePath != string.Empty;
+        public bool IsValid => FilePath != string.Empty;
 
         public Rom() : base()
         {
@@ -41,7 +27,5 @@ namespace RaSetMaker.Models
         public Rom(Game parent) : base(parent)
         {
         }
-
-        private string _filePath = string.Empty;
     }
 }
