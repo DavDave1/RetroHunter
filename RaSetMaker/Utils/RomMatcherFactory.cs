@@ -7,7 +7,8 @@ namespace RaSetMaker.Utils
 {
     public class RomMatcherFactory
     {
-        static RomMatcherFactory() {
+        static RomMatcherFactory()
+        {
             _gameIdentificators = new()
             {
                 { RomMatcherType.Null, typeof(NullMatcher) },
@@ -21,7 +22,7 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.PcEngine, typeof(PcEngineMatcher) },
                 { RomMatcherType.PcEngineCD, typeof(NullMatcher) },
                 { RomMatcherType.PcFx, typeof(NullMatcher) },
-                { RomMatcherType.GameCube, typeof(NullMatcher) },
+                { RomMatcherType.GameCube, typeof(GameCubeMatcher) },
                 { RomMatcherType.Nintendo64, typeof(N64Matcher) },
                 { RomMatcherType.NintendoDS, typeof(NdsMatcher) },
                 { RomMatcherType.Nes, typeof(NesMatcher) },
