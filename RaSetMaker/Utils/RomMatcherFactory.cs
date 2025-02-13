@@ -14,7 +14,7 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.Null, typeof(NullMatcher) },
                 { RomMatcherType.Md5, typeof(Md5Matcher) },
                 { RomMatcherType.FileNameHash, typeof(FileNameHashMatcher) },
-                { RomMatcherType.ThreeDO, typeof(NullMatcher) },
+                { RomMatcherType.ThreeDO, typeof(ThreeDOMatcher) },
                 { RomMatcherType.Arduboy, typeof(ArduboyMatcher) },
                 { RomMatcherType.Atari7800, typeof(Atari7800Matcher) },
                 { RomMatcherType.AtariJaguarCD, typeof(NullMatcher) },
