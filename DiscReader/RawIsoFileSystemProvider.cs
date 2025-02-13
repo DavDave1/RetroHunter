@@ -1,13 +1,13 @@
 ﻿namespace DiskReader;
 
-public class RawFileSystemProvider : IFileSystemProvider
+public class RawIsoFileSystemProvider : IFileSystemProvider
 {
     public bool Load(string FilePath)
     {
         if (Path.GetExtension(FilePath) == ".cue")
         {
             _reader = new BinCueDataReader();
-            
+
         }
         else if (Path.GetExtension(FilePath) == ".chd")
         {
@@ -22,10 +22,8 @@ public class RawFileSystemProvider : IFileSystemProvider
         {
             return false;
         }
-        
-        ReadPrimaryVolumeInfo();
 
-        return true;
+        return ReadPrimaryVolumeInfo();
     }
 
     public List<string> GetAllTrackFiles() => _reader?.GetAllTrackFiles() ?? [];
@@ -51,7 +49,17 @@ public class RawFileSystemProvider : IFileSystemProvider
         return buffer;
     }
 
-    private void ReadPrimaryVolumeInfo()
+    public byte[]? GetVolumeHeader()
+    {
+        _reader.Seek(0);
+
+        var volHeader = new byte[132];
+        _reader.Read(volHeader);
+
+        return volHeader;
+    }
+
+    private bool ReadPrimaryVolumeInfo()
     {
         bool volumeInfoBlockFound = false;
         uint volumeInfoBlock = Constants.DESCRIPTORS_START_ADDR;
@@ -62,7 +70,7 @@ public class RawFileSystemProvider : IFileSystemProvider
         {
             if (!_reader.Seek(volumeInfoBlock))
             {
-                return;
+                return false;
             }
 
             _reader.Read(volumeInfoData);
@@ -76,7 +84,14 @@ public class RawFileSystemProvider : IFileSystemProvider
             volumeInfoBlock++;
         }
 
-        _primaryVolumeInfo = new(volumeInfoData);
+        if (volumeInfoBlockFound)
+        {
+            _primaryVolumeInfo = new(volumeInfoData);
+            return true;
+        }
+
+        return false;
+
     }
 
     private DirectoryRecord? GetDirectory(string filename)

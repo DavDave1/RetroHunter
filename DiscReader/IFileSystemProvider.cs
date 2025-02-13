@@ -7,5 +7,7 @@
         List<string> GetAllTrackFiles();
 
         byte[]? ReadFile(string fileName);
+
+        byte[]? GetVolumeHeader();
     }
 }

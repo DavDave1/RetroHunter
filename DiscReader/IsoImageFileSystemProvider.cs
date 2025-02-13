@@ -20,6 +20,7 @@ namespace DiskReader
         {
             try
             {
+                _isoFile = new FileInfo(fileName);
                 var fileStream = _cdReader.OpenFile(fileName, FileMode.Open);
 
                 var buffer = new byte[fileStream.Length];
@@ -33,9 +34,14 @@ namespace DiskReader
             return null;
         }
 
-        private FileInfo _isoFile;
-        private FileStream _isoStream;
-        private CDReader _cdReader;
+        public byte[]? GetVolumeHeader()
+        {
+            throw new NotImplementedException();
+        }
 
-}
+        private FileInfo? _isoFile;
+        private FileStream? _isoStream;
+        private CDReader? _cdReader;
+
+    }
 }

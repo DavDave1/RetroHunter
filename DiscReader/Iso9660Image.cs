@@ -13,14 +13,18 @@ namespace DiskReader
             }
             else
             {
-                _fsProvider = new RawFileSystemProvider();
+                _fsProvider = new RawIsoFileSystemProvider();
+                if (!_fsProvider.Load(FilePath))
+                {
+                    _fsProvider = new OperaFS.OperaFileSystemProvider();
+                }
             }
 
             if (!_fsProvider.Load(FilePath))
             {
                 return false;
             }
-            
+
 
             return true;
         }
@@ -33,6 +37,11 @@ namespace DiskReader
         public byte[]? ReadFile(string filename)
         {
             return _fsProvider?.ReadFile(filename);
+        }
+
+        public byte[]? GetVolumeHeader()
+        {
+            return _fsProvider?.GetVolumeHeader();
         }
 
 
