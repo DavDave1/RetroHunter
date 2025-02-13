@@ -30,6 +30,8 @@
             _sectorSize = _cue.Tracks[_trackIndex].SectorSize;
             _sectorHeaderSize = _cue.Tracks[_trackIndex].SectorHeaderSize;
 
+            Seek(0);
+
             return true;
         }
 
@@ -52,13 +54,16 @@
                 return false;
             }
 
-            if (lba == _currentLba)
+            var position = (lba * _sectorSize) + _sectorHeaderSize;
+
+            if (_currentPosition == position)
             {
                 return true;
             }
 
             _currentLba = lba;
-            _currentPosition = (lba * _sectorSize) + _sectorHeaderSize;
+            _currentPosition = position;
+            _positionInSector = 0;
             _track.Seek(_currentPosition, SeekOrigin.Begin);
 
             return true;
@@ -72,15 +77,22 @@
             }
 
             int readLen = 0;
-            uint nextLba = _currentLba;
+            var nextLba = _currentLba;
             while (readLen < buffer.Length)
             {
-                var sizeToRead = Math.Min(2048, buffer.Length - readLen);
+                var sizeToRead = (int)Math.Min(2048 - _positionInSector, buffer.Length - readLen);
 
                 _track.ReadExactly(buffer, readLen, sizeToRead);
-
                 readLen += sizeToRead;
-                nextLba++;
+
+                _positionInSector += (uint)sizeToRead;
+
+                if (_positionInSector >= 2048)
+                {
+                    ++nextLba;
+                    _positionInSector = 0;
+                }
+
                 if (!Seek(nextLba))
                 {
                     return false;
@@ -115,5 +127,7 @@
 
         private long _currentPosition;
         private uint _currentLba;
+
+        private uint _positionInSector;
     }
 }
