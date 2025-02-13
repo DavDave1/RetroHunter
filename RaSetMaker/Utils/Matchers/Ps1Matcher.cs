@@ -16,7 +16,6 @@ namespace RaSetMaker.Utils.Matchers
         {
             var cdImage = new Iso9660Image();
 
-            var trackFiles = cdImage.GetAllTrackFiles();
 
             if (!cdImage.Load(file.FullName))
             {
@@ -68,7 +67,7 @@ namespace RaSetMaker.Utils.Matchers
 
             var rom = MatchRomByHash(Convert.ToHexStringLower(_hasher.Hash!));
 
-            return (rom, [file.FullName]);
+            return (rom, cdImage.GetAllTrackFiles());
         }
 
         protected static readonly MD5 _hasher = MD5.Create();
