@@ -6,7 +6,7 @@ namespace DiskReader
     public class Cue
     {
         public List<Track> Tracks { get; private set; } = [];
-    
+
         public bool Parse(Stream cueFileStream)
         {
             using TextReader reader = new StreamReader(cueFileStream);
@@ -17,6 +17,13 @@ namespace DiskReader
             var line = reader.ReadLine()?.TrimStart();
             while (line != null)
             {
+                // ignore
+                if (line.StartsWith(LINE_START[LineType.Catalog]))
+                {
+                    line = reader.ReadLine()?.TrimStart();
+                    continue;
+                }
+
                 if (!line.StartsWith(LINE_START[currLineType]))
                 {
                     throw new Exception($"Unexpected tag at line {lineNr}");
@@ -44,6 +51,11 @@ namespace DiskReader
                     else if (lineSplit[2].StartsWith("MODE2"))
                     {
                         currTrack.TrackType = Track.ETrackType.Mode2;
+                        currTrack.SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
+                    }
+                    else if (lineSplit[2].StartsWith("MODE1"))
+                    {
+                        currTrack.TrackType = Track.ETrackType.Mode1;
                         currTrack.SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
                     }
                     else
@@ -84,14 +96,15 @@ namespace DiskReader
                 }
             }
 
-            return Tracks.Any(t => t.TrackType == Track.ETrackType.Mode2);
+            return Tracks.Count > 0;
         }
 
         private enum LineType
         {
             File,
             Track,
-            Index
+            Index,
+            Catalog
         }
 
         private static readonly Dictionary<LineType, string> LINE_START = new()
@@ -99,6 +112,7 @@ namespace DiskReader
             { LineType.File, "FILE" },
             { LineType.Track, "TRACK" },
             { LineType.Index, "INDEX" },
+            { LineType.Catalog, "CATALOG"}
         };
     }
 }
