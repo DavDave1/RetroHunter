@@ -44,31 +44,5 @@ namespace RaSetMaker.Utils.Matchers
         }
 
         protected static readonly MD5 _hasher = MD5.Create();
-
-
-        private class PsxExeHeader
-        {
-            public int FileSize { get; private set; }
-
-            public bool IsValid { get; private set; }
-
-            public PsxExeHeader(byte[] data)
-            {
-                if (data.Length < 0x800)
-                {
-                    return;
-                }
-
-                if (!data[..HEADER_ID.Length].SequenceEqual(HEADER_ID))
-                {
-                    return;
-                }
-
-                IsValid = true;
-                FileSize = BitConverter.ToInt32(data[28..32]);
-            }
-
-            private readonly byte[] HEADER_ID = [0x50, 0x53, 0x2D, 0x58, 0x20, 0x45, 0x58, 0x45]; // PS-X EXE
-        }
     }
 }
