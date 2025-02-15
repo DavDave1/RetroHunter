@@ -51,9 +51,9 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
     public byte[]? GetVolumeHeader()
     {
-        _reader.Seek(0);
+        _reader.SeekRelative(0);
 
-        var volHeader = new byte[132];
+        var volHeader = new byte[2048];
         _reader.Read(volHeader);
 
         return volHeader;
@@ -68,7 +68,7 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
         while (!volumeInfoBlockFound)
         {
-            if (!_reader.Seek(volumeInfoBlock))
+            if (!_reader.SeekRelative(volumeInfoBlock))
             {
                 return false;
             }
@@ -96,19 +96,34 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
     private DirectoryRecord? GetDirectory(string filename)
     {
-        var dirs = filename.Split("/");
+        _reader.OpenFirstTrack();
 
-        var currentDir = _primaryVolumeInfo?.RootDirectory;
-
-        foreach (var dir in filename.Split("/"))
+        do
         {
+
+            ReadPrimaryVolumeInfo();
+
+            var dirs = filename.Split("/");
+
+            var currentDir = _primaryVolumeInfo?.RootDirectory;
+
+            foreach (var dir in filename.Split("/"))
+            {
+                if (currentDir != null)
+                {
+                    currentDir = GetChild(currentDir, dir);
+                }
+            }
+
             if (currentDir != null)
             {
-                currentDir = GetChild(currentDir, dir);
+                return currentDir;
             }
         }
+        while (_reader.OpenNextTrack());
 
-        return currentDir;
+        return null;
+
     }
 
     public List<DirectoryRecord> GetChildren(DirectoryRecord parent)
@@ -171,4 +186,5 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
     private IDiskDatakReader? _reader;
     private PrimaryVolume? _primaryVolumeInfo;
+
 }
