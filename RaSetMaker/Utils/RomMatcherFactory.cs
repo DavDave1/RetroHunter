@@ -28,7 +28,7 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.Nes, typeof(NesMatcher) },
                 { RomMatcherType.Snes, typeof(SnesMatcher) },
                 { RomMatcherType.NeoGeoCD, typeof(NullMatcher) },
-                { RomMatcherType.Dreamcast, typeof(NullMatcher) },
+                { RomMatcherType.Dreamcast, typeof(DreamcastMatcher) },
                 { RomMatcherType.Saturn, typeof(NullMatcher) },
                 { RomMatcherType.SegaCD, typeof(NullMatcher) },
                 { RomMatcherType.Ps1, typeof(Ps1Matcher) },

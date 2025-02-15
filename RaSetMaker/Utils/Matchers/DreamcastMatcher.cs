@@ -1,0 +1,57 @@
+﻿using DiskReader;
+using RaSetMaker.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace RaSetMaker.Utils.Matchers
+{
+    public class DreamcastMatcher(GameSystem system) : MatcherBase(system)
+    {
+        public override (Rom?, List<string>) FindRom(FileInfo file)
+        {
+            var cdImage = new Iso9660Image();
+
+            if (!cdImage.Load(file.FullName))
+            {
+                return (null, [file.FullName]);
+            }
+
+            var volumeHeader = cdImage.GetVolumeHeader();
+
+            if (volumeHeader == null)
+            {
+                return (null, [file.FullName]);
+            }
+
+            string dcIdentifier = Encoding.ASCII.GetString(volumeHeader.AsSpan()[..16]);
+            if (dcIdentifier != DC_IDENTIFIER)
+            {
+                return (null, [file.FullName]);
+            }
+
+            string bootFilename = Encoding.ASCII.GetString(volumeHeader.AsSpan(96..112)).Trim();
+
+            var bootFileData = cdImage.ReadFile(bootFilename);
+
+            if (bootFileData == null)
+            {
+                return (null, [file.FullName]);
+            }
+
+            var hasher = MD5.Create();
+            hasher.Initialize();
+            hasher.TransformBlock(volumeHeader, 0, 256, null, 0);
+            hasher.TransformFinalBlock(bootFileData, 0, bootFileData.Length);
+
+            var rom = MatchRomByHash(Convert.ToHexStringLower(hasher.Hash!));
+
+            return (rom, cdImage.GetAllTrackFiles());
+        }
+
+        private static readonly string DC_IDENTIFIER = "SEGA SEGAKATANA ";
+    }
+}

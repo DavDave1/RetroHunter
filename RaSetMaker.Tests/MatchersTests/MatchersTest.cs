@@ -227,6 +227,22 @@ namespace RaSetMaker.Tests.MatchersTests
 
             Assert.NotNull(foundRom);
             Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+
+        [InlineData("../../../TestRoms/dreamcast/18 Wheeler - American Pro Trucker (USA).cue", "aa571861964e9f58437f609239cbfb7c")]
+        public void DreamcastBinCueMatch(string filePath, string expectedHash)
+        {
+            var sys = GetGameSystemByType(GameSystemType.Dreamcast);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
 
         }
     }
