@@ -13,14 +13,40 @@ namespace DiskReader
 
             var currLineType = LineType.File;
             int lineNr = 0;
-            var currTrack = new Track();
-            var line = reader.ReadLine()?.TrimStart();
-            while (line != null)
+            bool highDensityTrack = false;
+
+            while (true)
             {
+                var line = reader.ReadLine()?.TrimStart();
+                lineNr++;
+
+                if (line == null)
+                {
+                    break;
+                }
+
                 // ignore
                 if (line.StartsWith(LINE_START[LineType.Catalog]))
                 {
-                    line = reader.ReadLine()?.TrimStart();
+                    continue;
+                }
+
+                // End of previous file, begin new
+                if (currLineType == LineType.Index && !line.StartsWith(LINE_START[LineType.Index]))
+                {
+                    currLineType = LineType.File;
+                }
+
+                if (line.StartsWith(LINE_START[LineType.Comment]))
+                {
+                    var comment = line.Replace(LINE_START[LineType.Comment], "").Trim();
+
+                    // System specific hack to handle Dreamcast cue files.
+                    if (comment == "HIGH-DENSITY AREA")
+                    {
+                        highDensityTrack = true;
+                    }
+
                     continue;
                 }
 
@@ -31,39 +57,43 @@ namespace DiskReader
 
                 if (currLineType == LineType.File)
                 {
-                    currTrack = new Track
+                    // High density area starts at sector 45000.
+                    // See https://github.com/flyinghead/flycast/blob/e1da1c3a55ad09545d2eefbd8b909689602a4de7/core/imgread/cue.cpp#L123
+                    // TOOD: investigate why and possibly find a generic implementation for this.
+                    Tracks.Add(new Track
                     {
-                        FilePath = line.Split('\"').Skip(1).First()
-                    };
+                        FilePath = line.Split('\"').Skip(1).First(),
+                        TrackSectorBegin = highDensityTrack ? 45000 : 0,
+                    });
 
-                    line = reader.ReadLine()?.TrimStart();
+                    highDensityTrack = false;
                     currLineType = LineType.Track;
                 }
                 else if (currLineType == LineType.Track)
                 {
                     var lineSplit = line.Split(' ').ToList();
-                    currTrack.TrackNr = int.Parse(lineSplit[1]);
+                    Tracks.Last().TrackNr = int.Parse(lineSplit[1]);
 
                     if (lineSplit[2] == "AUDIO")
                     {
-                        currTrack.TrackType = Track.ETrackType.Audio;
+                        Tracks.Last().TrackType = Track.ETrackType.Audio;
+                        Tracks.Last().SectorSize = 2352;
                     }
                     else if (lineSplit[2].StartsWith("MODE2"))
                     {
-                        currTrack.TrackType = Track.ETrackType.Mode2;
-                        currTrack.SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
+                        Tracks.Last().TrackType = Track.ETrackType.Mode2;
+                        Tracks.Last().SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
                     }
                     else if (lineSplit[2].StartsWith("MODE1"))
                     {
-                        currTrack.TrackType = Track.ETrackType.Mode1;
-                        currTrack.SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
+                        Tracks.Last().TrackType = Track.ETrackType.Mode1;
+                        Tracks.Last().SectorSize = int.Parse(lineSplit[2].Split('/').Skip(1).First());
                     }
                     else
                     {
                         throw new Exception($"Unknown track type on line {lineNr}");
                     }
 
-                    line = reader.ReadLine()?.TrimStart();
                     currLineType = LineType.Index;
                 }
                 else if (currLineType == LineType.Index)
@@ -81,18 +111,7 @@ namespace DiskReader
                         ss = int.Parse(timeSplit[2])
                     };
 
-                    currTrack.Indices.Add(index);
-
-                    line = reader.ReadLine()?.TrimStart();
-                    if (line != null && line.StartsWith(LINE_START[LineType.File]))
-                    {
-                        Tracks.Add(currTrack);
-                        currLineType = LineType.File;
-                    }
-                    else if (line == null)
-                    {
-                        Tracks.Add(currTrack);
-                    }
+                    Tracks.Last().Indices.Add(index);
                 }
             }
 
@@ -104,7 +123,9 @@ namespace DiskReader
             File,
             Track,
             Index,
-            Catalog
+            Catalog,
+            Comment
+
         }
 
         private static readonly Dictionary<LineType, string> LINE_START = new()
@@ -112,7 +133,8 @@ namespace DiskReader
             { LineType.File, "FILE" },
             { LineType.Track, "TRACK" },
             { LineType.Index, "INDEX" },
-            { LineType.Catalog, "CATALOG"}
+            { LineType.Catalog, "CATALOG" },
+            { LineType.Comment, "REM" }
         };
     }
 }

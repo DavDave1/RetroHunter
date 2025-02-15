@@ -53,6 +53,8 @@ namespace DiskReader
 
         public int TrackSize { get; set; }
 
+        public int TrackSectorBegin { get; set; }
+
         public int SectorHeaderSize =>
             TrackType switch
             {
@@ -114,7 +116,7 @@ namespace DiskReader
             VolumeSequenceNumber = Constants.Int16LsbMsbToInt(buffer[124..128]);
             LogicalBlockSize = Constants.Int16LsbMsbToInt(buffer[128..132]);
             PathTableSize = Constants.Int32LsbMsbToInt(buffer[132..140]);
-            PathTableLocation = BitConverter.IsLittleEndian ? 
+            PathTableLocation = BitConverter.IsLittleEndian ?
                 BitConverter.ToInt32(buffer[140..144], 0) :
                 BitConverter.ToInt32(buffer[144..148], 0);
             OptPathTableLocation = BitConverter.IsLittleEndian ?
