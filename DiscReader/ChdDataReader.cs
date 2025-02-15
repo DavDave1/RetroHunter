@@ -2,10 +2,11 @@
 
 using DiskReader.Chd;
 using System;
+using System.Runtime.Versioning;
 
 namespace DiskReader
 {
-  
+
 
     public partial class ChdDataReader : IDiskDatakReader, IDisposable
     {
@@ -26,10 +27,11 @@ namespace DiskReader
             _hunkBuffer = new byte[_hunkSize];
 
             ParseTrackList();
-            FindDataTrack();
+            OpenFirstTrack();
 
             return true;
         }
+
 
         public bool Seek(uint lba)
         {
@@ -51,6 +53,11 @@ namespace DiskReader
             }
 
             return true;
+        }
+
+        public bool SeekRelative(uint lba)
+        {
+            return Seek(lba);
         }
 
         public bool Read(byte[] buffer)
@@ -97,12 +104,14 @@ namespace DiskReader
                 {
                     break;
                 }
+
                 _tracks.Add(track);
+
                 trackIndex++;
             }
         }
 
-        private void FindDataTrack()
+        public void OpenFirstTrack()
         {
             _trackIndex = 0;
             _trackFileOffset = 0;
@@ -119,16 +128,34 @@ namespace DiskReader
             }
         }
 
+        public bool OpenNextTrack()
+        {
+            _trackIndex++;
+
+            for (; _trackIndex < _tracks.Count; _trackIndex++)
+            {
+                _trackFileOffset += (uint)_tracks[_trackIndex].TrackSize;
+
+                if (_tracks[_trackIndex].TrackType != Track.ETrackType.Audio)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
         private FileInfo? _chdFile;
         private UIntPtr _chd = UIntPtr.Zero;
-        private List<Track> _tracks = [];
+        private readonly List<Track> _tracks = [];
 
         private uint _hunkSize;
         private uint _sectorsPerHunk;
         private int _currentHunk = -1;
         private uint _currentLba;
         private uint _currentHunkOffset;
-        private byte [] _hunkBuffer = [];
+        private byte[] _hunkBuffer = [];
 
         private int _trackIndex;
         private uint _trackFileOffset;
