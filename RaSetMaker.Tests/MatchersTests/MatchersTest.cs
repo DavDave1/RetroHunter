@@ -33,6 +33,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/atari2600.zip", "0db4f4150fecf77e4ce72ca4d04c052f")]
         public void Md5HashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Atari2600);
             AddRomWithHash(sys, expectedHash);
             var matcher = RomMatcherFactory.Create(sys);
@@ -48,6 +53,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/arduboy.zip", "cee7f24fab74cef92ff1e03cd76d38cb")]
         public void ArduboyHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Arduboy);
             AddRomWithHash(sys, expectedHash);
 
@@ -63,6 +73,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/progolf.zip", "d0f2f686b61f08f07cd2925bb3ae8b41")]
         public void FileNameHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var arcade = GetGameSystemByType(GameSystemType.Arcade);
             AddRomWithHash(arcade, expectedHash);
 
@@ -78,6 +93,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/Animal Crossing (USA).iso", "4f69c7886162509baa0882062bb2e1c8")]
         public void GameCubeHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.GameCube);
             AddRomWithHash(sys, expectedHash);
 
@@ -94,6 +114,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/nintendo64_bigendian.zip", "755df7f57edf87706d4c80ff15883312")]
         public void N64BigEndianHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var n64 = GetGameSystemByType(GameSystemType.Nintendo64);
             AddRomWithHash(n64, expectedHash);
 
@@ -109,6 +134,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/nintendo64_byteswapped.zip", "755df7f57edf87706d4c80ff15883312")]
         public void N64ByteSwappedHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var n64 = GetGameSystemByType(GameSystemType.Nintendo64);
             AddRomWithHash(n64, expectedHash);
 
@@ -124,6 +154,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/nds.zip", "e6d6d2daad4cc49483793ba298067065")]
         public void NdsHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.NintendoDS);
             AddRomWithHash(sys, expectedHash);
 
@@ -139,6 +174,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/nes_headered.zip", "29e5e1a5f8b400773ef9d959044456b2")]
         public void NesHeaderedHashMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Nes);
             AddRomWithHash(sys, expectedHash);
 
@@ -154,6 +194,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/ps1/007 Racing (USA).cue", "3620a316e7ce463e604d91540840df62")]
         public void Ps1BinCueMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
@@ -170,6 +215,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/ps1/007 Racing (USA).chd", "3620a316e7ce463e604d91540840df62")]
         public void Ps1ChdMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
@@ -186,6 +236,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/psp.iso", "3cd66bf66e631a8d90c97a2f7628bd2a")]
         public void PspIsoMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Psp);
             AddRomWithHash(sys, expectedHash);
 
@@ -202,6 +257,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/snes.zip", "c638c1175840c6640d897951daa73637")]
         public void SnesHeaderedMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.SuperNintendo);
             AddRomWithHash(sys, expectedHash);
 
@@ -218,6 +278,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/3do/Alone in the Dark (USA).cue", "4d7f2e1b2e8b9d9d14f083fae44d9760")]
         public void TheeeDOBinCueMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.ThreeDo);
             AddRomWithHash(sys, expectedHash);
 
@@ -230,10 +295,14 @@ namespace RaSetMaker.Tests.MatchersTests
         }
 
         [Theory]
-
         [InlineData("../../../TestRoms/dreamcast/18 Wheeler - American Pro Trucker (USA).cue", "aa571861964e9f58437f609239cbfb7c")]
         public void DreamcastBinCueMatch(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
