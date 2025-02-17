@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DiskReader.Chd;
 
 namespace DiskReader.OperaFS;
 

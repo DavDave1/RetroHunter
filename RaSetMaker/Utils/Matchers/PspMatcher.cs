@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
 
 namespace RaSetMaker.Utils.Matchers
 {
@@ -14,7 +12,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            var cdImage = new Iso9660Image(file.FullName);
+            var cdImage = new DiskImage(file.FullName);
 
             var paramSfoData = cdImage.ReadFile(@"PSP_GAME\PARAM.SFO");
 

@@ -13,7 +13,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            var cdImage = new Iso9660Image(file.FullName);
+            var cdImage = new DiskImage(file.FullName);
 
             var launchMe = cdImage.ReadFile("LaunchMe");
 

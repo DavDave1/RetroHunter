@@ -1,11 +1,11 @@
 ﻿
-using System.Runtime.CompilerServices;
+using DiskReader.IsoFS;
 
 namespace DiskReader
 {
-    public class Iso9660Image
+    public class DiskImage
     {
-        public Iso9660Image(string filePath)
+        public DiskImage(string filePath)
         {
             if (Path.GetExtension(filePath) == ".iso")
             {

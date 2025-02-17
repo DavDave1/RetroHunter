@@ -1,11 +1,10 @@
 ﻿using System.Text;
 
-namespace DiskReader
+namespace DiskReader.IsoFS
 {
     public static class Constants
     {
         public const int DESCRIPTORS_START_ADDR = 0x10;
-        public const int MODE2_SECTOR_SIZE = 2352;
         public const int PRIMARY_VOLUME_ID = 0x01;
         public static readonly byte[] STANDARD_ID = [0x43, 0x44, 0x30, 0x30, 0x31]; // CD001 
 
@@ -22,71 +21,11 @@ namespace DiskReader
                 BitConverter.ToInt16(buffer[2..4], 0);
         }
     }
-
-    public class Track
-    {
-        public class TrackIndex
-        {
-            public int nr;
-            public int hh;
-            public int mm;
-            public int ss;
-        }
-
-        public enum ETrackType
-        {
-            Mode1,
-            Mode1Raw,
-            Mode2,
-            Mode2Raw,
-            Mode2Form1,
-            Mode2Form2,
-            Mode2FormMix,
-            Audio
-        }
-
-        public string FilePath { get; set; } = "";
-
-        public int TrackNr { get; set; }
-
-        public int SectorSize { get; set; }
-
-        public int TrackSize { get; set; }
-
-        public int TrackSectorBegin { get; set; }
-
-        public int SectorHeaderSize =>
-            TrackType switch
-            {
-                ETrackType.Mode1 or ETrackType.Mode1Raw => 16,
-                ETrackType.Mode2 or ETrackType.Mode2Raw => 24,
-                _ => throw new Exception("Unknown track header size")
-            };
-
-        public ETrackType TrackType { get; set; }
-        public List<TrackIndex> Indices { get; set; } = [];
-    }
-
-    public enum VolumeDescriptorType
-    {
-        BootRecord = 0,
-        PrimaryVolume = 1,
-        SupplementarVolume = 2,
-        VolumePartition = 3,
-        Terminator = 255
-    }
-
     public class VolumeDescriptor
     {
         public byte Type;
         public string Identifier = "";
         public byte Version;
-    }
-
-    public class BootRecord : VolumeDescriptor
-    {
-        public string BootSystemIdentifier = "";
-        public string BootIdentifier = "";
     }
 
     public class PrimaryVolume : VolumeDescriptor

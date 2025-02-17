@@ -1,4 +1,6 @@
-﻿namespace DiskReader;
+﻿using DiskReader.Chd;
+
+namespace DiskReader.IsoFS;
 
 public class RawIsoFileSystemProvider : IFileSystemProvider
 {

@@ -2,7 +2,7 @@
 
 using DiscUtils.Iso9660;
 
-namespace DiskReader
+namespace DiskReader.IsoFS
 {
     public class IsoImageFileSystemProvider : IFileSystemProvider
     {

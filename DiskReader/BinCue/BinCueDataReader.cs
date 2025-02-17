@@ -1,4 +1,6 @@
-﻿namespace DiskReader
+﻿using DiskReader.BinCue;
+
+namespace DiskReader
 {
     internal class BinCueDataReader : IDiskDatakReader
     {

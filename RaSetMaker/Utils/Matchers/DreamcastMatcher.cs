@@ -1,11 +1,10 @@
-﻿using DiskReader;
-using RaSetMaker.Models;
+﻿using RaSetMaker.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+
 
 namespace RaSetMaker.Utils.Matchers
 {
@@ -13,7 +12,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            var cdImage = new Iso9660Image(file.FullName);
+            var cdImage = new DiskReader.DiskImage(file.FullName);
 
             var volumeHeader = cdImage.GetVolumeHeader();
 
