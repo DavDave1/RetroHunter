@@ -24,5 +24,10 @@
     <PackageReference Include="DiscUtils.Iso9660" Version="0.16.13" />
     <PackageReference Include="DiscUtils.Streams" Version="0.16.13" />
   </ItemGroup>
+    
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Reference Include="../libchdr/build/libchdr.so.0.2" />
+    <Content Include="../libchdr/build/libchdr.so.0.2" CopyToPublishDirectory="PreserveNewest"/>
+  </ItemGroup>
 
 </Project>

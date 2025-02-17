@@ -3,4 +3,10 @@
     <Nullable>enable</Nullable>
     <AvaloniaVersion>11.1.0</AvaloniaVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Packaging.Targets">
+      <Version>0.1.232-*</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>
