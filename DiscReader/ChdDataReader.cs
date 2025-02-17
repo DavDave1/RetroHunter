@@ -10,16 +10,15 @@ namespace DiskReader
 
     public partial class ChdDataReader : IDiskDatakReader, IDisposable
     {
-
-        public bool Load(string filePath)
+        public ChdDataReader(string filePath)
         {
-            _chdFile = new FileInfo(filePath);
+            _chdFileName = filePath;
 
             var result = LibChdAccess.Open(filePath, ChdConstants.CHD_OPEN_READ, UIntPtr.Zero, ref _chd);
 
             if (result != 0)
             {
-                return false;
+                throw new FileLoadException($"Chd reader failed to open file with error {result}", filePath);
             }
 
             _hunkSize = LibChdAccess.GetHunkSize(_chd);
@@ -28,10 +27,7 @@ namespace DiskReader
 
             ParseTrackList();
             OpenFirstTrack();
-
-            return true;
         }
-
 
         public bool Seek(uint lba)
         {
@@ -83,14 +79,19 @@ namespace DiskReader
 
             return true;
         }
-        public List<string> GetAllTrackFiles() => [_chdFile?.FullName];
+        public List<string> GetAllTrackFiles() => [_chdFileName];
 
         public void Dispose()
         {
             if (_chd != UIntPtr.Zero)
             {
-                LibChdAccess.Close(_chd);
+                int result = LibChdAccess.Close(_chd);
                 _chd = UIntPtr.Zero;
+
+                if (result != 0)
+                {
+                    throw new DiskReaderException($"Failed to close CHD file with error {result}");
+                }
             }
         }
 
@@ -111,21 +112,24 @@ namespace DiskReader
             }
         }
 
-        public void OpenFirstTrack()
+        public bool OpenFirstTrack()
         {
-            _trackIndex = 0;
+            _trackIndex = -1;
             _trackFileOffset = 0;
 
             foreach (var track in _tracks)
             {
+                _trackIndex++;
+
                 if (track.TrackType != Track.ETrackType.Audio)
                 {
                     break;
                 }
 
-                _trackIndex++;
                 _trackFileOffset += (uint)track.TrackSize;
             }
+
+            return _trackIndex >= 0 && _trackIndex < _tracks.Count;
         }
 
         public bool OpenNextTrack()
@@ -143,10 +147,9 @@ namespace DiskReader
             }
 
             return false;
-
         }
 
-        private FileInfo? _chdFile;
+        private readonly string _chdFileName;
         private UIntPtr _chd = UIntPtr.Zero;
         private readonly List<Track> _tracks = [];
 

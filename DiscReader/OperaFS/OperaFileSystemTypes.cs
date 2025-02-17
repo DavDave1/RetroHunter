@@ -23,12 +23,12 @@ public class VolumeHeaderInfo
     {
         if (data.Length != 132)
         {
-            throw new Exception("Invalid volume header size");
+            throw new ArgumentException("Invalid volume header size");
         }
 
         if (!data[0..VOLUME_HEADER_IDENTIFIER.Length].SequenceEqual(VOLUME_HEADER_IDENTIFIER))
         {
-            throw new Exception("Invalid volume header identifier");
+            throw new UnsupportedFormatException("Invalid volume header identifier");
         }
 
         Comment = Encoding.UTF8.GetString(data.AsSpan()[8..40]).Replace("\0", "");

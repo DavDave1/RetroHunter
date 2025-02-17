@@ -6,21 +6,19 @@ namespace DiskReader
 {
     public class IsoImageFileSystemProvider : IFileSystemProvider
     {
-        public List<string> GetAllTrackFiles() => [_isoFile?.FullName];
-
-        public bool Load(string filePath)
+        public IsoImageFileSystemProvider(string filePath)
         {
-            _isoStream = File.OpenRead(filePath);
+            _isoFileName = filePath;
+            _isoStream = File.OpenRead(_isoFileName);
             _cdReader = new CDReader(_isoStream, true);
 
-            return true;
         }
+        public List<string> GetAllTrackFiles() => [_isoFileName];
 
         public byte[]? ReadFile(string fileName)
         {
             try
             {
-                _isoFile = new FileInfo(fileName);
                 var fileStream = _cdReader.OpenFile(fileName, FileMode.Open);
 
                 var buffer = new byte[fileStream.Length];
@@ -34,14 +32,14 @@ namespace DiskReader
             return null;
         }
 
-        public byte[]? GetVolumeHeader()
+        public byte[] GetVolumeHeader()
         {
             throw new NotImplementedException();
         }
 
-        private FileInfo? _isoFile;
-        private FileStream? _isoStream;
-        private CDReader? _cdReader;
+        private string _isoFileName;
+        private readonly FileStream _isoStream;
+        private readonly CDReader _cdReader;
 
     }
 }

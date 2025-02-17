@@ -2,28 +2,18 @@
 
 public class RawIsoFileSystemProvider : IFileSystemProvider
 {
-    public bool Load(string FilePath)
+    public RawIsoFileSystemProvider(string filePath)
     {
-        if (Path.GetExtension(FilePath) == ".cue")
-        {
-            _reader = new BinCueDataReader();
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
-        }
-        else if (Path.GetExtension(FilePath) == ".chd")
+        _reader = extension switch
         {
-            _reader = new ChdDataReader();
-        }
-        else
-        {
-            return false;
-        }
+            ".cue" => new BinCueDataReader(filePath),
+            ".chd" => new ChdDataReader(filePath),
+            _ => throw new NotSupportedException($"Extension {extension} is not supported by OperaFSReader"),
+        };
 
-        if (!_reader.Load(FilePath))
-        {
-            return false;
-        }
-
-        return ReadPrimaryVolumeInfo();
+        _primaryVolumeInfo = ReadPrimaryVolumeInfo();
     }
 
     public List<string> GetAllTrackFiles() => _reader?.GetAllTrackFiles() ?? [];
@@ -49,7 +39,7 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         return buffer;
     }
 
-    public byte[]? GetVolumeHeader()
+    public byte[] GetVolumeHeader()
     {
         _reader.SeekRelative(0);
 
@@ -59,53 +49,15 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         return volHeader;
     }
 
-    private bool ReadPrimaryVolumeInfo()
-    {
-        bool volumeInfoBlockFound = false;
-        uint volumeInfoBlock = Constants.DESCRIPTORS_START_ADDR;
-
-        var volumeInfoData = new byte[2048];
-
-        while (!volumeInfoBlockFound)
-        {
-            if (!_reader.SeekRelative(volumeInfoBlock))
-            {
-                return false;
-            }
-
-            _reader.Read(volumeInfoData);
-
-            if (volumeInfoData[0] == Constants.PRIMARY_VOLUME_ID &&
-                volumeInfoData[1..6].SequenceEqual(Constants.STANDARD_ID))
-            {
-                volumeInfoBlockFound = true;
-            }
-
-            volumeInfoBlock++;
-        }
-
-        if (volumeInfoBlockFound)
-        {
-            _primaryVolumeInfo = new(volumeInfoData);
-            return true;
-        }
-
-        return false;
-
-    }
-
     private DirectoryRecord? GetDirectory(string filename)
     {
         _reader.OpenFirstTrack();
 
         do
         {
+            _primaryVolumeInfo = ReadPrimaryVolumeInfo();
 
-            ReadPrimaryVolumeInfo();
-
-            var dirs = filename.Split("/");
-
-            var currentDir = _primaryVolumeInfo?.RootDirectory;
+            var currentDir = _primaryVolumeInfo.RootDirectory;
 
             foreach (var dir in filename.Split("/"))
             {
@@ -123,7 +75,6 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         while (_reader.OpenNextTrack());
 
         return null;
-
     }
 
     public List<DirectoryRecord> GetChildren(DirectoryRecord parent)
@@ -183,8 +134,27 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         return null;
     }
 
+    private PrimaryVolume ReadPrimaryVolumeInfo()
+    {
+        uint volumeInfoBlock = Constants.DESCRIPTORS_START_ADDR;
 
-    private IDiskDatakReader? _reader;
-    private PrimaryVolume? _primaryVolumeInfo;
+        var volumeInfoData = new byte[2048];
+
+        _reader.SeekRelative(volumeInfoBlock);
+        _reader.Read(volumeInfoData);
+
+        if (volumeInfoData[0] == Constants.PRIMARY_VOLUME_ID &&
+            volumeInfoData[1..6].SequenceEqual(Constants.STANDARD_ID))
+        {
+            return new(volumeInfoData);
+        }
+
+        throw new UnsupportedFormatException("No primary volume info found");
+    }
+
+
+
+    private IDiskDatakReader _reader;
+    private PrimaryVolume _primaryVolumeInfo;
 
 }

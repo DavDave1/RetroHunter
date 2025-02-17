@@ -4,28 +4,20 @@ namespace DiskReader.OperaFS;
 
 public class OperaFileSystemProvider : IFileSystemProvider
 {
-    public bool Load(string FilePath)
+    public OperaFileSystemProvider(string filePath)
     {
-        if (Path.GetExtension(FilePath) == ".cue")
-        {
-            _reader = new BinCueDataReader();
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
-        }
-        else if (Path.GetExtension(FilePath) == ".chd")
+        _reader = extension switch
         {
-            _reader = new ChdDataReader();
-        }
-        else
-        {
-            return false;
-        }
+            ".cue" => new BinCueDataReader(filePath),
+            ".chd" => new ChdDataReader(filePath),
+            _ => throw new NotSupportedException($"Extension {extension} is not supported by OperaFSReader"),
+        };
 
-        if (!_reader.Load(FilePath))
-        {
-            return false;
-        }
+        var volHeaderBuffer = GetVolumeHeader();
 
-        return ReadVolumeHeaderInfo();
+        _volumeHeader = new(volHeaderBuffer);
     }
 
     public List<string> GetAllTrackFiles() => _reader?.GetAllTrackFiles() ?? [];
@@ -51,7 +43,7 @@ public class OperaFileSystemProvider : IFileSystemProvider
         return buffer;
     }
 
-    public byte[]? GetVolumeHeader()
+    public byte[] GetVolumeHeader()
     {
         _reader.Seek(0);
 
@@ -63,9 +55,6 @@ public class OperaFileSystemProvider : IFileSystemProvider
 
     private bool ReadVolumeHeaderInfo()
     {
-        var volHeaderBuffer = GetVolumeHeader();
-
-        _volumeHeader = new(volHeaderBuffer);
 
         return true;
 
@@ -101,6 +90,6 @@ public class OperaFileSystemProvider : IFileSystemProvider
         return currentEntry;
     }
 
-    private IDiskDatakReader? _reader;
+    private IDiskDatakReader _reader;
     private VolumeHeaderInfo? _volumeHeader;
 }

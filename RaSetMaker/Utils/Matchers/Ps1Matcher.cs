@@ -14,13 +14,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            var cdImage = new Iso9660Image();
-
-
-            if (!cdImage.Load(file.FullName))
-            {
-                return (null, [file.FullName]);
-            }
+            var cdImage = new Iso9660Image(file.FullName);
 
             var systemCnfData = cdImage.ReadFile("SYSTEM.CNF");
 

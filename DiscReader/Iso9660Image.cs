@@ -5,28 +5,23 @@ namespace DiskReader
 {
     public class Iso9660Image
     {
-        public bool Load(string FilePath)
+        public Iso9660Image(string filePath)
         {
-            if (Path.GetExtension(FilePath) == ".iso")
+            if (Path.GetExtension(filePath) == ".iso")
             {
-                _fsProvider = new IsoImageFileSystemProvider();
+                _fsProvider = new IsoImageFileSystemProvider(filePath);
             }
             else
             {
-                _fsProvider = new RawIsoFileSystemProvider();
-                if (!_fsProvider.Load(FilePath))
+                try
                 {
-                    _fsProvider = new OperaFS.OperaFileSystemProvider();
+                    _fsProvider = new RawIsoFileSystemProvider(filePath);
+                }
+                catch (UnsupportedFormatException)
+                {
+                    _fsProvider = new OperaFS.OperaFileSystemProvider(filePath);
                 }
             }
-
-            if (!_fsProvider.Load(FilePath))
-            {
-                return false;
-            }
-
-
-            return true;
         }
 
         public List<string> GetAllTrackFiles()
@@ -43,7 +38,6 @@ namespace DiskReader
         {
             return _fsProvider?.GetVolumeHeader();
         }
-
 
         private IFileSystemProvider? _fsProvider;
     }

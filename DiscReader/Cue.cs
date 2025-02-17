@@ -7,9 +7,11 @@ namespace DiskReader
     {
         public List<Track> Tracks { get; private set; } = [];
 
-        public bool Parse(Stream cueFileStream)
+        public Cue(string filePath)
         {
-            using TextReader reader = new StreamReader(cueFileStream);
+            _cueFile = new FileInfo(filePath);
+            using var cueStream = _cueFile.OpenRead();
+            using TextReader reader = new StreamReader(cueStream);
 
             var currLineType = LineType.File;
             int lineNr = 0;
@@ -52,7 +54,7 @@ namespace DiskReader
 
                 if (!line.StartsWith(LINE_START[currLineType]))
                 {
-                    throw new Exception($"Unexpected tag at line {lineNr}");
+                    throw new DiskReaderException($"Unexpected tag at line {lineNr}");
                 }
 
                 if (currLineType == LineType.File)
@@ -91,7 +93,7 @@ namespace DiskReader
                     }
                     else
                     {
-                        throw new Exception($"Unknown track type on line {lineNr}");
+                        throw new DiskReaderException($"Unknown track type on line {lineNr}");
                     }
 
                     currLineType = LineType.Index;
@@ -115,8 +117,50 @@ namespace DiskReader
                 }
             }
 
-            return Tracks.Count > 0;
+            foreach (var track in Tracks)
+            {
+                track.TrackSize = (int)GetBinLength(track.FilePath);
+            }
         }
+
+        public bool SelectFirstTrack()
+        {
+            _trackIndex = Tracks.FindIndex(t => t.TrackType != Track.ETrackType.Audio);
+
+            return _trackIndex >= 0;
+        }
+
+        public bool SelectNextTrack()
+        {
+            do
+            {
+                _trackIndex++;
+            }
+            while (_trackIndex < Tracks.Count && Tracks[_trackIndex].TrackType == Track.ETrackType.Audio);
+
+            return _trackIndex < Tracks.Count;
+        }
+
+        public Stream OpenTrack()
+        {
+            return new FileInfo(GetBinAbsolutePath(Tracks[_trackIndex].FilePath)).OpenRead();
+        }
+
+        public Track CurrentTrack() => Tracks[_trackIndex];
+
+        public FileStream? GetBin(string fileName)
+        {
+            return new FileInfo(GetBinAbsolutePath(fileName)).OpenRead();
+        }
+
+        public List<string> GetAllFiles()
+        {
+            return [_cueFile.FullName, .. Tracks.Select(t => GetBinAbsolutePath(t.FilePath))];
+        }
+
+        private long GetBinLength(string fileName) => new FileInfo(GetBinAbsolutePath(fileName)).Length;
+
+        private string GetBinAbsolutePath(string fileName) => $"{_cueFile?.Directory?.FullName}/{fileName}";
 
         private enum LineType
         {
@@ -136,5 +180,9 @@ namespace DiskReader
             { LineType.Catalog, "CATALOG" },
             { LineType.Comment, "REM" }
         };
+
+        private readonly FileInfo _cueFile;
+
+        private int _trackIndex;
     }
 }

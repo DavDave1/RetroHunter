@@ -2,8 +2,6 @@
 {
     public interface IDiskDatakReader
     {
-        bool Load(string FilePath);
-
         bool Seek(uint lba);
 
         bool SeekRelative(uint lba);
@@ -12,7 +10,7 @@
 
         List<string> GetAllTrackFiles();
 
-        void OpenFirstTrack();
+        bool OpenFirstTrack();
 
         bool OpenNextTrack();
     }

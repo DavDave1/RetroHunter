@@ -2,39 +2,17 @@
 {
     internal class BinCueDataReader : IDiskDatakReader
     {
-        public bool Load(string FilePath)
+        public BinCueDataReader(string filePath)
         {
-            _cueFile = new FileInfo(FilePath);
-            using var cueStream = _cueFile.OpenRead();
 
-            if (cueStream == null)
+            _cue = new(filePath);
+
+            if (!OpenFirstTrack())
             {
-                return false;
+                throw new UnsupportedFormatException($"{filePath} is not a valid cue file");
             }
-
-            bool cueOK = _cue.Parse(cueStream);
-
-            if (!cueOK)
-            {
-                return false;
-            }
-
-            foreach (var track in _cue.Tracks)
-            {
-                track.TrackSize = (int)GetBinLength(track.FilePath);
-            }
-
-            var largestTrack = _cue.Tracks.Where(t => t.TrackType != Track.ETrackType.Audio).OrderBy(t => t.TrackSize).Last();
-
-            var largestTrackIndex = _cue.Tracks.IndexOf(largestTrack);
-
-            return OpenTrack(0);
         }
-
-        public List<string> GetAllTrackFiles()
-        {
-            return [_cueFile?.FullName, .. _cue.Tracks.Select(t => GetBinAbsolutePath(t.FilePath))];
-        }
+        public List<string> GetAllTrackFiles() => _cue.GetAllFiles();
 
         public bool Seek(uint lba)
         {
@@ -44,19 +22,18 @@
             }
 
 
-            var lbaInTrack = lba - _cue.Tracks[_trackIndex].TrackSectorBegin;
+            var lbaInTrack = lba - _cue.CurrentTrack().TrackSectorBegin;
 
-            var position = (lbaInTrack * _sectorSize) + _sectorHeaderSize;
+            var position = (lbaInTrack * _cue.CurrentTrack().SectorSize) + _cue.CurrentTrack().SectorHeaderSize;
 
             if (_currentPosition == position)
             {
                 return true;
             }
 
-            if (position >= _trackSize)
+            if (position >= _cue.CurrentTrack().TrackSize)
             {
-                OpenTrack(_trackIndex + 1);
-                return Seek(lba);
+                return OpenNextTrack() && Seek(lba);
             }
 
             _currentLba = lba;
@@ -69,7 +46,7 @@
 
         public bool SeekRelative(uint lba)
         {
-            return Seek(lba + (uint)_cue.Tracks[_trackIndex].TrackSectorBegin);
+            return Seek(lba + (uint)_cue.CurrentTrack().TrackSectorBegin);
         }
 
         public bool Read(byte[] buffer)
@@ -105,67 +82,28 @@
             return true;
         }
 
-        private FileStream? GetBin(string fileName)
+
+        public bool OpenFirstTrack()
         {
-            if (_cueFile == null)
-            {
-                return null;
-            }
-
-            return new FileInfo(GetBinAbsolutePath(fileName)).OpenRead();
-        }
-
-        private long GetBinLength(string fileName) => new FileInfo(GetBinAbsolutePath(fileName)).Length;
-
-        private string GetBinAbsolutePath(string fileName) => $"{_cueFile?.Directory?.FullName}/{fileName}";
-
-        public void OpenFirstTrack()
-        {
-            var firstTrack = _cue.Tracks.FindIndex(t => t.TrackType != Track.ETrackType.Audio);
-
-            OpenTrack(firstTrack);
+            return _cue.SelectFirstTrack() && OpenTrack();
         }
 
         public bool OpenNextTrack()
         {
-            int nextTrack = _trackIndex + 1;
-
-            while (nextTrack < _cue.Tracks.Count && _cue.Tracks[nextTrack].TrackType == Track.ETrackType.Audio)
-            {
-                nextTrack++;
-            }
-
-            return OpenTrack(nextTrack);
+            return _cue.SelectNextTrack() && OpenTrack();
         }
 
-        private bool OpenTrack(int trackIndex)
+        private bool OpenTrack()
         {
-            if (trackIndex >= _cue.Tracks.Count)
-            {
-                return false;
-            }
-
-            _trackIndex = trackIndex;
-            _track = GetBin(_cue.Tracks[_trackIndex].FilePath);
-            _trackSize = (int)GetBinLength(_cue.Tracks[_trackIndex].FilePath);
-            _sectorSize = _cue.Tracks[_trackIndex].SectorSize;
-            _sectorHeaderSize = _cue.Tracks[_trackIndex].SectorHeaderSize;
-
+            _track = _cue.OpenTrack();
             return SeekRelative(0);
         }
 
         private Stream? _track;
-        private int _trackIndex;
-        private int _trackSize;
-        private int _sectorSize;
-        private int _sectorHeaderSize;
-
-        private FileInfo? _cueFile;
-        private readonly Cue _cue = new();
+        private readonly Cue _cue;
 
         private long _currentPosition;
         private uint _currentLba;
-
         private uint _positionInSector;
     }
 }
