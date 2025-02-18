@@ -29,7 +29,7 @@ namespace RaSetMaker.ViewModels
             GameSystem.IsChecked = value;
         }
 
-        private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom).Count();
+        private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom(_config.OutputRomsDirectory)).Count();
 
         private readonly GameSystem _gameSystem;
         private readonly UserConfig _config;

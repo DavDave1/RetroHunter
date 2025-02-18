@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace RaSetMaker.Models
@@ -33,10 +32,10 @@ namespace RaSetMaker.Models
         [XmlIgnore]
         public GameSystem? GameSystem => Parent != null ? (GameSystem)Parent : null;
 
-        [XmlIgnore]
-        public bool HasValidRom => Roms.Any(r => r.IsValid);
+        public bool HasValidRom(string basePath) => Roms.Any(r => r.IsValid && Path.Exists(Path.Combine(basePath, r.FilePath)));
 
-        public List<Rom> Roms { 
+        public List<Rom> Roms
+        {
             get => _roms;
             set
             {
@@ -56,6 +55,6 @@ namespace RaSetMaker.Models
         {
         }
 
-        private List<Rom> _roms = []; 
+        private List<Rom> _roms = [];
     }
 }
