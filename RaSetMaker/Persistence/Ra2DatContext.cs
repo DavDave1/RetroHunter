@@ -83,7 +83,7 @@ namespace RaSetMaker.Persistence
 
         public void SyncGames(IEnumerable<Game> raGames, GameSystem system)
         {
-            var newGames = raGames.Where(rag => system.Games.All(g => g.Id != rag.Id));
+            var newGames = raGames.Where(rag => system.Games.All(g => g.RaId != rag.RaId));
             system.Games.AddRange(newGames);
             system.LastUpdate = DateTime.UtcNow;
         }
