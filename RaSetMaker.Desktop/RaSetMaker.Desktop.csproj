@@ -16,4 +16,10 @@
   <ItemGroup>
     <ProjectReference Include="..\RaSetMaker\RaSetMaker.csproj" />
   </ItemGroup>
+
+  <Target Name="CopyDllToOutput" AfterTargets="Build">
+    <Copy SourceFiles="../libchdr/build/libchdr.so" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="../libchdr/build/libchdr.so.0" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="../libchdr/build/libchdr.so.0.2" DestinationFolder="$(TargetDir)" />
+  </Target>
 </Project>

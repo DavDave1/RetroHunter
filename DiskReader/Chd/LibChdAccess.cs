@@ -8,21 +8,13 @@ namespace DiskReader.Chd
 
     internal static partial class LibChdAccess
     {
-
-#if Linux
-        private const string LibChdName = "libchdr.so.0.2";
-#elif Windows
-        private const string LibChdName = "chdr.dll";
-#endif
-
-
-        [LibraryImport(LibChdName, EntryPoint = "chd_open", StringMarshalling = StringMarshalling.Utf8)]
+        [LibraryImport("chdr", EntryPoint = "chd_open", StringMarshalling = StringMarshalling.Utf8)]
         internal static partial int Open(string filename, int mode, UIntPtr parent, ref UIntPtr chd_file);
 
-        [LibraryImport(LibChdName, EntryPoint = "chd_close")]
+        [LibraryImport("chdr", EntryPoint = "chd_close")]
         internal static partial int Close(UIntPtr chd_file);
 
-        [LibraryImport(LibChdName, EntryPoint = "chd_read")]
+        [LibraryImport("chdr", EntryPoint = "chd_read")]
         internal static partial int ReadHunk(UIntPtr chd_file, uint hunknum, byte[] buffer);
 
         internal static uint GetHunkSize(UIntPtr chd_file)
@@ -77,10 +69,10 @@ namespace DiskReader.Chd
             };
         }
 
-        [LibraryImport(LibChdName, EntryPoint = "chd_get_metadata")]
+        [LibraryImport("chdr", EntryPoint = "chd_get_metadata")]
         private static partial int GetMetadataInternal(UIntPtr chd_file, UInt32 searchtag, UInt32 searchindex, byte[] output, UInt32 outputLen, ref UInt32 resultLen, UIntPtr resultTag, UIntPtr resultflags);
 
-        [DllImport(LibChdName, EntryPoint = "chd_get_header")]
+        [DllImport("chdr", EntryPoint = "chd_get_header")]
         private static extern ref ChdHeader GetHeader(UIntPtr chd_file);
 
     }
