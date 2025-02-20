@@ -5,10 +5,12 @@ public class Track
 {
     public class TrackIndex
     {
-        public int nr;
-        public int hh;
-        public int mm;
-        public int ss;
+        public uint nr;
+        public uint mm;
+        public uint ss;
+        public uint ff;
+
+        public uint SectorsOffset => (mm * 60) + ss * 75 + ff;
     }
 
     public enum ETrackType
@@ -31,7 +33,9 @@ public class Track
 
     public int TrackSize { get; set; }
 
-    public int TrackSectorBegin { get; set; }
+    public uint TrackSectorBegin => (uint)Indices.Sum(i => i.SectorsOffset);
+
+    public uint TrackFileOffset => HighDensityTrack ? 45000u : 0;
 
     public int SectorHeaderSize =>
         TrackType switch
@@ -43,5 +47,7 @@ public class Track
 
     public ETrackType TrackType { get; set; }
     public List<TrackIndex> Indices { get; set; } = [];
+
+    public bool HighDensityTrack { get; set; } = false;
 }
 

@@ -63,7 +63,7 @@ public class Cue
                 Tracks.Add(new Track
                 {
                     FilePath = line.Split('\"').Skip(1).First(),
-                    TrackSectorBegin = highDensityTrack ? 45000 : 0,
+                    HighDensityTrack = highDensityTrack,
                 });
 
                 highDensityTrack = false;
@@ -99,16 +99,16 @@ public class Cue
             else if (currLineType == LineType.Index)
             {
                 var lineSplit = line.Split(' ').ToList();
-                var indexNr = int.Parse(lineSplit[1]);
+                var indexNr = uint.Parse(lineSplit[1]);
 
                 var timeSplit = lineSplit[2].Split(":").ToList();
 
                 var index = new Track.TrackIndex
                 {
                     nr = indexNr,
-                    hh = int.Parse(timeSplit[0]),
-                    mm = int.Parse(timeSplit[1]),
-                    ss = int.Parse(timeSplit[2])
+                    mm = uint.Parse(timeSplit[0]),
+                    ss = uint.Parse(timeSplit[1]),
+                    ff = uint.Parse(timeSplit[2])
                 };
 
                 Tracks.Last().Indices.Add(index);
