@@ -314,5 +314,65 @@ namespace RaSetMaker.Tests.MatchersTests
             Assert.Equal(expectedHash, foundRom.Hash);
 
         }
+
+        [Theory]
+        [InlineData("../../../TestRoms/pcenginecd/Advanced V.G. (Japan).cue", "17f2a62623bf1091f286c92eda4ddf43")]
+        public void PcEngineCDBinCueMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.PcEngineCD);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/pcfx/Battle Heat (Japan).cue", "7511f808929b912962e468daba4fe844")]
+        public void PcFxBinCueMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.PcFx);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/neogeocd/ADK World (Japan).cue", "0fd821fdb242210f87e33f8ff921ef6d")]
+        public void NeoGeoCDBinCueMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.NeoGeoCD);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
     }
 }
