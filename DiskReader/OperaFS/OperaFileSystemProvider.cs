@@ -54,13 +54,6 @@ public class OperaFileSystemProvider : IFileSystemProvider
         return volHeader;
     }
 
-    private bool ReadVolumeHeaderInfo()
-    {
-
-        return true;
-
-    }
-
     private OperaFsEntry? GetFile(string filename)
     {
         if (_reader == null || _volumeHeader == null)
@@ -89,6 +82,11 @@ public class OperaFileSystemProvider : IFileSystemProvider
         }
 
         return currentEntry;
+    }
+
+    public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+    {
+        throw new NotImplementedException();
     }
 
     private IDiskDatakReader _reader;

@@ -37,6 +37,11 @@ namespace DiskReader.IsoFS
             throw new NotImplementedException();
         }
 
+        public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+        {
+            throw new NotImplementedException();
+        }
+
         private string _isoFileName;
         private readonly FileStream _isoStream;
         private readonly CDReader _cdReader;

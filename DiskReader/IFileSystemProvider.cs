@@ -7,5 +7,7 @@
         byte[]? ReadFile(string fileName);
 
         byte[] GetVolumeHeader();
+
+        bool ReadDataRaw(byte[] buffer, uint track, uint sector);
     }
 }

@@ -154,9 +154,27 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         throw new UnsupportedFormatException("No primary volume info found");
     }
 
+    public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+    {
+        _reader.OpenFirstTrack();
 
+        var currTrack = 0;
+        while (currTrack < track)
+        {
+            if (_reader.OpenNextTrack())
+            {
+                currTrack++;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-    private IDiskDatakReader _reader;
+        return _reader.SeekRelative(sector) && _reader.Read(buffer);
+    }
+
+    private readonly IDiskDatakReader _reader;
     private PrimaryVolume _primaryVolumeInfo;
 
 }
