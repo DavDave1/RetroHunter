@@ -374,5 +374,85 @@ namespace RaSetMaker.Tests.MatchersTests
             Assert.NotNull(foundRom);
             Assert.Equal(expectedHash, foundRom.Hash);
         }
+
+        [Theory]
+        [InlineData("../../../TestRoms/saturn/Alien Trilogy (USA)/Alien Trilogy (USA).cue", "3ea899f2b89ad6887071cfe178c0e559")]
+        public void SegaSaturnBinCueMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.Saturn);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/saturn/Alien Trilogy (USA).chd", "3ea899f2b89ad6887071cfe178c0e559")]
+        public void SegaSaturnChdMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.Saturn);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/segacd/Adventures of Willy Beamish, The (USA).cue", "88e929c3c9db840c2f784d16398651d8")]
+        public void SegaCDBinCueMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.SegaCD);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/segacd/Adventures of Willy Beamish, The (USA).chd", "88e929c3c9db840c2f784d16398651d8")]
+        public void SegaCDChdMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.SegaCD);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
     }
 }
