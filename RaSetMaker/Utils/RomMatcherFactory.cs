@@ -32,7 +32,7 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.Saturn, typeof(SegaSaturnAndCDMatcher) },
                 { RomMatcherType.SegaCD, typeof(SegaSaturnAndCDMatcher) },
                 { RomMatcherType.Ps1, typeof(Ps1Matcher) },
-                { RomMatcherType.Ps2, typeof(NullMatcher) },
+                { RomMatcherType.Ps2, typeof(Ps2Matcher) },
                 { RomMatcherType.Psp, typeof(PspMatcher) },
             };
         }

@@ -454,5 +454,25 @@ namespace RaSetMaker.Tests.MatchersTests
             Assert.NotNull(foundRom);
             Assert.Equal(expectedHash, foundRom.Hash);
         }
+
+        [Theory]
+        [InlineData("../../../TestRoms/ps2/007 - Agent Under Fire (USA).iso", "4c1df2b611348bc16ace85c4cbc626db")]
+        public void Ps2IsoMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.PlayStation2);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
     }
 }
