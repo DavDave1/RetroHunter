@@ -33,6 +33,8 @@ public class Track
 
     public int TrackSize { get; set; }
 
+    public uint SessionNr { get; set; }
+
     public uint TrackSectorBegin => (uint)Indices.Sum(i => i.SectorsOffset);
 
     public uint TrackFileOffset => HighDensityTrack ? 45000u : 0;
@@ -42,7 +44,15 @@ public class Track
         {
             ETrackType.Mode1 or ETrackType.Mode1Raw => 16,
             ETrackType.Mode2 or ETrackType.Mode2Raw => 24,
+            ETrackType.Audio => 0,
             _ => throw new Exception("Unknown track header size")
+        };
+
+    public int SectorRawSize =>
+        TrackType switch
+        {
+            ETrackType.Audio => SectorSize,
+            _ => 2048,
         };
 
     public ETrackType TrackType { get; set; }

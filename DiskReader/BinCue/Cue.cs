@@ -5,15 +5,18 @@ public class Cue
 {
     public List<Track> Tracks { get; private set; } = [];
 
-    public Cue(string filePath)
+    public Cue(string filePath, DiskImage.ReadMode readMode)
     {
         _cueFile = new FileInfo(filePath);
+        _readMode = readMode;
+
         using var cueStream = _cueFile.OpenRead();
         using TextReader reader = new StreamReader(cueStream);
 
         var currLineType = LineType.File;
         int lineNr = 0;
         bool highDensityTrack = false;
+        uint sessionNr = 1;
 
         while (true)
         {
@@ -26,7 +29,7 @@ public class Cue
             }
 
             // ignore
-            if (line.StartsWith(LINE_START[LineType.Catalog]))
+            if (line.StartsWith(LINE_START[LineType.Catalog]) || line.StartsWith(LINE_START[LineType.Flags]))
             {
                 continue;
             }
@@ -47,6 +50,12 @@ public class Cue
                     highDensityTrack = true;
                 }
 
+                if (comment.StartsWith("SESSION"))
+                {
+                    var sessionNrStr = comment.Replace("SESSION", "").Trim();
+                    sessionNr = uint.Parse(sessionNrStr);
+                }
+
                 continue;
             }
 
@@ -64,6 +73,7 @@ public class Cue
                 {
                     FilePath = line.Split('\"').Skip(1).First(),
                     HighDensityTrack = highDensityTrack,
+                    SessionNr = sessionNr
                 });
 
                 highDensityTrack = false;
@@ -121,20 +131,28 @@ public class Cue
         }
     }
 
-    public bool SelectFirstTrack()
+    public bool SelectFirstTrack(uint session)
     {
-        _trackIndex = Tracks.FindIndex(t => t.TrackType != Track.ETrackType.Audio);
+        _trackIndex = Tracks
+            .FindIndex(t => t.SessionNr == session && (_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || t.TrackType != Track.ETrackType.Audio));
 
         return _trackIndex >= 0;
     }
 
-    public bool SelectNextTrack()
+    public bool SelectNextTrack(uint session)
     {
-        do
+        _trackIndex++;
+
+        while (_trackIndex < Tracks.Count)
         {
+            if ((Tracks[_trackIndex].SessionNr == session) &&
+                (_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || Tracks[_trackIndex].TrackType != Track.ETrackType.Audio))
+            {
+                break;
+            }
+
             _trackIndex++;
         }
-        while (_trackIndex < Tracks.Count && Tracks[_trackIndex].TrackType == Track.ETrackType.Audio);
 
         return _trackIndex < Tracks.Count;
     }
@@ -166,8 +184,8 @@ public class Cue
         Track,
         Index,
         Catalog,
-        Comment
-
+        Comment,
+        Flags
     }
 
     private static readonly Dictionary<LineType, string> LINE_START = new()
@@ -176,10 +194,12 @@ public class Cue
         { LineType.Track, "TRACK" },
         { LineType.Index, "INDEX" },
         { LineType.Catalog, "CATALOG" },
-        { LineType.Comment, "REM" }
+        { LineType.Comment, "REM" },
+        { LineType.Flags, "FLAGS" }
     };
 
     private readonly FileInfo _cueFile;
+    private readonly DiskImage.ReadMode _readMode;
 
     private int _trackIndex;
 }

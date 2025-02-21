@@ -37,7 +37,7 @@ namespace DiskReader.IsoFS
             throw new NotImplementedException();
         }
 
-        public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+        public bool ReadDataRaw(byte[] buffer, uint sector, uint track, uint session)
         {
             throw new NotImplementedException();
         }

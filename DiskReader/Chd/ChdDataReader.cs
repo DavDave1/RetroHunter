@@ -4,9 +4,10 @@ namespace DiskReader.Chd;
 
 public partial class ChdDataReader : IDiskDatakReader, IDisposable
 {
-    public ChdDataReader(string filePath)
+    public ChdDataReader(string filePath, DiskImage.ReadMode readMode)
     {
         _chdFileName = filePath;
+        _readMode = readMode;
 
         var result = LibChdAccess.Open(filePath, ChdConstants.CHD_OPEN_READ, nuint.Zero, ref _chd);
 
@@ -106,7 +107,7 @@ public partial class ChdDataReader : IDiskDatakReader, IDisposable
         }
     }
 
-    public bool OpenFirstTrack()
+    public bool OpenFirstTrack(uint session = 1)
     {
         _trackIndex = -1;
         _trackFileOffset = 0;
@@ -115,7 +116,8 @@ public partial class ChdDataReader : IDiskDatakReader, IDisposable
         {
             _trackIndex++;
 
-            if (track.TrackType != Track.ETrackType.Audio)
+            if ((_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || track.TrackType != Track.ETrackType.Audio) &&
+                track.SessionNr == session)
             {
                 break;
             }
@@ -126,7 +128,7 @@ public partial class ChdDataReader : IDiskDatakReader, IDisposable
         return _trackIndex >= 0 && _trackIndex < _tracks.Count;
     }
 
-    public bool OpenNextTrack()
+    public bool OpenNextTrack(uint session = 1)
     {
         _trackIndex++;
 
@@ -134,7 +136,8 @@ public partial class ChdDataReader : IDiskDatakReader, IDisposable
         {
             _trackFileOffset += (uint)_tracks[_trackIndex].TrackSize;
 
-            if (_tracks[_trackIndex].TrackType != Track.ETrackType.Audio)
+            if ((_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || _tracks[_trackIndex].TrackType != Track.ETrackType.Audio) &&
+                _tracks[_trackIndex].SessionNr == session)
             {
                 return true;
             }
@@ -144,6 +147,9 @@ public partial class ChdDataReader : IDiskDatakReader, IDisposable
     }
 
     private readonly string _chdFileName;
+
+    private readonly DiskImage.ReadMode _readMode;
+
     private nuint _chd = nuint.Zero;
     private readonly List<Track> _tracks = [];
 

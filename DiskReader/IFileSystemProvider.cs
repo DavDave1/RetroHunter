@@ -8,6 +8,6 @@
 
         byte[] GetVolumeHeader();
 
-        bool ReadDataRaw(byte[] buffer, uint track, uint sector);
+        bool ReadDataRaw(byte[] buffer, uint sector, uint track, uint session = 1);
     }
 }

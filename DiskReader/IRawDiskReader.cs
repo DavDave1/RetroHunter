@@ -1,4 +1,6 @@
-﻿namespace DiskReader
+﻿using System.Xml;
+
+namespace DiskReader
 {
     public interface IDiskDatakReader
     {
@@ -10,8 +12,8 @@
 
         List<string> GetAllTrackFiles();
 
-        bool OpenFirstTrack();
+        bool OpenFirstTrack(uint session = 1);
 
-        bool OpenNextTrack();
+        bool OpenNextTrack(uint session = 1);
     }
 }

@@ -5,7 +5,13 @@ namespace DiskReader
 {
     public class DiskImage
     {
-        public DiskImage(string filePath)
+        public enum ReadMode
+        {
+            SkipAudioTracks,
+            TreatAudioTracksAsData
+        }
+
+        public DiskImage(string filePath, ReadMode readMode = ReadMode.SkipAudioTracks)
         {
             if (Path.GetExtension(filePath) == ".iso")
             {
@@ -14,16 +20,16 @@ namespace DiskReader
             else
             {
 
-                var fsProvider = CreateProvider(filePath, ProviderType.RawIso);
+                var fsProvider = CreateProvider(filePath, readMode, ProviderType.RawIso);
 
                 if (fsProvider == null)
                 {
-                    fsProvider = CreateProvider(filePath, ProviderType.Opera);
+                    fsProvider = CreateProvider(filePath, readMode, ProviderType.Opera);
                 }
 
                 if (fsProvider == null)
                 {
-                    fsProvider = CreateProvider(filePath, ProviderType.Raw);
+                    fsProvider = CreateProvider(filePath, readMode, ProviderType.Raw);
                 }
 
                 if (fsProvider == null)
@@ -50,9 +56,9 @@ namespace DiskReader
             return _fsProvider.GetVolumeHeader();
         }
 
-        public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+        public bool ReadDataRaw(byte[] buffer, uint sector, uint track, uint session = 1)
         {
-            return _fsProvider.ReadDataRaw(buffer, track, sector);
+            return _fsProvider.ReadDataRaw(buffer, sector, track, session);
         }
 
 
@@ -62,21 +68,21 @@ namespace DiskReader
             Opera,
             Raw
         }
-        private static IFileSystemProvider? CreateProvider(string filePath, ProviderType type)
+        private static IFileSystemProvider? CreateProvider(string filePath, ReadMode mode, ProviderType type)
         {
             try
             {
                 if (type == ProviderType.RawIso)
                 {
-                    return new RawIsoFileSystemProvider(filePath);
+                    return new RawIsoFileSystemProvider(filePath, mode);
                 }
                 else if (type == ProviderType.Opera)
                 {
-                    return new OperaFS.OperaFileSystemProvider(filePath);
+                    return new OperaFS.OperaFileSystemProvider(filePath, mode);
                 }
                 else
                 {
-                    return new RawFileSystemProvider(filePath);
+                    return new RawFileSystemProvider(filePath, mode);
                 }
             }
             catch (UnsupportedFormatException)

@@ -4,10 +4,10 @@ namespace DiskReader
 {
     internal class BinCueDataReader : IDiskDatakReader
     {
-        public BinCueDataReader(string filePath)
+        public BinCueDataReader(string filePath, DiskImage.ReadMode readMode)
         {
 
-            _cue = new(filePath);
+            _cue = new(filePath, readMode);
 
             if (!OpenFirstTrack())
             {
@@ -62,14 +62,14 @@ namespace DiskReader
             var nextLba = _currentLba;
             while (readLen < buffer.Length)
             {
-                var sizeToRead = (int)Math.Min(2048 - _positionInSector, buffer.Length - readLen);
+                var sizeToRead = (int)Math.Min(_cue.CurrentTrack().SectorRawSize - _positionInSector, buffer.Length - readLen);
 
                 _track.ReadExactly(buffer, readLen, sizeToRead);
                 readLen += sizeToRead;
 
                 _positionInSector += (uint)sizeToRead;
 
-                if (_positionInSector >= 2048)
+                if (_positionInSector >= _cue.CurrentTrack().SectorRawSize)
                 {
                     ++nextLba;
                     _positionInSector = 0;
@@ -85,14 +85,14 @@ namespace DiskReader
         }
 
 
-        public bool OpenFirstTrack()
+        public bool OpenFirstTrack(uint session = 1)
         {
-            return _cue.SelectFirstTrack() && OpenTrack();
+            return _cue.SelectFirstTrack(session) && OpenTrack();
         }
 
-        public bool OpenNextTrack()
+        public bool OpenNextTrack(uint session = 1)
         {
-            return _cue.SelectNextTrack() && OpenTrack();
+            return _cue.SelectNextTrack(session) && OpenTrack();
         }
 
         private bool OpenTrack()

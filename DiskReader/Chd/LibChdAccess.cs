@@ -49,6 +49,7 @@ namespace DiskReader.Chd
                 TrackType = TypeStringToTrackMode(metadata[1].Replace("TYPE:", "")),
                 TrackSize = int.Parse(metadata[3].Replace("FRAMES:", "")),
                 SectorSize = ChdConstants.CHD_CD_SECTOR_DATA_SIZE,
+                SessionNr = 1,
             };
         }
 

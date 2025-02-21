@@ -4,14 +4,14 @@ namespace DiskReader;
 
 public class RawFileSystemProvider : IFileSystemProvider
 {
-    public RawFileSystemProvider(string filePath)
+    public RawFileSystemProvider(string filePath, DiskImage.ReadMode readMode)
     {
         var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
         _reader = extension switch
         {
-            ".cue" => new BinCueDataReader(filePath),
-            ".chd" => new ChdDataReader(filePath),
+            ".cue" => new BinCueDataReader(filePath, readMode),
+            ".chd" => new ChdDataReader(filePath, readMode),
             _ => throw new NotSupportedException($"Extension {extension} is not supported by OperaFSReader"),
         };
 
@@ -29,14 +29,14 @@ public class RawFileSystemProvider : IFileSystemProvider
 
         return volHeader;
     }
-    public bool ReadDataRaw(byte[] buffer, uint track, uint sector)
+    public bool ReadDataRaw(byte[] buffer, uint sector, uint track, uint session = 1)
     {
-        _reader.OpenFirstTrack();
+        _reader.OpenFirstTrack(session);
 
         var currTrack = 0;
         while (currTrack < track)
         {
-            if (_reader.OpenNextTrack())
+            if (_reader.OpenNextTrack(session))
             {
                 currTrack++;
             }
