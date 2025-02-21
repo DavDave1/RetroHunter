@@ -474,5 +474,25 @@ namespace RaSetMaker.Tests.MatchersTests
             Assert.NotNull(foundRom);
             Assert.Equal(expectedHash, foundRom.Hash);
         }
+
+        [Theory]
+        [InlineData("../../../TestRoms/jaguarcd/Baldies (USA) (Rev 1).cue", "76af127fbb4f621d9c128df809b27d4c")]
+        public void JaguarCDMatch(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.AtariJaguarCD);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = RomMatcherFactory.Create(sys);
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+        }
     }
 }

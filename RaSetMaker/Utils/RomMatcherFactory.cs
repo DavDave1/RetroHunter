@@ -17,7 +17,7 @@ namespace RaSetMaker.Utils
                 { RomMatcherType.ThreeDO, typeof(ThreeDOMatcher) },
                 { RomMatcherType.Arduboy, typeof(ArduboyMatcher) },
                 { RomMatcherType.Atari7800, typeof(Atari7800Matcher) },
-                { RomMatcherType.AtariJaguarCD, typeof(NullMatcher) },
+                { RomMatcherType.AtariJaguarCD, typeof(JaguarCDMatcher) },
                 { RomMatcherType.AtariLynx, typeof(LynxMatcher) },
                 { RomMatcherType.PcEngine, typeof(PcEngineMatcher) },
                 { RomMatcherType.PcEngineCD, typeof(PcEngineCDMatcher) },

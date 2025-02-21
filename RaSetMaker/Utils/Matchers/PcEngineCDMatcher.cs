@@ -17,7 +17,7 @@ namespace RaSetMaker.Utils.Matchers
             var cdImage = new DiskImage(file.FullName);
 
             var header = new byte[128];
-            cdImage.ReadDataRaw(header, 0, 1);
+            cdImage.ReadDataRaw(header, 1, 0);
 
             int headerIDStart = 32;
             int headerIDEnd = 32 + HEADER_ID.Length;
@@ -35,7 +35,7 @@ namespace RaSetMaker.Utils.Matchers
 
             var bootCodeData = new byte[bootCodeLength * 2048];
 
-            bool readOk = cdImage.ReadDataRaw(bootCodeData, 0, bootCodeSector);
+            bool readOk = cdImage.ReadDataRaw(bootCodeData, bootCodeSector, 0);
 
             if (!readOk)
             {

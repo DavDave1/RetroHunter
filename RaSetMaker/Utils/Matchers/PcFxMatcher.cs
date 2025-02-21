@@ -20,7 +20,7 @@ namespace RaSetMaker.Utils.Matchers
 
             uint trackIdx = 0;
             bool headerFound = false;
-            while (cdImage.ReadDataRaw(header, trackIdx, 0))
+            while (cdImage.ReadDataRaw(header, 0, trackIdx))
             {
                 cdImage.ReadDataRaw(header, 0, 0);
 
@@ -42,7 +42,7 @@ namespace RaSetMaker.Utils.Matchers
             }
 
             var volumeHeader = new byte[128];
-            cdImage.ReadDataRaw(volumeHeader, trackIdx, 1);
+            cdImage.ReadDataRaw(volumeHeader, 1, trackIdx);
 
 
             var bootCodeSector = BitConverter.ToUInt32(volumeHeader[32..36]);
@@ -50,7 +50,7 @@ namespace RaSetMaker.Utils.Matchers
 
             var bootCodeData = new byte[bootCodeLength * 2048];
 
-            bool readOk = cdImage.ReadDataRaw(bootCodeData, 0, bootCodeSector);
+            bool readOk = cdImage.ReadDataRaw(bootCodeData, bootCodeSector, 0);
 
             if (!readOk)
             {
