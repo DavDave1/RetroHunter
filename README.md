@@ -44,22 +44,22 @@ RaSetMaker aims to support all game systems for which achievements are available
 | Atari2600                 | .a26, .zip                         |
 | Atari7800                 | .a78, .zip                         |
 | Atari Jaguar              | .j64, .rom, .zip                   |
-| Atari Jaguar CD           |                                    |
+| Atari Jaguar CD           | .cue, .chd                         |
 | Atary Lynx                | .lyx, .zip                         |
 | SG-1000                   | .sg                                |
 | Master System             | .sms, .zip                         |
 | Genesis                   | .md, .zip                          |
-| Sega CD                   |                                    |
+| Sega CD                   | .cue, .chd                         |
 | Sega 32X                  | .32x, .zip                         |
-| Saturn                    |                                    |
+| Saturn                    | .cue, .chd                         |
 | Dreamcast                 | .iso, .chd                         |
 | PC Engine                 | .pce, .zip                         |
 | PC Engine CD              | .cue, .iso                         |
 | PC-8000/8800              | .88d, .cmt, .d88, .t88, .u88, .zip |
-| PC-FX                     | .cue                               |
-| NeoGeo CD                 |                                    |
+| PC-FX                     | .cue, .chd                         |
+| NeoGeo CD                 | .cue, .chd                         |
 | NeoGeo Pocket             | .ngp, .ngc, .zip                   |
-| 3DO                       |                                    |
+| 3DO                       | .cue, .chd                         |
 | Amstrad CPC               |                                    |
 | Apple II                  | .ar2, .woz, .zip                   |
 | Arcade                    | .zip                               |
@@ -89,9 +89,9 @@ RaSetMaker includes the [libchdr](https://github.com/rtissera/libchdr) C library
 ## TODOs
 
 ### Systems
-- [ ] GameCube matcher
-- [ ] PlayStation 2 matcher
-- [ ] Dreamcast matcher
+- [x] GameCube matcher
+- [x] PlayStation 2 matcher
+- [x] Dreamcast matcher
 - [ ] Support reading RZV format
 
 ### UI
