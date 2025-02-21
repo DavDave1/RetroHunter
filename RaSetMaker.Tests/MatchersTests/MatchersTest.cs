@@ -40,7 +40,7 @@ namespace RaSetMaker.Tests.MatchersTests
 
             var sys = GetGameSystemByType(GameSystemType.Atari2600);
             AddRomWithHash(sys, expectedHash);
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -61,7 +61,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Arduboy);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));
 
@@ -78,10 +78,10 @@ namespace RaSetMaker.Tests.MatchersTests
                 return;
             }
 
-            var arcade = GetGameSystemByType(GameSystemType.Arcade);
-            AddRomWithHash(arcade, expectedHash);
+            var sys = GetGameSystemByType(GameSystemType.Arcade);
+            AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(arcade);
+            var matcher = sys.CreateMatcher();
             Assert.NotNull(matcher);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -101,7 +101,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.GameCube);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));
 
@@ -119,10 +119,10 @@ namespace RaSetMaker.Tests.MatchersTests
                 return;
             }
 
-            var n64 = GetGameSystemByType(GameSystemType.Nintendo64);
-            AddRomWithHash(n64, expectedHash);
+            var sys = GetGameSystemByType(GameSystemType.Nintendo64);
+            AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(n64);
+            var matcher = sys.CreateMatcher();
             Assert.NotNull(matcher);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -139,10 +139,10 @@ namespace RaSetMaker.Tests.MatchersTests
                 return;
             }
 
-            var n64 = GetGameSystemByType(GameSystemType.Nintendo64);
-            AddRomWithHash(n64, expectedHash);
+            var sys = GetGameSystemByType(GameSystemType.Nintendo64);
+            AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(n64);
+            var matcher = sys.CreateMatcher();
             Assert.NotNull(matcher);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -162,7 +162,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.NintendoDS);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -182,7 +182,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Nes);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -202,7 +202,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -223,7 +223,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -244,7 +244,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Psp);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -265,7 +265,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SuperNintendo);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -286,7 +286,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.ThreeDo);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -306,7 +306,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -327,7 +327,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PcEngineCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -347,7 +347,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PcFx);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -367,7 +367,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.NeoGeoCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -387,7 +387,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Saturn);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -407,7 +407,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Saturn);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -427,7 +427,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SegaCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -447,7 +447,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SegaCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -467,7 +467,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation2);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -487,7 +487,7 @@ namespace RaSetMaker.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.AtariJaguarCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = RomMatcherFactory.Create(sys);
+            var matcher = sys.CreateMatcher();
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 

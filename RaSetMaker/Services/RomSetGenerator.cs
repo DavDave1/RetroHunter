@@ -139,8 +139,7 @@ namespace RaSetMaker.Services
             {
                 var gameSystemDir = system.GetDirName(dirStyle);
 
-                // Create matcher for system
-                var matcher = RomMatcherFactory.Create(system);
+                var matcher = system.CreateMatcher();
 
                 HashSet<FileInfo> movedFiles = [];
 

@@ -1,5 +1,6 @@
 ﻿
 using RaSetMaker.Utils;
+using RaSetMaker.Utils.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,6 @@ namespace RaSetMaker.Models
 
         [XmlIgnore]
         public GameSystemCompany Company => GameSystemType.Company();
-
-        [XmlIgnore]
-        public RomMatcherType MatcherType => GameSystemType.Matcher();
 
         [XmlIgnore]
         public List<string> SupportedExtensions => GameSystemType.Extensions();
@@ -63,6 +61,10 @@ namespace RaSetMaker.Models
 
         public string GetDirName(DirStructureStyle style) => GameSystemType.FolderName(style);
 
+        public MatcherBase CreateMatcher()
+        {
+            return (MatcherBase)Activator.CreateInstance(GameSystemType.Matcher(), this)!;
+        }
         private List<Game> _games = [];
     }
 }
