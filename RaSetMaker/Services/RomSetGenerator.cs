@@ -80,10 +80,10 @@ namespace RaSetMaker.Services
 
             var filesInDb = context
                 .GetSystems()
-                .SelectMany(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter))
+                .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
                 .Where(r => r.IsValid)
-                .Select(r => Path.Combine(outDirInfo.FullName, r.FilePath))
+                .Select(r => new FileInfo(Path.Combine(outDirInfo.FullName, r.FilePath)).FullName)
                 .ToImmutableHashSet();
 
             // Iterate output dir recursively and move all files not linked to Roms to input
