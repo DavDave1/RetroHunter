@@ -1,6 +1,7 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
 using RaSetMaker.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace RaSetMaker.ViewModels
     {
         public override string Title => GameSystem.Games.Count == 0 ? GameSystem.Name : $"{GameSystem.Name} ({GetValidGamesCount()} / {Games.Count})";
 
-        public override string ForegroundColor => GameSystem.RaId == 0 ? "DarkRed" : (GameSystem.Games.Count == 0 ? "Orange" : "Black");
+        public override string IconSrc =>  GameSystem.Games.Count == 0 ? "avares://RaSetMaker/Assets/system-warn.png" : "avares://RaSetMaker/Assets/system.png";
 
         public GameSystem GameSystem => _gameSystem;
 
@@ -30,6 +31,10 @@ namespace RaSetMaker.ViewModels
         }
 
         private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom(_config.OutputRomsDirectory)).Count();
+
+        private string SelectedForeground() => GameSystem.RaId == 0 ? "LightRed" : (GameSystem.Games.Count == 0 ? "Orange" : "White");
+
+        private string NormalForeground() => GameSystem.RaId == 0 ? "DarkRed" : (GameSystem.Games.Count == 0 ? "Orange" : "Black");
 
         private readonly GameSystem _gameSystem;
         private readonly UserConfig _config;

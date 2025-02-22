@@ -10,10 +10,10 @@ namespace RaSetMaker.ViewModels
     {
         public override string Title => $"{RomName} ({Rom.Hash})";
 
-        public override string ForegroundColor => IsRomValid() ? "Black" : "DarkRed";
-
         [ObservableProperty]
         private Rom _rom = rom;
+
+        public override string IconSrc => "avares://RaSetMaker/Assets/rom.png";
 
         public bool IsRomValid() => Rom.Exists(userConfig.OutputRomsDirectory);
 

@@ -8,11 +8,11 @@ namespace RaSetMaker.ViewModels
     {
         public override string Title => Game.GameTypes.Count == 0 ? Game.Name : $"{Game.Name} {GameTypesToString()}";
 
-        public override string ForegroundColor => ValidRomsCount == 0 ? "DarkRed" : "Black";
-
         public Game Game { get; private set; }
 
         public int ValidRomsCount { get; private set; }
+
+        public override string IconSrc =>  ValidRomsCount == 0 ? "avares://RaSetMaker/Assets/error.png" : "avares://RaSetMaker/Assets/check.png";
 
         public GameViewModel(Game game, UserConfig userConfig)
         {

@@ -44,7 +44,7 @@
                 Text="Fetch Data" />
             <classicControls:ToolBarButton
                 Command="{Binding GenerateSetsCommand}"
-                LargeIcon="/Assets/drum.png"
+                LargeIcon="/Assets/scan.png"
                 Text="Generate..." />
         </classicControls:ToolBar>
 
@@ -91,7 +91,8 @@
                     <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <CheckBox Margin="0,1,0,2" IsChecked="{Binding IsChecked}" />
-                            <TextBlock Foreground="{Binding ForegroundColor}" Text="{Binding Title}" />
+                            <Image IsVisible="{Binding HasIcon}" Source="{Binding Icon}" Width="16" Height="16" />
+                            <TextBlock Text="{Binding Title}" />
                         </StackPanel>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>
@@ -106,7 +107,8 @@
                     <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <CheckBox Margin="0,1,0,2" IsChecked="{Binding IsChecked}" />
-                            <TextBlock Foreground="{Binding ForegroundColor}" Text="{Binding Title}" />
+                            <Image IsVisible="{Binding HasIcon}" Source="{Binding Icon}" Width="16" Height="16" />
+                            <TextBlock Text="{Binding Title}" />
                         </StackPanel>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>

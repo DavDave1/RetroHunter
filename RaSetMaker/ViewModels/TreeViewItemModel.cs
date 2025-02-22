@@ -1,5 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using RaSetMaker.Models;
+﻿using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using RaSetMaker.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace RaSetMaker.ViewModels
@@ -10,12 +12,17 @@ namespace RaSetMaker.ViewModels
 
         public virtual bool IsSelectable { get; } = true;
 
-        public virtual string ForegroundColor { get; } = "Black";
+        public virtual string IconSrc { get; } = "";
+
+        public Bitmap? Icon => HasIcon ? ImageHelper.LoadFromResource(new Uri(IconSrc)) : null;
+
+        public bool HasIcon => IconSrc != string.Empty;
 
         public string StatusColor => "";
 
         [ObservableProperty]
         private bool _isChecked = true;
+
 
         [ObservableProperty]
         private List<TreeViewItemModel> _children = [];

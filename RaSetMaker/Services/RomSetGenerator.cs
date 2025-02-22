@@ -136,7 +136,7 @@ namespace RaSetMaker.Services
 
                 double systemProgressStep = 100.0 / (double)inFiles.Count;
 
-                progressInfo.currentSystem = system.Name;
+                progressInfo.currentSystem = $"Processing {system.Name}";
                 progressInfo.systemProgress = 0;
 
                 foreach (var file in inFiles)
@@ -199,6 +199,7 @@ namespace RaSetMaker.Services
             progressInfo.totalProgress = 100;
             progressInfo.systemProgress = 100;
             progressInfo.currentSystem = "Done";
+            progressInfo.currentFile = "";
             progress.Report(progressInfo);
 
             return addedRoms;

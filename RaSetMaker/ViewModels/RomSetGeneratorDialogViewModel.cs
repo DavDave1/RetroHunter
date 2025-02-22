@@ -40,7 +40,7 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
 
     public void Report(RomSetGeneratorProgress value)
     {
-        CurrentSystem = $"Processing {value.currentSystem}";
+        CurrentSystem = value.currentSystem;
         CurrentFile = value.currentFile;
         SystemProgress = (int)value.systemProgress;
         TotalProgress = (int)value.totalProgress;
@@ -73,12 +73,13 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
         }
         catch (Exception ex)
         {
-            App.ShowError("Rom Set Generation Failed", ex.Message);
+            await App.ShowError("Rom Set Generation Failed", ex.Message);
             FinishedSuccesfully = false;
         }
 
         _cancellationTokenSrc.Dispose();
         _cancellationTokenSrc = null;
+        App.CurrentWindow().Close();
     }
 
     private CancellationTokenSource? _cancellationTokenSrc;
