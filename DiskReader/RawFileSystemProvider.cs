@@ -54,5 +54,10 @@ public class RawFileSystemProvider : IFileSystemProvider
         throw new NotImplementedException();
     }
 
+    public void Dispose()
+    {
+        _reader.Dispose();
+    }
+
     private readonly IDiskDatakReader _reader;
 }

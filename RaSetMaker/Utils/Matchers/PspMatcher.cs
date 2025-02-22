@@ -17,7 +17,7 @@ namespace RaSetMaker.Utils.Matchers
                 return (null, [file.FullName]);
             }
 
-            var cdImage = new DiskImage(file.FullName);
+            using var cdImage = new DiskImage(file.FullName);
 
             var paramSfoData = cdImage.ReadFile(@"PSP_GAME\PARAM.SFO");
 

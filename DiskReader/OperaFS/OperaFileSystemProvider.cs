@@ -89,6 +89,11 @@ public class OperaFileSystemProvider : IFileSystemProvider
         throw new NotImplementedException();
     }
 
+    public void Dispose()
+    {
+        _reader.Dispose();
+    }
+
     private IDiskDatakReader _reader;
     private VolumeHeaderInfo? _volumeHeader;
 }

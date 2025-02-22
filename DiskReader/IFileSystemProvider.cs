@@ -1,6 +1,6 @@
 ﻿namespace DiskReader
 {
-    public interface IFileSystemProvider
+    public interface IFileSystemProvider : IDisposable
     {
         List<string> GetAllTrackFiles();
 

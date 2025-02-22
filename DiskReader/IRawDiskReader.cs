@@ -2,7 +2,7 @@
 
 namespace DiskReader
 {
-    public interface IDiskDatakReader
+    public interface IDiskDatakReader : IDisposable
     {
         bool Seek(uint lba);
 

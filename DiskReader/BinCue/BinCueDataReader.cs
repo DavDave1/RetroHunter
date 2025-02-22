@@ -2,7 +2,7 @@
 
 namespace DiskReader
 {
-    internal class BinCueDataReader : IDiskDatakReader
+    internal class BinCueDataReader : IDiskDatakReader, IDisposable
     {
         public BinCueDataReader(string filePath, DiskImage.ReadMode readMode)
         {
@@ -97,8 +97,14 @@ namespace DiskReader
 
         private bool OpenTrack()
         {
+            _track?.Dispose();
             _track = _cue.OpenTrack();
             return SeekRelative(0);
+        }
+
+        public void Dispose()
+        {
+            _track?.Dispose();
         }
 
         private Stream? _track;

@@ -19,7 +19,7 @@ namespace RaSetMaker.Utils.Matchers
                 return (null, [file.FullName]);
             }
 
-            var cdImage = new DiskImage(file.FullName, DiskImage.ReadMode.TreatAudioTracksAsData);
+            using var cdImage = new DiskImage(file.FullName, DiskImage.ReadMode.TreatAudioTracksAsData);
 
             var buffer = new byte[2352];
             cdImage.ReadDataRaw(buffer, 0, 0, 2);

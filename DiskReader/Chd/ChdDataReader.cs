@@ -2,7 +2,7 @@
 
 namespace DiskReader.Chd;
 
-public partial class ChdDataReader : IDiskDatakReader, IDisposable
+public partial class ChdDataReader : IDiskDatakReader
 {
     public ChdDataReader(string filePath, DiskImage.ReadMode readMode)
     {

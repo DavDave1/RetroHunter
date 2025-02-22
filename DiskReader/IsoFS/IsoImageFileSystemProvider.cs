@@ -42,6 +42,12 @@ namespace DiskReader.IsoFS
             throw new NotImplementedException();
         }
 
+        public void Dispose()
+        {
+            _isoStream.Dispose();
+            _cdReader.Dispose();
+        }
+
         private string _isoFileName;
         private readonly FileStream _isoStream;
         private readonly CDReader _cdReader;

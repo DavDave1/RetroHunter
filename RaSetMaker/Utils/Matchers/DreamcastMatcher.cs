@@ -17,7 +17,7 @@ namespace RaSetMaker.Utils.Matchers
                 return (null, [file.FullName]);
             }
 
-            var cdImage = new DiskReader.DiskImage(file.FullName);
+            using var cdImage = new DiskReader.DiskImage(file.FullName);
 
             var volumeHeader = cdImage.GetVolumeHeader();
 

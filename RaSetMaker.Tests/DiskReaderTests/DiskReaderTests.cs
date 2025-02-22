@@ -10,7 +10,7 @@ namespace RaSetMaker.Tests.DiskReaderTests
         [InlineData("../../../TestRoms/ps1/007 Racing (USA).cue")]
         public void ReadCueImage(string filePath)
         {
-            DiskImage disk = new(filePath);
+            using DiskImage disk = new(filePath);
 
             var dataBuffer = disk.ReadFile("SYSTEM.CNF");
             Assert.NotNull(dataBuffer);

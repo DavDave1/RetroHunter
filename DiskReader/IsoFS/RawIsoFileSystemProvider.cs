@@ -174,6 +174,11 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         return _reader.SeekRelative(sector) && _reader.Read(buffer);
     }
 
+    public void Dispose()
+    {
+        _reader.Dispose();
+    }
+
     private readonly IDiskDatakReader _reader;
     private PrimaryVolume _primaryVolumeInfo;
 

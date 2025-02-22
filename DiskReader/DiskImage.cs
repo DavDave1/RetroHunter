@@ -3,7 +3,7 @@ using DiskReader.IsoFS;
 
 namespace DiskReader
 {
-    public class DiskImage
+    public class DiskImage : IDisposable
     {
         public enum ReadMode
         {
@@ -90,6 +90,11 @@ namespace DiskReader
             }
 
             return null;
+        }
+
+        public void Dispose()
+        {
+            _fsProvider.Dispose();
         }
 
         private readonly IFileSystemProvider _fsProvider;
