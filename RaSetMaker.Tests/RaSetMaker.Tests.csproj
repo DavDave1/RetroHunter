@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +30,13 @@
     <Folder Include="TestRoms\" />
   </ItemGroup>
 
-  <Target Name="CopyDllToOutput" AfterTargets="Build">
+  <Target Condition="'$(IsLinux)'=='true'" Name="CopyDllToOutput" AfterTargets="Build">
     <Copy SourceFiles="../libchdr/build/libchdr.so" DestinationFolder="$(TargetDir)" />
     <Copy SourceFiles="../libchdr/build/libchdr.so.0" DestinationFolder="$(TargetDir)" />
     <Copy SourceFiles="../libchdr/build/libchdr.so.0.2" DestinationFolder="$(TargetDir)" />
   </Target>
 
+  <Target Condition="'$(IsWindows)'=='true'" Name="CopyDllToOutput" AfterTargets="Build">
+    <Copy SourceFiles="../libchdr/build/libchdr.dll" DestinationFolder="$(TargetDir)" />
+  </Target>
 </Project>

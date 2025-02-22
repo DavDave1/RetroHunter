@@ -10,16 +10,6 @@
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsWindows)'=='true'">
-    <DefineConstants>Windows</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsOSX)'=='true'">
-    <DefineConstants>OSX</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsLinux)'=='true'">
-    <DefineConstants>Linux</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="DiscUtils.Iso9660" Version="0.16.13" />
     <PackageReference Include="DiscUtils.Streams" Version="0.16.13" />
@@ -29,10 +19,13 @@
     <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so" />
     <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so.0" />
     <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so.0.2" />
-    <Content Include="../libchdr/build/libchdr.so" CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="../libchdr/build/libchdr.so.0" CopyToPublishDirectory="PreserveNewest"/>
-    <Content Include="../libchdr/build/libchdr.so.0.2" CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="../libchdr/build/libchdr.so" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../libchdr/build/libchdr.so.0" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../libchdr/build/libchdr.so.0.2" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <Reference Include="$(SolutionDir)/libchdr/build/libchdr.dll" />
+    <Content Include="../libchdr/build/libchdr.dll" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
