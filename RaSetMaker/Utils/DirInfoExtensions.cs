@@ -24,5 +24,16 @@ namespace RaSetMaker.Utils
                     .SelectMany(d => d.GetAllFilesRecursive()))
                 .ToList();
         }
+
+        public static void CleanEmptySubdirs(this DirectoryInfo dirInfo)
+        {
+            foreach (var inSubdir in dirInfo.GetDirectories())
+            {
+                if (inSubdir.IsEmptyRecursive())
+                {
+                    inSubdir.Delete(true);
+                }
+            }
+        }
     }
 }

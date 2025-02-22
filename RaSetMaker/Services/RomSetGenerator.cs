@@ -78,15 +78,6 @@ namespace RaSetMaker.Services
                 }
             }
 
-            // Iterate input dir and remove all empty subdirs
-            foreach (var inSubdir in inDirInfo.GetDirectories())
-            {
-                if (inSubdir.IsEmptyRecursive())
-                {
-                    inSubdir.Delete(true);
-                }
-            }
-
             var filesInDb = context
                 .GetSystems()
                 .SelectMany(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter))
@@ -132,7 +123,7 @@ namespace RaSetMaker.Services
 
             double totalProgressStep = 100.0 / (double)context.GetSystems().Count();
 
-            var inFiles = inDirInfo.GetAllFilesRecursive().Select(f => new FileInfo(f)).ToHashSet();
+            var inFiles = inDirInfo.GetAllFilesRecursive().ToHashSet();
 
             var addedRoms = 0;
             foreach (var system in context.GetCheckedSystems().Where(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter).Any()))
@@ -141,7 +132,7 @@ namespace RaSetMaker.Services
 
                 var matcher = system.CreateMatcher();
 
-                HashSet<FileInfo> movedFiles = [];
+                HashSet<string> movedFiles = [];
 
                 double systemProgressStep = 100.0 / (double)inFiles.Count;
 
@@ -150,7 +141,8 @@ namespace RaSetMaker.Services
 
                 foreach (var file in inFiles)
                 {
-                    if (!file.Exists)
+                    var fileInfo = new FileInfo(file);
+                    if (!fileInfo.Exists)
                     {
                         continue;
                     }
@@ -165,10 +157,10 @@ namespace RaSetMaker.Services
                         return addedRoms;
                     }
 
-                    progressInfo.currentFile = file.FullName;
+                    progressInfo.currentFile = file;
                     progress.Report(progressInfo);
 
-                    var (rom, romFiles) = matcher.FindRom(file);
+                    var (rom, romFiles) = matcher.FindRom(fileInfo);
 
 
                     // If rom was found, move it to proper outut subdir and update rom file path
@@ -187,6 +179,10 @@ namespace RaSetMaker.Services
                         {
                             var outFilePath = $"{outDirInfo.FullName}{gameSystemDir}/{romSubdir}/{romFile.Name}";
 
+                            var outFileInfo = new FileInfo(outFilePath);
+
+                            outFileInfo.Directory?.Create();
+
                             romFile.MoveTo(outFilePath, true);
                             movedFiles.Add(file);
                         }
@@ -202,6 +198,8 @@ namespace RaSetMaker.Services
 
                 progressInfo.totalProgress += totalProgressStep;
             }
+
+            inDirInfo.CleanEmptySubdirs();
 
             progressInfo.totalProgress = 100;
             progressInfo.systemProgress = 100;

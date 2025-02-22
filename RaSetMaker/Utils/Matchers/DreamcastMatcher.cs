@@ -12,6 +12,11 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
+            if (!system.SupportedExtensions.Contains(file.Extension))
+            {
+                return (null, [file.FullName]);
+            }
+
             var cdImage = new DiskReader.DiskImage(file.FullName);
 
             var volumeHeader = cdImage.GetVolumeHeader();

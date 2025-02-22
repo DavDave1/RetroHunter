@@ -71,8 +71,9 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
             FinishedSuccesfully = true;
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            App.ShowError("Rom Set Generation Failed", ex.Message);
             FinishedSuccesfully = false;
         }
 
