@@ -34,6 +34,11 @@ namespace RaSetMaker.Utils.Matchers
                 return OpenArchive(file, matchExtension);
             }
 
+            if (matchExtension && !system.SupportedExtensions.Contains(file.Extension))
+            {
+                return (null, "");
+            }
+
             _openStream = file.OpenRead();
             return (_openStream, file.Extension);
         }
