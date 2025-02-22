@@ -1,5 +1,6 @@
 ﻿using RaSetMaker.Models;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace RaSetMaker.ViewModels
 {
@@ -20,6 +21,7 @@ namespace RaSetMaker.ViewModels
             ValidRomsCount = romViewModels.Sum(rvm => rvm.IsRomValid() ? 1 : 0);
             Children = romViewModels.Select(r => (TreeViewItemModel)r).ToList();
         }
+
 
         private string GameTypesToString() => string.Join("", Game.GameTypes.Select(t => $"[{t}]").Order());
     }

@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using RaSetMaker.Models;
 using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace RaSetMaker.ViewModels
 {
@@ -13,11 +15,12 @@ namespace RaSetMaker.ViewModels
         [ObservableProperty]
         private Rom _rom = rom;
 
-        public bool IsRomValid() => _fileInfo != null && _fileInfo.Exists;
+        public bool IsRomValid() => Rom.Exists(userConfig.OutputRomsDirectory);
 
-        private FileInfo? _fileInfo = rom.FilePath == string.Empty ? null : new FileInfo(Path.Combine(userConfig.OutputRomsDirectory, rom.FilePath));
+        public string RomName => rom.FilePaths.Count > 1 ? _fInfo?.Directory?.Name ?? "" : _fInfo?.Name ?? "";
 
-        private string RomName => IsRomValid() ? _fileInfo!.Name : Rom.Name;
+
+        private readonly FileInfo? _fInfo = rom.FilePaths.Count == 0 ? null : new FileInfo(Path.Combine(userConfig.OutputRomsDirectory, rom.FilePaths.First()));
 
     }
 }

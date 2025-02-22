@@ -95,18 +95,15 @@ namespace RaSetMaker.Persistence
             var roms = GetSystems()
                 .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
-                .Where(r => r.IsValid)
-                .Select(r => (r, new FileInfo(r.FilePath)));
+                .Where(r => r.FilePaths.Count > 0);
 
             var outDir = new DirectoryInfo(UserConfig.OutputRomsDirectory);
 
-            foreach (var (rom, fileInfo) in roms)
+            foreach (var rom in roms)
             {
-                var expectedPath = $"{outDir.FullName}{fileInfo.Directory?.Name ?? ""}\\{fileInfo.Name}";
-
-                if (new FileInfo(expectedPath).Exists == false)
+                if (!rom.Exists(outDir.FullName))
                 {
-                    rom.FilePath = string.Empty;
+                    rom.FilePaths.Clear();
                     dataChanged = true;
                 }
             }

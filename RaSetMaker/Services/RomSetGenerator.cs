@@ -82,8 +82,8 @@ namespace RaSetMaker.Services
                 .GetSystems()
                 .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
-                .Where(r => r.IsValid)
-                .Select(r => new FileInfo(Path.Combine(outDirInfo.FullName, r.FilePath)).FullName)
+                .SelectMany(r => r.FilePaths)
+                .Select(relPath => new FileInfo(Path.Combine(outDirInfo.FullName, relPath)).FullName)
                 .ToImmutableHashSet();
 
             // Iterate output dir recursively and move all files not linked to Roms to input
@@ -169,25 +169,20 @@ namespace RaSetMaker.Services
                         // If rom has multiple files, create subdir for them
                         var romSubdir = romFiles.Count > 1 ? Path.GetFileNameWithoutExtension(romFiles[0]) : "";
 
-                        // Rom path points to either single file or subdir if multiple
-                        // Path is relative to rom set output dir
-                        var romFilepath = romFiles.Count > 1 ?
-                            $"{gameSystemDir}/{romSubdir}" :
-                            $"{gameSystemDir}/{Path.GetFileName(romFiles[0])}";
-
                         foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
                         {
-                            var outFilePath = $"{outDirInfo.FullName}{gameSystemDir}/{romSubdir}/{romFile.Name}";
+                            var outRelPath = $"{gameSystemDir}/{romSubdir}/{romFile.Name}";
+                            var outAbsPath = $"{outDirInfo.FullName}{outRelPath}";
 
-                            var outFileInfo = new FileInfo(outFilePath);
+                            var outFileInfo = new FileInfo(outAbsPath);
 
                             outFileInfo.Directory?.Create();
 
-                            romFile.MoveTo(outFilePath, true);
+                            romFile.MoveTo(outAbsPath, true);
                             movedFiles.Add(file);
+                            rom.FilePaths.Add(outRelPath);
                         }
 
-                        rom.FilePath = romFilepath;
                         addedRoms++;
                     }
 

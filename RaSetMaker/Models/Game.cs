@@ -32,7 +32,7 @@ namespace RaSetMaker.Models
         [XmlIgnore]
         public GameSystem? GameSystem => Parent != null ? (GameSystem)Parent : null;
 
-        public bool HasValidRom(string basePath) => Roms.Any(r => r.IsValid && Path.Exists(Path.Combine(basePath, r.FilePath)));
+        public bool HasValidRom(string basePath) => Roms.Any(r => r.Exists(basePath));
 
         public List<Rom> Roms
         {

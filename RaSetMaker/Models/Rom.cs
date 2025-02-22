@@ -1,5 +1,7 @@
 ﻿
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace RaSetMaker.Models
@@ -8,17 +10,14 @@ namespace RaSetMaker.Models
     {
         public string Hash { get; set; } = string.Empty;
 
-        public string Name { get; set; } = string.Empty;
-
-        public string FilePath { get; set; } = string.Empty;
+        public List<string> FilePaths { get; set; } = [];
 
         public string PatchUrl { get; set; } = string.Empty;
 
         [XmlIgnore]
         public Game? Game => Parent != null ? (Game)Parent : null;
 
-        [XmlIgnore]
-        public bool IsValid => FilePath != string.Empty;
+        public bool Exists(string basePath) => FilePaths.Count > 0 && FilePaths.All(relPath => Path.Exists(Path.Combine(basePath, relPath)));
 
         public Rom() : base()
         {
