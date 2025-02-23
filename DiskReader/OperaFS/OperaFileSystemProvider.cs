@@ -46,7 +46,7 @@ public class OperaFileSystemProvider : IFileSystemProvider
 
     public byte[] GetVolumeHeader()
     {
-        _reader.Seek(0);
+        _reader.SeekRelative(0);
 
         var volHeader = new byte[132];
         _reader.Read(volHeader);
