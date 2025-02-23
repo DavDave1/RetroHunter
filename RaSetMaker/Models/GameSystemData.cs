@@ -364,4 +364,17 @@ public static class GameSystemData
         };
     }
 
+    public static long RomSizeLimit(this GameSystemType type)
+    {
+        return type switch
+        {
+            GameSystemType.MagnavoxOdyssey2 => 8192,
+            GameSystemType.FairchildChannelF or
+            GameSystemType.IntertonVC4000 or
+            GameSystemType.Arcadia2001 or
+            GameSystemType.MegaDuck => 65536,
+            _ => 0,
+        };
+    }
+
 }

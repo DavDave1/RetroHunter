@@ -29,6 +29,13 @@ namespace RaSetMaker.Utils.Matchers
 
         protected (Stream?, string) Open(FileInfo file, bool matchExtension = false)
         {
+            var sizeLimit = system.GameSystemType.RomSizeLimit();
+
+            if (sizeLimit > 0 && sizeLimit < GetFileSize(file))
+            {
+                return (null, "");
+            }
+
             if (IsCompressed(file))
             {
                 return OpenArchive(file, matchExtension);
@@ -92,7 +99,7 @@ namespace RaSetMaker.Utils.Matchers
 
             return (_openStream, extension);
         }
-        private static bool IsCompressed(FileInfo file) => file.Extension == ".zip" || file.Extension == ".7z";
+        private static bool IsCompressed(FileInfo file) => file.Extension == ".zip";
 
         private static Dictionary<string, string> _archivesInnerExtensionCache = [];
 
