@@ -12,7 +12,7 @@ namespace DiskReader.Chd
         internal static partial int Open(string filename, int mode, UIntPtr parent, ref UIntPtr chd_file);
 
         [LibraryImport("chdr", EntryPoint = "chd_close")]
-        internal static partial int Close(UIntPtr chd_file);
+        internal static partial void Close(UIntPtr chd_file);
 
         [LibraryImport("chdr", EntryPoint = "chd_read")]
         internal static partial int ReadHunk(UIntPtr chd_file, uint hunknum, byte[] buffer);

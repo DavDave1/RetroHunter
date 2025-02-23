@@ -81,13 +81,8 @@ public partial class ChdDataReader : IDiskDatakReader
     {
         if (_chd != nuint.Zero)
         {
-            int result = LibChdAccess.Close(_chd);
+            LibChdAccess.Close(_chd);
             _chd = nuint.Zero;
-
-            if (result != 0)
-            {
-                throw new DiskReaderException($"Failed to close CHD file with error {result}");
-            }
         }
     }
 
