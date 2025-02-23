@@ -1,5 +1,4 @@
-﻿
-namespace DiskReader.BinCue;
+﻿namespace DiskReader.BinCue;
 
 public class Cue
 {
@@ -15,7 +14,6 @@ public class Cue
 
         var currLineType = LineType.File;
         int lineNr = 0;
-        bool highDensityTrack = false;
         uint sessionNr = 1;
 
         while (true)
@@ -44,12 +42,6 @@ public class Cue
             {
                 var comment = line.Replace(LINE_START[LineType.Comment], "").Trim();
 
-                // System specific hack to handle Dreamcast cue files.
-                if (comment == "HIGH-DENSITY AREA")
-                {
-                    highDensityTrack = true;
-                }
-
                 if (comment.StartsWith("SESSION"))
                 {
                     var sessionNrStr = comment.Replace("SESSION", "").Trim();
@@ -72,11 +64,9 @@ public class Cue
                 Tracks.Add(new Track
                 {
                     FilePath = line.Split('\"').Skip(1).First(),
-                    HighDensityTrack = highDensityTrack,
                     SessionNr = sessionNr
                 });
 
-                highDensityTrack = false;
                 currLineType = LineType.Track;
             }
             else if (currLineType == LineType.Track)
@@ -128,6 +118,29 @@ public class Cue
         foreach (var track in Tracks)
         {
             track.TrackSize = (int)GetBinLength(track.FilePath);
+        }
+
+        foreach (var track in Tracks)
+        {
+            if (track.SectorHeaderSize == 0)
+            {
+                continue;
+            }
+
+            using var trackFile = new FileInfo(GetBinAbsolutePath(track.FilePath)).OpenRead();
+
+            var volumeHeaderSector = 16 + track.PregapSectors;
+            trackFile.Seek(volumeHeaderSector * track.SectorSize, SeekOrigin.Begin);
+
+            var sectorHeader = new byte[track.SectorHeaderSize];
+
+            trackFile.ReadExactly(sectorHeader);
+
+            uint minutes = (uint)((sectorHeader[12] >> 4) * 10 + (sectorHeader[12] & 0x0F));
+            uint seconds = (uint)((sectorHeader[13] >> 4) * 10 + (sectorHeader[13] & 0x0F));
+            uint frames = (uint)((sectorHeader[14] >> 4) * 10 + (sectorHeader[14] & 0x0F));
+
+            track.FileSectorOffset = ((minutes * 60) + seconds) * 75 + frames - 150 - 16;
         }
     }
 

@@ -316,6 +316,22 @@ namespace RaSetMaker.Tests.MatchersTests
         }
 
         [Theory]
+        [InlineData("../../../TestRoms/dreamcast/Chicken Run (USA).cue", "8f1a9e2297e1472d8a0f486487f26d75")]
+        public void DreamcastBinCueMatchBootFileInLastTrack(string filePath, string expectedHash)
+        {
+            var sys = GetGameSystemByType(GameSystemType.Dreamcast);
+            AddRomWithHash(sys, expectedHash);
+
+            var matcher = sys.CreateMatcher();
+
+            var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom);
+            Assert.Equal(expectedHash, foundRom.Hash);
+
+        }
+
+        [Theory]
         [InlineData("../../../TestRoms/pcenginecd/Advanced V.G. (Japan).cue", "17f2a62623bf1091f286c92eda4ddf43")]
         public void PcEngineCDBinCueMatch(string filePath, string expectedHash)
         {

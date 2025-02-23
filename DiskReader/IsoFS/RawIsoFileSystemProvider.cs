@@ -15,7 +15,7 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
             _ => throw new NotSupportedException($"Extension {extension} is not supported by OperaFSReader"),
         };
 
-        _primaryVolumeInfo = ReadPrimaryVolumeInfo();
+        ReadPrimaryVolumeInfo();
     }
 
     public List<string> GetAllTrackFiles() => _reader?.GetAllTrackFiles() ?? [];
@@ -29,7 +29,11 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
             return null;
         }
 
-        _reader.Seek(record.Location);
+        if (!_reader.Seek(record.Location))
+        {
+            return null;
+        }
+
 
         var buffer = new byte[record.DataLength];
 
@@ -57,7 +61,7 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
         do
         {
-            _primaryVolumeInfo = ReadPrimaryVolumeInfo();
+            ReadPrimaryVolumeInfo();
 
             var currentDir = _primaryVolumeInfo.RootDirectory;
 
@@ -136,7 +140,7 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         return null;
     }
 
-    private PrimaryVolume ReadPrimaryVolumeInfo()
+    private void ReadPrimaryVolumeInfo()
     {
         uint volumeInfoBlock = Constants.DESCRIPTORS_START_ADDR;
 
@@ -148,10 +152,12 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
         if (volumeInfoData[0] == Constants.PRIMARY_VOLUME_ID &&
             volumeInfoData[1..6].SequenceEqual(Constants.STANDARD_ID))
         {
-            return new(volumeInfoData);
+            _primaryVolumeInfo = new(volumeInfoData);
         }
-
-        throw new UnsupportedFormatException("No primary volume info found");
+        else
+        {
+            throw new UnsupportedFormatException("No primary volume info found");
+        }
     }
 
     public bool ReadDataRaw(byte[] buffer, uint sector, uint track, uint session = 1)
@@ -181,5 +187,4 @@ public class RawIsoFileSystemProvider : IFileSystemProvider
 
     private readonly IDiskDatakReader _reader;
     private PrimaryVolume _primaryVolumeInfo;
-
 }

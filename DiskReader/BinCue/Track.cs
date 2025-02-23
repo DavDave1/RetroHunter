@@ -35,9 +35,9 @@ public class Track
 
     public uint SessionNr { get; set; }
 
-    public uint TrackSectorBegin => (uint)Indices.Sum(i => i.SectorsOffset);
+    public uint PregapSectors => (uint)Indices.Sum(i => i.SectorsOffset);
 
-    public uint TrackFileOffset => HighDensityTrack ? 45000u : 0;
+    public uint FileSectorOffset { get; set; }
 
     public int SectorHeaderSize =>
         TrackType switch
@@ -57,7 +57,5 @@ public class Track
 
     public ETrackType TrackType { get; set; }
     public List<TrackIndex> Indices { get; set; } = [];
-
-    public bool HighDensityTrack { get; set; } = false;
 }
 

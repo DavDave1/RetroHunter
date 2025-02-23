@@ -24,7 +24,7 @@ namespace DiskReader
             }
 
 
-            var lbaInTrack = lba + _cue.CurrentTrack().TrackSectorBegin - _cue.CurrentTrack().TrackFileOffset;
+            var lbaInTrack = lba + _cue.CurrentTrack().PregapSectors - _cue.CurrentTrack().FileSectorOffset;
 
             var position = (lbaInTrack * _cue.CurrentTrack().SectorSize) + _cue.CurrentTrack().SectorHeaderSize;
 
@@ -48,7 +48,7 @@ namespace DiskReader
 
         public bool SeekRelative(uint lba)
         {
-            return Seek(lba + _cue.CurrentTrack().TrackFileOffset);
+            return Seek(lba + _cue.CurrentTrack().FileSectorOffset);
         }
 
         public bool Read(byte[] buffer)
@@ -83,7 +83,6 @@ namespace DiskReader
 
             return true;
         }
-
 
         public bool OpenFirstTrack(uint session = 1)
         {

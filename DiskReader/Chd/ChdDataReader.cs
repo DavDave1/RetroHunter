@@ -74,6 +74,7 @@ public partial class ChdDataReader : IDiskDatakReader
 
         return true;
     }
+
     public List<string> GetAllTrackFiles() => [_chdFileName];
 
     public void Dispose()
