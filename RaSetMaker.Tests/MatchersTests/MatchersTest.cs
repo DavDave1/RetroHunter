@@ -319,6 +319,11 @@ namespace RaSetMaker.Tests.MatchersTests
         [InlineData("../../../TestRoms/dreamcast/Chicken Run (USA).cue", "8f1a9e2297e1472d8a0f486487f26d75")]
         public void DreamcastBinCueMatchBootFileInLastTrack(string filePath, string expectedHash)
         {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
