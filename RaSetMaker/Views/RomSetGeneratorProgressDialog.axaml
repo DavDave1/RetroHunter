@@ -8,8 +8,8 @@
     xmlns:vm="clr-namespace:RaSetMaker.ViewModels"
     Title="Generating Retroachievement Set"
     Width="500"
-    Height="180"
-    d:DesignHeight="180"
+    Height="200"
+    d:DesignHeight="280"
     d:DesignWidth="500"
     x:DataType="vm:RomSetGeneratorDialogViewModel"
     ExtendClientAreaChromeHints="NoChrome"
@@ -40,5 +40,8 @@
                 Command="{Binding CancelCommand}"
                 Content="Cancel" />
         </StackPanel>
+      <ScrollViewer IsVisible="{Binding TotalProgress}" Height="100">
+        <ListBox ItemsSource="{Binding Exceptions}" />
+      </ScrollViewer>
     </StackPanel>
 </classic:ClassicWindow>

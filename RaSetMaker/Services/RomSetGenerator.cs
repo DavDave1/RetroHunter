@@ -18,6 +18,7 @@ namespace RaSetMaker.Services
         public double systemProgress = 0;
         public string currentSystem = "";
         public string currentFile = "";
+        public List<string> exceptions = [];
     }
 
     public class RomSetGeneratorResult
@@ -160,31 +161,39 @@ namespace RaSetMaker.Services
                     progressInfo.currentFile = file;
                     progress.Report(progressInfo);
 
-                    var (rom, romFiles) = matcher.FindRom(fileInfo);
-
-
-                    // If rom was found, move it to proper outut subdir and update rom file path
-                    if (rom != null)
+                    try
                     {
-                        // If rom has multiple files, create subdir for them
-                        var romSubdir = romFiles.Count > 1 ? Path.GetFileNameWithoutExtension(romFiles[0]) : "";
+                        var (rom, romFiles) = matcher.FindRom(fileInfo);
 
-                        foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
+
+                        // If rom was found, move it to proper outut subdir and update rom file path
+                        if (rom != null)
                         {
-                            var outRelPath = $"{gameSystemDir}/{romSubdir}/{romFile.Name}";
-                            var outAbsPath = $"{outDirInfo.FullName}{outRelPath}";
+                            // If rom has multiple files, create subdir for them
+                            var romSubdir = romFiles.Count > 1 ? Path.GetFileNameWithoutExtension(romFiles[0]) : "";
 
-                            var outFileInfo = new FileInfo(outAbsPath);
+                            foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
+                            {
+                                var outRelPath = $"{gameSystemDir}/{romSubdir}/{romFile.Name}";
+                                var outAbsPath = $"{outDirInfo.FullName}{outRelPath}";
 
-                            outFileInfo.Directory?.Create();
+                                var outFileInfo = new FileInfo(outAbsPath);
 
-                            romFile.MoveTo(outAbsPath, true);
-                            movedFiles.Add(file);
-                            rom.FilePaths.Add(outRelPath);
+                                outFileInfo.Directory?.Create();
+
+                                romFile.MoveTo(outAbsPath, true);
+                                movedFiles.Add(file);
+                                rom.FilePaths.Add(outRelPath);
+                            }
+
+                            addedRoms++;
                         }
-
-                        addedRoms++;
                     }
+                    catch (Exception ex) 
+                    {
+                        progressInfo.exceptions.Add(ex.Message);
+                    }
+                
 
                     progressInfo.systemProgress += systemProgressStep;
                 }

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using RaSetMaker.Persistence;
 using RaSetMaker.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,9 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
 
     [ObservableProperty]
     private int _totalProgress;
+
+    [ObservableProperty]
+    private List<string> _exceptions = [];
 
     public bool FinishedSuccesfully { get; private set; }
 
@@ -44,6 +48,7 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
         CurrentFile = value.currentFile;
         SystemProgress = (int)value.systemProgress;
         TotalProgress = (int)value.totalProgress;
+        Exceptions = value.exceptions;
     }
 
     [RelayCommand]
