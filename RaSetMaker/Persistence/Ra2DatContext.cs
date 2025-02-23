@@ -60,7 +60,7 @@ namespace RaSetMaker.Persistence
             }
 
             var serializer = new XmlSerializer(typeof(Ra2DatModel));
-            var writer = new StreamWriter(FilePath);
+            using var writer = new StreamWriter(FilePath);
             serializer.Serialize(writer, _model);
         }
 
