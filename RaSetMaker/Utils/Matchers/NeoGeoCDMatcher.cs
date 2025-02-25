@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 
 namespace RaSetMaker.Utils.Matchers
 {
@@ -14,7 +13,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            if (!system.SupportedExtensions.Contains(file.Extension))
+            if (!_system.SupportedExtensions.Contains(file.Extension))
             {
                 return (null, [file.FullName]);
             }
@@ -53,6 +52,9 @@ namespace RaSetMaker.Utils.Matchers
 
             return (rom, cdImage.GetAllTrackFiles());
         }
+
+        private readonly GameSystem _system = system;
     }
+
 
 }
