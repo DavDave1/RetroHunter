@@ -189,7 +189,7 @@ public partial class MainViewModel : ViewModelBase
         var companyList = new List<GameSystemCompanyViewModel>();
         foreach (var company in Enum.GetValues<GameSystemCompany>())
         {
-            companyList.Add(new(company, [.. systems.Where(gs => gs.Company == company)], _dbContext.UserConfig));
+            companyList.Add(new(company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)], _dbContext.UserConfig));
         }
 
         CompanyList = companyList;
