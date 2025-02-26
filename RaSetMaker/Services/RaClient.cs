@@ -21,6 +21,21 @@ namespace RaSetMaker.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<RaUserProfile> GetUserProfile(string user)
+        {
+            var response = await _client.GetAsync(GetUserProfileUri(user));
+
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var userProfile = await JsonSerializer.DeserializeAsync<RaUserProfile>(stream) ?? new();
+                userProfile.UserPic = $"{Constants.RA_BASE_URL}{userProfile.UserPic}";
+                return userProfile;
+            }
+
+            throw new Exception($"Failed to fetch profile for {user}, server responded {response.StatusCode}");
+        }
+
         public async Task<List<Game>> FetchGames(GameSystem gameSystem)
         {
             if (gameSystem.RaId == 0)
@@ -170,6 +185,26 @@ namespace RaSetMaker.Services
             return (types, trimmedStr);
 
         }
+    }
+
+    public class RaUserProfile
+    {
+        public string User { get; set; } = string.Empty;
+        public string ULID { get; set; } = string.Empty;
+        public string UserPic { get; set; } = string.Empty;
+        public string MemberSince { get; set; } = string.Empty;
+        public string RichPresenceMsg { get; set; } = string.Empty;
+        public int LastGameID { get; set; }
+        public int ContribCount { get; set; }
+        public int ContribYield { get; set; }
+        public int TotalPoints { get; set; }
+        public int TotalSoftcorePoints { get; set; }
+        public int TotalTruePoints { get; set; }
+        public int Permissions { get; set; }
+        public int Untracked { get; set; }
+        public int ID { get; set; }
+        public bool UserWallActive { get; set; }
+        public string Motto { get; set; } = string.Empty;
     }
 
     internal class RaRomResponse

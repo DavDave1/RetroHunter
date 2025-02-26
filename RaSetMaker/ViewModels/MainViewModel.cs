@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RaSetMaker.Models;
 using RaSetMaker.Persistence;
 using RaSetMaker.Services;
+using RaSetMaker.Utils;
 using RaSetMaker.Views;
 
 namespace RaSetMaker.ViewModels;
@@ -32,14 +35,18 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private int _progressValue = 0;
 
+    [ObservableProperty]
+    private RaUserProfile _userProfile = new();
+
+    [ObservableProperty]
+    private Bitmap? _userIcon = ImageHelper.LoadFromResource(new Uri("avares://RaSetMaker/Assets/question.png"));
+
     public MainViewModel(RaClient raClient, Ra2DatContext context)
     {
         _dbContext = context;
         _raClient = raClient;
 
         raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
-
-        LoadModel();
     }
 
     /// <summary>
@@ -70,7 +77,7 @@ public partial class MainViewModel : ViewModelBase
         {
             _dbContext.LoadModel(dbFile.Path.AbsolutePath);
             _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
-            LoadModel();
+            await LoadModel();
         }
     }
 
@@ -115,7 +122,7 @@ public partial class MainViewModel : ViewModelBase
             _dbContext.ValidateRoms();
         }
 
-        LoadModel();
+        await LoadModel();
     }
 
 
@@ -148,7 +155,7 @@ public partial class MainViewModel : ViewModelBase
             await App.ShowError("Failed to fetch RetroAchievement data", e.Message);
         }
 
-        LoadModel();
+        await LoadModel();
     }
 
     [RelayCommand]
@@ -174,16 +181,32 @@ public partial class MainViewModel : ViewModelBase
                 $"removed {vm.Result.RemovedRoms} roms and added {vm.Result.AddedRoms} roms");
         }
 
-        LoadModel();
+        await LoadModel();
     }
 
-    partial void OnSelectedSystemChanged(GameSystemViewModel? value)
+    public async Task FetchUserProfile()
     {
-        GamesList = value?.Games.ToList() ?? [];
+        if (_dbContext.UserConfig.Name == string.Empty)
+        {
+            return;
+        }
+
+        try
+        {
+            UserProfile = await _raClient.GetUserProfile(_dbContext.UserConfig.Name);
+            UserIcon = await ImageHelper.LoadFromWeb(new Uri(UserProfile.UserPic));
+
+        }
+        catch (Exception ex)
+        {
+            await App.ShowError("Failed to fetch user profile", ex.Message);
+        }
     }
 
-    private void LoadModel()
+    public async Task LoadModel()
     {
+        await FetchUserProfile();
+
         var systems = _dbContext.GetSystems();
 
         var companyList = new List<GameSystemCompanyViewModel>();
@@ -195,6 +218,11 @@ public partial class MainViewModel : ViewModelBase
         CompanyList = companyList;
         SelectedSystem = null;
         GamesList = [];
+    }
+
+    partial void OnSelectedSystemChanged(GameSystemViewModel? value)
+    {
+        GamesList = value?.Games.ToList() ?? [];
     }
 
     private readonly Ra2DatContext _dbContext;
