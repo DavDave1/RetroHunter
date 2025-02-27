@@ -8,7 +8,7 @@ namespace RaSetMaker.ViewModels
 {
     public partial class RomViewModel(Rom rom, UserConfig userConfig) : TreeViewItemModel
     {
-        public override string Title => $"{RomName} ({Rom.Hash})";
+        public override string Title => RomName == string.Empty ? Rom.Hash : RomName;
 
         [ObservableProperty]
         private Rom _rom = rom;
