@@ -11,6 +11,7 @@ namespace DiskReader.Chd
 
         public static uint CDROM_TRACK_METADATA_TAG = MakeTag('C', 'H', 'T', 'R');
         public static uint CDROM_TRACK_METADATA2_TAG = MakeTag('C', 'H', 'T', '2');
+        public static uint GDROM_TRACK_METADATA_TAG = MakeTag('C', 'H', 'G', 'D');
 
         public const int CHD_CD_SECTOR_DATA_SIZE = 2352 + 96;
 

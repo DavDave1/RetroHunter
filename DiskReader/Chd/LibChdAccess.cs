@@ -36,6 +36,12 @@ namespace DiskReader.Chd
                 result = GetMetadataInternal(chd_file, ChdConstants.CDROM_TRACK_METADATA_TAG, tack_index, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero);
             }
 
+            // Failed, again, is this a GDROM
+            if (result != 0)
+            {
+                result = GetMetadataInternal(chd_file, ChdConstants.GDROM_TRACK_METADATA_TAG, tack_index, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero);
+            }
+
             if (result != 0)
             {
                 return null;

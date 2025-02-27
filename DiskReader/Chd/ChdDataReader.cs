@@ -26,7 +26,7 @@ public partial class ChdDataReader : IDiskDatakReader
 
     public bool Seek(uint lba)
     {
-        uint disc_frame = _trackFileOffset + lba;
+        uint disc_frame = lba;
         uint hunk_index = disc_frame / _sectorsPerHunk;
 
         _currentHunkOffset = disc_frame % _sectorsPerHunk * ChdConstants.CHD_CD_SECTOR_DATA_SIZE;
@@ -48,7 +48,7 @@ public partial class ChdDataReader : IDiskDatakReader
 
     public bool SeekRelative(uint lba)
     {
-        return Seek(lba);
+        return Seek(lba + _trackFileOffset);
     }
 
     public bool Read(byte[] buffer)
@@ -105,20 +105,20 @@ public partial class ChdDataReader : IDiskDatakReader
 
     public bool OpenFirstTrack(uint session = 1)
     {
-        _trackIndex = -1;
+        _trackIndex = 0;
         _trackFileOffset = 0;
 
         foreach (var track in _tracks)
         {
-            _trackIndex++;
-
             if ((_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || track.TrackType != Track.ETrackType.Audio) &&
                 track.SessionNr == session)
             {
                 break;
             }
 
+            _trackIndex++;
             _trackFileOffset += (uint)track.TrackSize;
+
         }
 
         return _trackIndex >= 0 && _trackIndex < _tracks.Count;
@@ -126,18 +126,19 @@ public partial class ChdDataReader : IDiskDatakReader
 
     public bool OpenNextTrack(uint session = 1)
     {
-        _trackIndex++;
-
-        for (; _trackIndex < _tracks.Count; _trackIndex++)
+        do
         {
-            _trackFileOffset += (uint)_tracks[_trackIndex].TrackSize;
+            _trackIndex++;
+            _trackFileOffset += (uint)_tracks[_trackIndex - 1].TrackSize;
 
             if ((_readMode == DiskImage.ReadMode.TreatAudioTracksAsData || _tracks[_trackIndex].TrackType != Track.ETrackType.Audio) &&
                 _tracks[_trackIndex].SessionNr == session)
             {
                 return true;
             }
+
         }
+        while (_trackIndex < _tracks.Count);
 
         return false;
     }
