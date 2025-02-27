@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefaultItemExcludes>$(DefaultItemExcludes);libchdr/**</DefaultItemExcludes>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
@@ -14,18 +15,43 @@
     <PackageReference Include="DiscUtils.Iso9660" Version="0.16.13" />
     <PackageReference Include="DiscUtils.Streams" Version="0.16.13" />
   </ItemGroup>
-    
+
+  <Target Condition="'$(IsLinux)'=='true'" Name="BuildLibchdrLinux" BeforeTargets="PreBuildEvent" >
+    <Exec Command="./build_libchdr.sh" />
+  </Target>
+
+  <Target Condition="'$(IsWindows)'=='true'" Name="BuildLibchdrWin" BeforeTargets="PreBuildEvent">
+    <Exec Command="./build_libchdr.ps1" />
+  </Target>
+
+  <Target Name="LibchdrClean" BeforeTargets="CoreClean">
+    <RemoveDir Directories="./libchdr/build/" />
+  </Target>
+
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so" />
-    <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so.0" />
-    <Reference Include="$(SolutionDir)/libchdr/build/libchdr.so.0.2" />
-    <Content Include="../libchdr/build/libchdr.so" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="../libchdr/build/libchdr.so.0" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="../libchdr/build/libchdr.so.0.2" CopyToPublishDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="./libchdr/build/libchdr.so">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libchdr.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="./libchdr/build/libchdr.so.0">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libchdr.so.0</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="./libchdr/build/libchdr.so.0.2">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libchdr.so.0.2</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <Reference Include="$(SolutionDir)/libchdr/build/libchdr.dll" />
-    <Content Include="../libchdr/build/libchdr.dll" CopyToPublishDirectory="PreserveNewest" />
+    <ContentWithTargetPath Include="./libchdr/build/libchdr.dll">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libchdr.dll</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
+
 </Project>
