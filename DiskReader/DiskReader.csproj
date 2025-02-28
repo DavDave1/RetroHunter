@@ -21,7 +21,7 @@
   </Target>
 
   <Target Condition="'$(IsWindows)'=='true'" Name="BuildLibchdrWin" BeforeTargets="PreBuildEvent">
-    <Exec Command="./build_libchdr.ps1" />
+    <Exec Command="build_libchdr.ps1" />
   </Target>
 
   <Target Name="LibchdrClean" BeforeTargets="CoreClean">

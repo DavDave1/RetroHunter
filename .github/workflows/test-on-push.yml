@@ -1,0 +1,38 @@
+name: Test on Push
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug]
+
+    runs-on: ubuntu-latest
+
+    env:
+      Solution_Name: RaSetMaker.sln
+      Test_Project_Path: RaSetMaker.Tests.cspoj
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+          
+    - name: Install cmake
+      uses: lukka/get-cmake@latest
+
+    - name: Execute unit tests
+      run: dotnet test
