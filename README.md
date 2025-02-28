@@ -1,4 +1,3 @@
-
 # RaSetMaker
 
 RaSetMaker is a Desktop application that builds emulators rom sets by collecting games that have [Retroachievements](http://retroachievements.org/).
@@ -86,6 +85,12 @@ RaSetMaker requires .NET 9.0 and can be build on Windows and Linux (Verify Mac O
 
 RaSetMaker includes the [libchdr](https://github.com/rtissera/libchdr) C library as submodule dependency for reading compressed disk images in CHD format. Before building the RaSetMaker C# solution, you need to compile the libchdr libary by running the `build_libchdr.sh` script.
 
+
+## Status
+
+[![Build Main](https://github.com/DavDave1/RaSetMaker/actions/workflows/build-main.yml/badge.svg)](https://github.com/DavDave1/RaSetMaker/actions/workflows/build-main.yml)
+
+
 ## TODOs
 
 ### Systems
@@ -102,3 +107,4 @@ RaSetMaker includes the [libchdr](https://github.com/rtissera/libchdr) C library
 - [ ] Support downloading and applying patches
 - [ ] Display RA user profile summary
 - [ ] Implement github actions to build, test and release
+- [ ] Implement compression to chd format
