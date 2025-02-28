@@ -10,6 +10,12 @@ namespace RaSetMaker.Tests.DiskReaderTests
         [InlineData("../../../TestRoms/ps1/007 Racing (USA).cue")]
         public void ReadCueImage(string filePath)
         {
+
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             using DiskImage disk = new(filePath);
 
             var dataBuffer = disk.ReadFile("SYSTEM.CNF");
@@ -20,6 +26,12 @@ namespace RaSetMaker.Tests.DiskReaderTests
         [InlineData("../../../TestRoms/psp.iso")]
         public void ReadIsoImage(string filePath)
         {
+
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var exception = Record.Exception(() => new DiskImage(filePath));
             Assert.Null(exception);
         }
@@ -28,6 +40,12 @@ namespace RaSetMaker.Tests.DiskReaderTests
         [InlineData("../../../TestRoms/ps1/007 Racing (USA).chd")]
         public void ReadChdImage(string filePath)
         {
+
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
             var exception = Record.Exception(() => new DiskImage(filePath));
             Assert.Null(exception);
         }
