@@ -5,6 +5,7 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Classic.CommonControls.Dialogs;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RaSetMaker.Persistence;
 using RaSetMaker.Services;
 using RaSetMaker.ViewModels;
@@ -31,8 +32,11 @@ public partial class App : Application
         // DI container
         var collection = new ServiceCollection();
 
+        collection.AddLogging(builder => builder.AddConsole());
+
         collection.AddSingleton<Ra2DatContext>();
         collection.AddSingleton<RaClient>();
+        collection.AddSingleton<Chdman>();
 
         collection.AddTransient<MainViewModel>();
         collection.AddTransient<ConfigureDialogViewModel>();
