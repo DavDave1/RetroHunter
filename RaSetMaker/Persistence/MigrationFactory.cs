@@ -10,9 +10,6 @@ namespace RaSetMaker.Persistence
 
         static MigrationFactory()
         {
-            _migrations[typeof(Migration_DeduplicateGames)] = new Migration_DeduplicateGames();
-            _migrations[typeof(Migration_DetectSubset)] = new Migration_DetectSubset();
-
         }
 
 

@@ -143,6 +143,18 @@
                                 IsVisible="{Binding HasIcon}"
                                 Source="{Binding Icon}" />
                             <TextBlock Text="{Binding Title}" />
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem
+                                        Command="{Binding CompressCommand}"
+                                        Header="Compress"
+                                        IsVisible="{Binding CanCompress}" />
+                                    <MenuItem
+                                        Command="{Binding ShowDetailsCommand}"
+                                        Header="Show Details"
+                                        IsVisible="{Binding CanShowDetails}" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
                         </StackPanel>
                     </TreeDataTemplate>
                 </TreeView.ItemTemplate>

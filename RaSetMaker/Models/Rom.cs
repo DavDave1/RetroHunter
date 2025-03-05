@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -16,6 +17,8 @@ namespace RaSetMaker.Models
 
         [XmlIgnore]
         public Game? Game => Parent != null ? (Game)Parent : null;
+
+        public long GetSize(string basePath) => FilePaths.Sum(path => new FileInfo(Path.Combine(basePath, path)).Length);
 
         public bool Exists(string basePath) => FilePaths.Count > 0 && FilePaths.All(relPath => Path.Exists(Path.Combine(basePath, relPath)));
 

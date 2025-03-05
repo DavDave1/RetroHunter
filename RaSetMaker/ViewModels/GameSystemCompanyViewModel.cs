@@ -9,10 +9,10 @@ namespace RaSetMaker.ViewModels
     {
         public override string Title => _company.ToString();
 
-        public GameSystemCompanyViewModel(GameSystemCompany company, List<GameSystem> systems, UserConfig config)
+        public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems, UserConfig config) : base(mainVm)
         {
             _company = company;
-            Children = [.. systems.Select(s => new GameSystemViewModel(s, config))];
+            Children = [.. systems.Select(s => new GameSystemViewModel(mainVm, s, config))];
             IsChecked = Children.Any(c => c.IsChecked);
         }
 

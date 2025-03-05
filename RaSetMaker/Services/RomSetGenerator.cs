@@ -189,11 +189,11 @@ namespace RaSetMaker.Services
                             addedRoms++;
                         }
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         progressInfo.exceptions.Add(ex.Message);
                     }
-                
+
 
                     progressInfo.systemProgress += systemProgressStep;
                 }

@@ -14,10 +14,10 @@ namespace RaSetMaker.ViewModels
 
         public override string IconSrc => ValidRomsCount == 0 ? "avares://RaSetMaker/Assets/error.png" : "avares://RaSetMaker/Assets/check.png";
 
-        public GameViewModel(Game game, UserConfig userConfig)
+        public GameViewModel(MainViewModel mainVm, Game game, UserConfig userConfig) : base(mainVm)
         {
             Game = game;
-            var romViewModels = Game.Roms.Select(r => new RomViewModel(r, userConfig)).OrderBy(r => r.Title).ToList();
+            var romViewModels = Game.Roms.Select(r => new RomViewModel(mainVm, r, userConfig)).OrderBy(r => r.Title).ToList();
             ValidRomsCount = romViewModels.Sum(rvm => rvm.IsRomValid() ? 1 : 0);
             Children = [.. romViewModels.Select(r => (TreeViewItemModel)r)];
         }

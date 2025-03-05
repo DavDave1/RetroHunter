@@ -1,12 +1,14 @@
 ﻿using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using RaSetMaker.Utils;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RaSetMaker.ViewModels
 {
-    public partial class TreeViewItemModel : ViewModelBase
+    public partial class TreeViewItemModel(MainViewModel mainVm) : ViewModelBase
     {
         public virtual string Title { get; } = "";
 
@@ -36,6 +38,22 @@ namespace RaSetMaker.ViewModels
         protected virtual void OnItemChecked(bool value)
         {
         }
+
+        protected virtual bool CanShowDetails => false;
+        protected virtual bool CanCompress => false;
+
+        [RelayCommand]
+        private async Task ShowDetails()
+        {
+            await mainVm.ShowDetails(this);
+        }
+
+        [RelayCommand]
+        private async Task Compress()
+        {
+            await mainVm.Compress(this);
+        }
+
 
     }
 }

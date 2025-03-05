@@ -41,12 +41,12 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private Bitmap? _userIcon = ImageHelper.LoadFromResource(new Uri("avares://RaSetMaker/Assets/question.png"));
 
-    public MainViewModel(RaClient raClient, Ra2DatContext context)
+    public MainViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context)
     {
         _dbContext = context;
         _raClient = raClient;
+        _chdman = chdman;
 
-        raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var dialog = new ConfigureDialog();
 
-        var vm = new ConfigureDialogViewModel(_raClient, _dbContext);
+        var vm = new ConfigureDialogViewModel(_raClient, _chdman, _dbContext);
         dialog.DataContext = vm;
 
         await dialog.ShowDialog<ConfigureDialogViewModel?>(App.CurrentWindow());
@@ -207,17 +207,50 @@ public partial class MainViewModel : ViewModelBase
     {
         await FetchUserProfile();
 
+        _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
+        _chdman.SetChdManPath(_dbContext.UserConfig.ChdmanExePath);
+
         var systems = _dbContext.GetSystems();
 
         var companyList = new List<GameSystemCompanyViewModel>();
         foreach (var company in Enum.GetValues<GameSystemCompany>())
         {
-            companyList.Add(new(company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)], _dbContext.UserConfig));
+            companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)], _dbContext.UserConfig));
         }
 
         CompanyList = companyList;
         SelectedSystem = null;
         GamesList = [];
+    }
+
+    public async Task ShowDetails(TreeViewItemModel vm)
+    {
+
+    }
+
+    public async Task Compress(TreeViewItemModel vm)
+    {
+        if (vm is RomViewModel romViewModel)
+        {
+            var sizeBefore = romViewModel.Rom.GetSize(_dbContext.UserConfig.OutputRomsDirectory);
+            using var progress = new ScopedTaskProgress(this, $"Compressing {romViewModel.RomName}", 100);
+
+            var sys = _dbContext.GetSystems().First(s => s.Games.FirstOrDefault(g => g.Roms.Contains(romViewModel.Rom)) != null);
+            bool ok = await _chdman.CompressRom(_dbContext.UserConfig, sys, romViewModel.Rom, progress);
+
+
+            if (!ok)
+            {
+                await App.ShowError("Failed to compress ROM", $"Failed to compress {romViewModel.RomName}");
+            }
+            else
+            {
+                await _dbContext.SaveChangesAsync();
+                var ratio = 100 * romViewModel.Rom.GetSize(_dbContext.UserConfig.OutputRomsDirectory) / (float)sizeBefore;
+                await App.ShowInfo("ROM compression completed", $"ROM {romViewModel.RomName} compressed successfully.\nCompression ratio: {ratio:F1}");
+            }
+
+        }
     }
 
     partial void OnSelectedSystemChanged(GameSystemViewModel? value)
@@ -227,6 +260,7 @@ public partial class MainViewModel : ViewModelBase
 
     private readonly Ra2DatContext _dbContext;
     private readonly RaClient _raClient;
+    private readonly Chdman _chdman;
 
     private static readonly FilePickerFileType RaSetMakerDb = new("RaSetMaker DB")
     {
@@ -236,12 +270,13 @@ public partial class MainViewModel : ViewModelBase
     };
 }
 
-internal class ScopedTaskProgress : IDisposable
+internal class ScopedTaskProgress : IDisposable, IProgress<ChdmanProgress>
 {
     public ScopedTaskProgress(MainViewModel vm, string message, int count = 0)
     {
         _vm = vm;
         SetCount(count);
+        SetMessage(message);
     }
 
     public void SetCount(int count)
@@ -269,6 +304,12 @@ internal class ScopedTaskProgress : IDisposable
         _vm.StatusMessage = "";
         _vm.ProgressValue = 0;
         _vm.ProgressIndeterminate = false;
+    }
+
+    public void Report(ChdmanProgress value)
+    {
+        _progress = value.Percent;
+        _vm.ProgressValue = (int)_progress;
     }
 
     private readonly MainViewModel _vm;

@@ -12,6 +12,10 @@ namespace RaSetMaker.ViewModels
 {
     public partial class ConfigureDialogViewModel : ViewModelBase
     {
+        public static List<DirStructureStyle> DirStructureStylesList => [DirStructureStyle.Retroachievements, DirStructureStyle.EmuDeck];
+
+        public static List<GameType> GameTypesList => Enum.GetValues<GameType>().Order().ToList();
+
         [ObservableProperty]
         private string _userName = string.Empty;
 
@@ -24,21 +28,21 @@ namespace RaSetMaker.ViewModels
         [ObservableProperty]
         private string _outputRomsDirectory = string.Empty;
 
-        public static List<DirStructureStyle> DirStructureStylesList => [DirStructureStyle.Retroachievements, DirStructureStyle.EmuDeck];
-
         [ObservableProperty]
         private DirStructureStyle _selectedDirStructureStyle;
-
-        public static List<GameType> GameTypesList => Enum.GetValues<GameType>().Order().ToList();
 
         [ObservableProperty]
         private List<GameType> _selectedGameTypesFilter = [];
 
+        [ObservableProperty]
+        private string _chdmanExePath = string.Empty;
+
         public bool WasCanceled { get; private set; } = true;
 
-        public ConfigureDialogViewModel(RaClient raClient, Ra2DatContext context)
+        public ConfigureDialogViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context)
         {
             _raClient = raClient;
+            _chdman = chdman;
             _context = context;
             UserName = _context.UserConfig.Name;
             RaApiKey = _context.UserConfig.RaApiKey;
@@ -46,6 +50,7 @@ namespace RaSetMaker.ViewModels
             OutputRomsDirectory = _context.UserConfig.OutputRomsDirectory;
             SelectedDirStructureStyle = _context.UserConfig.DirStructureStyle;
             SelectedGameTypesFilter = _context.UserConfig.GameTypesFilter;
+            ChdmanExePath = _context.UserConfig.ChdmanExePath;
         }
 
         [RelayCommand]
@@ -57,6 +62,7 @@ namespace RaSetMaker.ViewModels
             _context.UserConfig.OutputRomsDirectory = OutputRomsDirectory;
             _context.UserConfig.DirStructureStyle = SelectedDirStructureStyle;
             _context.UserConfig.GameTypesFilter = SelectedGameTypesFilter;
+            _context.UserConfig.ChdmanExePath = ChdmanExePath;
 
             _raClient.SetApiKey(_context.UserConfig.RaApiKey);
 
@@ -72,7 +78,7 @@ namespace RaSetMaker.ViewModels
         }
 
         [RelayCommand]
-        public async Task BrowseInputRomsDirectory()
+        private async Task BrowseInputRomsDirectory()
         {
             // Browse for the output path
             var result = await App.CurrentWindow().StorageProvider.OpenFolderPickerAsync(new() { AllowMultiple = false, Title = "Pick Rom Input Folder" });
@@ -86,21 +92,21 @@ namespace RaSetMaker.ViewModels
         }
 
         [RelayCommand]
-        public async Task BrowseOutputRomsDirectory()
+        private async Task BrowseOutputRomsDirectory()
         {
             // Browse for the output path
-            var result = await App.CurrentWindow().StorageProvider.OpenFolderPickerAsync(new() { AllowMultiple = false, Title = "Pick Rom Output Folder"});
+            var result = await App.CurrentWindow().StorageProvider.OpenFolderPickerAsync(new() { AllowMultiple = false, Title = "Pick Rom Output Folder" });
 
             var outputDir = result.FirstOrDefault();
 
             if (outputDir != null)
             {
-               OutputRomsDirectory = outputDir.Path.AbsolutePath.ToString();
+                OutputRomsDirectory = outputDir.Path.AbsolutePath.ToString();
             }
         }
 
         [RelayCommand]
-        public async Task TestLogin()
+        private async Task TestLogin()
         {
             _raClient.SetApiKey(RaApiKey);
             bool loginResult = await _raClient.TestLogin(UserName);
@@ -115,7 +121,18 @@ namespace RaSetMaker.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async Task DetectChdman()
+        {
+
+            if (!_chdman.Detect())
+            {
+                await App.ShowError("Chdman not found", "Chdman not found in PATH");
+            }
+        }
+
         private readonly RaClient _raClient;
+        private readonly Chdman _chdman;
         private readonly Ra2DatContext _context;
     }
 }
