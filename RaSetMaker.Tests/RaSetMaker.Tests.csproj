@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DiskReader\DiskReader.csproj" />
     <ProjectReference Include="..\RaSetMaker\RaSetMaker.csproj" />
+    <ProjectReference Include="..\RomPatcher\RomPatcher.csproj" />
   </ItemGroup>
 
   <ItemGroup>
