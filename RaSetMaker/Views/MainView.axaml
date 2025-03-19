@@ -103,7 +103,7 @@
         </Grid>
 
 
-        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, *, Auto">
+        <Grid ColumnDefinitions="2*, 3*" RowDefinitions="Auto, Auto, *, Auto">
             <Separator Grid.ColumnSpan="2" />
             <TextBlock
                 Grid.Row="1"
@@ -138,35 +138,35 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <TreeView
-                x:Name="GameTreeView"
+            <DataGrid
                 Grid.Row="2"
                 Grid.Column="1"
+                AutoGenerateColumns="False"
+                GridLinesVisibility="Horizontal"
+                IsReadOnly="True"
                 ItemsSource="{Binding GamesList}"
-                SelectedItem="{Binding SelectedGame}"
-                SelectionMode="Multiple">
-                <TreeView.ItemTemplate>
-                    <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal" Spacing="5">
-                            <CheckBox Margin="0,1,0,2" IsChecked="{Binding IsChecked}" />
-                            <Image
-                                Width="16"
-                                Height="16"
-                                IsVisible="{Binding HasIcon}"
-                                Source="{Binding Icon}" />
-                            <TextBlock Text="{Binding Title}" />
-                            <StackPanel.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem
-                                        Command="{Binding CompressCommand}"
-                                        Header="Compress"
-                                        IsVisible="{Binding CanCompress}" />
-                                </ContextMenu>
-                            </StackPanel.ContextMenu>
-                        </StackPanel>
-                    </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+                SelectedItem="{Binding SelectedGame}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="Auto" Header="Status">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="vm:GameViewModel">
+                                <Image
+                                    Width="16"
+                                    Height="16"
+                                    Source="{Binding StatusIcon}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Game.Name}"
+                        Header="Title" />
+                    <DataGridTextColumn
+                        Width="Auto"
+                        Binding="{Binding GameTypes}"
+                        Header="Types" />
+                </DataGrid.Columns>
+            </DataGrid>
 
             <StackPanel
                 Grid.Row="3"

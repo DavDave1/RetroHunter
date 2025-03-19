@@ -27,7 +27,7 @@
             Margin="0,0,4,0"
             HorizontalAlignment="Center"
             FontWeight="Bold"
-            Text="{Binding Title}" />
+            Text="{Binding Game.Name}" />
 
         <Image
             Grid.Row="1"
@@ -65,7 +65,7 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding Title}"
+                    Binding="{Binding Rom.RaName}"
                     Header="Name" />
 
                 <DataGridTemplateColumn Width="Auto" Header="Patch">
