@@ -224,6 +224,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
     public async Task LoadModel()
     {
         await FetchUserProfile();

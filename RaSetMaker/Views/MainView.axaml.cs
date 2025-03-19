@@ -10,12 +10,4 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
     }
-
-    public void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainViewModel vm)
-        {
-            vm.LoadModel();
-        }
-    }
 }
