@@ -15,6 +15,8 @@ namespace RaSetMaker.Models
 
         public string PatchUrl { get; set; } = string.Empty;
 
+        public string RaName { get; set; } = string.Empty;
+
         [XmlIgnore]
         public Game? Game => Parent != null ? (Game)Parent : null;
 

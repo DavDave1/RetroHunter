@@ -4,8 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:classicControls="clr-namespace:Classic.CommonControls;assembly=Classic.CommonControls.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Avalonia.Xaml.Interactivity"
+    xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:RaSetMaker.Models"
+    xmlns:views="clr-namespace:RaSetMaker.Views"
     xmlns:vm="clr-namespace:RaSetMaker.ViewModels"
     d:DesignHeight="600"
     d:DesignWidth="800"
@@ -94,7 +97,7 @@
         </Grid>
 
 
-        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, *">
+        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, *, Auto">
             <Separator Grid.ColumnSpan="2" />
             <TextBlock
                 Grid.Row="1"
@@ -110,6 +113,7 @@
 
             <TreeView
                 Grid.Row="2"
+                Grid.RowSpan="2"
                 ItemsSource="{Binding CompanyList}"
                 SelectedItem="{Binding SelectedSystem}"
                 SelectionMode="Single">
@@ -129,9 +133,11 @@
             </TreeView>
 
             <TreeView
+                x:Name="GameTreeView"
                 Grid.Row="2"
                 Grid.Column="1"
                 ItemsSource="{Binding GamesList}"
+                SelectedItem="{Binding SelectedGame}"
                 SelectionMode="Multiple">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate x:DataType="vm:TreeViewItemModel" ItemsSource="{Binding Children}">
@@ -149,10 +155,6 @@
                                         Command="{Binding CompressCommand}"
                                         Header="Compress"
                                         IsVisible="{Binding CanCompress}" />
-                                    <MenuItem
-                                        Command="{Binding ShowDetailsCommand}"
-                                        Header="Show Details"
-                                        IsVisible="{Binding CanShowDetails}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
@@ -160,7 +162,19 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
+            <StackPanel
+                Grid.Row="3"
+                Grid.Column="1"
+                IsVisible="{Binding HasSelectedGame}">
+                <views:GameDetailPanel
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    DataContext="{Binding DetailGame}" />
+            </StackPanel>
         </Grid>
+
     </DockPanel>
 
 </UserControl>

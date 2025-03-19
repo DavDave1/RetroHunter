@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -40,6 +42,15 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private Bitmap? _userIcon = ImageHelper.LoadFromResource(new Uri("avares://RaSetMaker/Assets/question.png"));
+
+    [ObservableProperty]
+    private GameViewModel? _selectedGame;
+
+    [ObservableProperty]
+    public GameViewModel? _detailGame;
+
+    [ObservableProperty]
+    private bool _hasSelectedGame = false;
 
     public MainViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context)
     {
@@ -184,6 +195,16 @@ public partial class MainViewModel : ViewModelBase
         await LoadModel();
     }
 
+    public async Task LoadDetails()
+    {
+        if (SelectedGame != null)
+        {
+            await SelectedGame.LoadDetails();
+            DetailGame = SelectedGame;
+        }
+    }
+
+
     public async Task FetchUserProfile()
     {
         if (_dbContext.UserConfig.Name == string.Empty)
@@ -223,8 +244,9 @@ public partial class MainViewModel : ViewModelBase
         GamesList = [];
     }
 
-    public async Task ShowDetails(TreeViewItemModel vm)
+    public async Task ApplyPatch(RomViewModel romViewModel)
     {
+        await App.ShowInfo("Apply Patch", romViewModel.Rom.PatchUrl);
 
     }
 
@@ -253,9 +275,20 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    public async Task UpdateGameData(Game game)
+    {
+        await _raClient.UpdateGame(game);
+    }
+
     partial void OnSelectedSystemChanged(GameSystemViewModel? value)
     {
         GamesList = value?.Games.ToList() ?? [];
+    }
+
+    partial void OnSelectedGameChanging(GameViewModel? value)
+    {
+        HasSelectedGame = value != null;
+        Task.Run(LoadDetails);
     }
 
     private readonly Ra2DatContext _dbContext;

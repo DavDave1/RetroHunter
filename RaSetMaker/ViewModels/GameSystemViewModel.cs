@@ -9,7 +9,6 @@ namespace RaSetMaker.ViewModels
 {
     public partial class GameSystemViewModel : TreeViewItemModel
     {
-        public override string Title => GameSystem.Games.Count == 0 ? GameSystem.Name : $"{GameSystem.Name} ({GetValidGamesCount()} / {Games.Count})";
 
         public override string IconSrc => GameSystem.Games.Count == 0 ? "avares://RaSetMaker/Assets/system-warn.png" : "avares://RaSetMaker/Assets/system.png";
 
@@ -25,12 +24,15 @@ namespace RaSetMaker.ViewModels
             Games = [.. _gameSystem
                 .GetGamesMatchingFilter(_config.GameTypesFilter)
                 .OrderBy(g => g.Name).Select(g => new GameViewModel(mainVm, g, config))];
+            Title = GameSystem.Games.Count == 0 ? GameSystem.Name : $"{GameSystem.Name} ({GetValidGamesCount()} / {Games.Count})";
         }
 
         protected override void OnItemChecked(bool value)
         {
             GameSystem.IsChecked = value;
         }
+
+
 
         private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom(_config.OutputRomsDirectory)).Count();
 

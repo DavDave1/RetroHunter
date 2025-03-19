@@ -55,7 +55,25 @@ namespace RaSetMaker.Services
             throw new Exception($"Failed to fetch games for {gameSystem.Name}, server responded {response.StatusCode}");
         }
 
-        public async Task<List<Rom>> FetchGameRoms(Game game)
+
+        public async Task UpdateGame(Game game)
+        {
+            var roms = await FetchGameRoms(game);
+
+            foreach (var raRom in roms)
+            {
+                var rom = game.Roms.FirstOrDefault(r => r.Hash == raRom.MD5);
+
+                if (rom != null)
+                {
+                    rom.RaName = raRom.Name;
+                    rom.PatchUrl = raRom.PatchUrl ?? "";
+                }
+            }
+
+        }
+
+        private async Task<List<RaRom>> FetchGameRoms(Game game)
         {
             if (game.RaId == 0)
             {
@@ -69,17 +87,13 @@ namespace RaSetMaker.Services
                 var stream = await response.Content.ReadAsStreamAsync();
                 var raRomsResponse = await JsonSerializer.DeserializeAsync<RaRomResponse>(stream);
 
-                return raRomsResponse?.Results.Select(r => new Rom
-                {
-                    Hash = r.MD5
-                }).ToList() ?? [];
+                return raRomsResponse?.Results ?? [];
             }
             else
             {
                 throw new Exception($"Rom fetching error for {game.Name}, served responded {response.StatusCode}");
             }
         }
-
 
         private string _apiKey = string.Empty;
 

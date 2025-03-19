@@ -10,7 +10,8 @@ namespace RaSetMaker.ViewModels
 {
     public partial class TreeViewItemModel(MainViewModel mainVm) : ViewModelBase
     {
-        public virtual string Title { get; } = "";
+        [ObservableProperty]
+        private string _title = string.Empty;
 
         public virtual bool IsSelectable { get; } = true;
 
@@ -19,8 +20,6 @@ namespace RaSetMaker.ViewModels
         public Bitmap? Icon => HasIcon ? ImageHelper.LoadFromResource(new Uri(IconSrc)) : null;
 
         public bool HasIcon => IconSrc != string.Empty;
-
-        public string StatusColor => "";
 
         [ObservableProperty]
         private bool _isChecked = true;
@@ -43,17 +42,9 @@ namespace RaSetMaker.ViewModels
         protected virtual bool CanCompress => false;
 
         [RelayCommand]
-        private async Task ShowDetails()
-        {
-            await mainVm.ShowDetails(this);
-        }
-
-        [RelayCommand]
         private async Task Compress()
         {
             await mainVm.Compress(this);
         }
-
-
     }
 }
