@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
@@ -199,7 +200,12 @@ public partial class MainViewModel : ViewModelBase
     {
         if (SelectedGame != null)
         {
-            await SelectedGame.LoadDetails();
+            await SelectedGame.LoadDetails(_loadingDetailsCancellation);
+
+            if (_loadingDetailsCancellation.IsCancellationRequested)
+            {
+                return;
+            }
             DetailGame = SelectedGame;
         }
     }
@@ -288,8 +294,17 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedGameChanging(GameViewModel? value)
     {
+        _loadingDetailsCancellation?.Cancel();
+
+        if (_loadingDetailsTask != null && !_loadingDetailsTask.IsCompleted)
+        {
+            _loadingDetailsTask.Wait();
+        }
+
+        _loadingDetailsCancellation = new CancellationTokenSource();
+
         HasSelectedGame = value != null;
-        Task.Run(LoadDetails);
+        _loadingDetailsTask = Task.Run(LoadDetails);
     }
 
     private readonly Ra2DatContext _dbContext;
@@ -302,6 +317,10 @@ public partial class MainViewModel : ViewModelBase
         AppleUniformTypeIdentifiers = new[] { "public.xml" },
         MimeTypes = new[] { "xml/*" }
     };
+
+    private Task _loadingDetailsTask;
+
+    private CancellationTokenSource _loadingDetailsCancellation;
 }
 
 internal class ScopedTaskProgress : IDisposable, IProgress<ChdmanProgress>

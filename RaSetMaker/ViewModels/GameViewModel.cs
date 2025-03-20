@@ -5,6 +5,7 @@ using RaSetMaker.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RaSetMaker.ViewModels
@@ -40,10 +41,22 @@ namespace RaSetMaker.ViewModels
             StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
         }
 
-        public async Task LoadDetails()
+        public async Task LoadDetails(CancellationTokenSource ct)
         {
             GameIcon = await ImageHelper.LoadFromWeb(new Uri(Game.IconUrl));
+
+            if (ct.IsCancellationRequested)
+            {
+                return;
+            }
+
             await _mainVm.UpdateGameData(Game);
+
+            if (ct.IsCancellationRequested)
+            {
+                return;
+            }
+
             Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, r, _userConfig))];
         }
 
