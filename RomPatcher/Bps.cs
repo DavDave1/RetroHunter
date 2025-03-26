@@ -13,12 +13,13 @@ namespace RomPatcher;
 
 public class Bps : IDisposable
 {
-    public Bps(string patchFile)
+    public static async Task<Bps> Create(string patchFile)
     {
-        _bps = File.OpenRead(patchFile);
-        _patchFile = patchFile;
+        var bps = new Bps(patchFile);
 
-        ParseHeader();
+        await bps.ParseHeader();
+
+        return bps;
     }
 
     public uint SourceChecksum => _sourceChecksum;
@@ -31,7 +32,7 @@ public class Bps : IDisposable
 
     public void BeginRead() => SeekBegin();
 
-    public IAction Next()
+    public async Task<IAction> Next()
     {
         ulong data = DecodeNumber();
         ulong commandID = data & 3;
@@ -40,7 +41,7 @@ public class Bps : IDisposable
         return commandID switch
         {
             0 => new SourceReadAction(length),
-            1 => new TargetReadAction(ReadData(length)),
+            1 => new TargetReadAction(await ReadData(length)),
             2 => new SourceCopyAction(length, DecodeOffset()),
             3 => new TargetCopyAction(length, DecodeOffset()),
             _ => throw new ArgumentException("Invalid command id", _patchFile)
@@ -49,16 +50,24 @@ public class Bps : IDisposable
 
     public bool HasNext() => _bps.Position < _bps.Length - 12;
 
+    public void Reset() => _bps.Seek(_actionsStartPosition, SeekOrigin.Begin);
+
     public void Dispose()
     {
         _bps.Dispose();
     }
 
-    private void ParseHeader()
+    private Bps(string patchFile)
+    {
+        _bps = File.OpenRead(patchFile);
+        _patchFile = patchFile;
+    }
+
+    private async Task ParseHeader()
     {
         var buffer = new byte[4];
 
-        _bps.ReadExactly(buffer);
+        await _bps.ReadExactlyAsync(buffer);
 
         string bpsId = Encoding.ASCII.GetString(buffer);
 
@@ -72,7 +81,7 @@ public class Bps : IDisposable
 
         var metadataBuffer = new byte[metadataSize];
 
-        _bps.ReadExactly(metadataBuffer);
+        await _bps.ReadExactlyAsync(metadataBuffer);
 
         _actionsStartPosition = _bps.Position;
 
@@ -82,13 +91,13 @@ public class Bps : IDisposable
 
         var u32buffer = new byte[4];
 
-        _bps.ReadExactly(u32buffer);
+        await _bps.ReadExactlyAsync(u32buffer);
         _sourceChecksum = BitConverter.ToUInt32(u32buffer);
 
-        _bps.ReadExactly(u32buffer);
+        await _bps.ReadExactlyAsync(u32buffer);
         _targetChecksum = BitConverter.ToUInt32(u32buffer);
 
-        _bps.ReadExactly(u32buffer);
+        await _bps.ReadExactlyAsync(u32buffer);
         _patchChecksum = BitConverter.ToUInt32(u32buffer);
 
         SeekBegin();
@@ -142,10 +151,10 @@ public class Bps : IDisposable
         return (ulong)_bps.ReadByte();
     }
 
-    private byte[] ReadData(ulong length)
+    private async Task<byte[]> ReadData(ulong length)
     {
         var buffer = new byte[length];
-        _bps.ReadExactly(buffer);
+        await _bps.ReadExactlyAsync(buffer);
         return buffer;
     }
 
@@ -168,7 +177,7 @@ public class Bps : IDisposable
 
 public interface IAction
 {
-    void Apply(BpsStream src, BpsStream tgt);
+    Task Apply(BpsStream src, BpsStream tgt);
 }
 
 public class BpsStream(Stream stream)
@@ -180,15 +189,15 @@ public class BpsStream(Stream stream)
 
 public class SourceReadAction(ulong length) : IAction
 {
-    public void Apply(BpsStream src, BpsStream tgt)
+    public async Task Apply(BpsStream src, BpsStream tgt)
     {
         var srcPos = src.stream.Position;
         src.stream.Seek(tgt.stream.Position, SeekOrigin.Begin);
 
         byte[] data = new byte[length];
-        src.stream.ReadExactly(data);
+        await src.stream.ReadExactlyAsync(data);
 
-        tgt.stream.Write(data);
+        await tgt.stream.WriteAsync(data);
 
         src.stream.Seek(srcPos, SeekOrigin.Begin);
     }
@@ -196,30 +205,30 @@ public class SourceReadAction(ulong length) : IAction
 
 public class TargetReadAction(byte[] data) : IAction
 {
-    public void Apply(BpsStream src, BpsStream tgt)
+    public async Task Apply(BpsStream src, BpsStream tgt)
     {
-        tgt.stream.Write(data);
+        await tgt.stream.WriteAsync(data);
     }
 }
 
 public class SourceCopyAction(ulong length, long sourceOffset) : IAction
 {
-    public void Apply(BpsStream src, BpsStream tgt)
+    public async Task Apply(BpsStream src, BpsStream tgt)
     {
         src.relativeOffset += sourceOffset;
         src.stream.Seek(src.relativeOffset, SeekOrigin.Begin);
 
         byte[] data = new byte[length];
-        src.stream.ReadExactly(data);
+        await src.stream.ReadExactlyAsync(data);
 
-        tgt.stream.Write(data);
+        await tgt.stream.WriteAsync(data);
 
         src.relativeOffset += (long)length;
     }
 }
 public class TargetCopyAction(ulong length, long targetOffset) : IAction
 {
-    public void Apply(BpsStream src, BpsStream tgt)
+    public async Task Apply(BpsStream src, BpsStream tgt)
     {
         tgt.relativeOffset += targetOffset;
 
@@ -231,11 +240,11 @@ public class TargetCopyAction(ulong length, long targetOffset) : IAction
 
             var readLength = Math.Min(tgt.stream.Length - tgt.stream.Position, remaining);
             byte[] data = new byte[readLength];
-            tgt.stream.ReadExactly(data);
+            await tgt.stream.ReadExactlyAsync(data);
 
             tgt.stream.Seek(tgtPosition, SeekOrigin.Begin);
 
-            tgt.stream.Write(data);
+            await tgt.stream.WriteAsync(data);
             tgt.relativeOffset += readLength;
 
             remaining -= readLength;
