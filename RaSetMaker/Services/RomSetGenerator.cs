@@ -36,8 +36,9 @@ namespace RaSetMaker.Services
             await Task.Run(() =>
             {
                 result.RemovedRoms = PrepareDirs(progress);
-                result.AddedRoms = MatchToRom(progress, cancellationToken);
             });
+
+            result.AddedRoms = await MatchToRom(progress, cancellationToken);
 
             return result;
         }
@@ -83,8 +84,8 @@ namespace RaSetMaker.Services
                 .GetSystems()
                 .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
-                .SelectMany(r => r.FilePaths)
-                .Select(relPath => new FileInfo(Path.Combine(outDirInfo.FullName, relPath)).FullName)
+                .SelectMany(r => r.RomFiles)
+                .Select(rf => new FileInfo(Path.Combine(outDirInfo.FullName, rf.FilePath)).FullName)
                 .ToImmutableHashSet();
 
             // Iterate output dir recursively and move all files not linked to Roms to input
@@ -114,7 +115,7 @@ namespace RaSetMaker.Services
             return removedRoms;
         }
 
-        public int MatchToRom(IProgress<RomSetGeneratorProgress> progress, CancellationToken cancellationToken)
+        private async Task<int> MatchToRom(IProgress<RomSetGeneratorProgress> progress, CancellationToken cancellationToken)
         {
             RomSetGeneratorProgress progressInfo = new();
 
@@ -122,12 +123,12 @@ namespace RaSetMaker.Services
             var outDirInfo = new DirectoryInfo(context.UserConfig.OutputRomsDirectory);
             var dirStyle = context.UserConfig.DirStructureStyle;
 
-            double totalProgressStep = 100.0 / (double)context.GetSystems().Count();
+            double totalProgressStep = 100.0 / context.GetSystems().Count();
 
             var inFiles = inDirInfo.GetAllFilesRecursive().ToHashSet();
 
             var addedRoms = 0;
-            foreach (var system in context.GetCheckedSystems().Where(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter).Any()))
+            foreach (var system in context.GetCheckedSystems().Where(s => s.GetGamesMatchingFilter().Any()))
             {
                 var gameSystemDir = system.GetDirName(dirStyle);
 
@@ -183,7 +184,11 @@ namespace RaSetMaker.Services
 
                                 romFile.MoveTo(outAbsPath, true);
                                 movedFiles.Add(file);
-                                rom.FilePaths.Add(outRelPath);
+                                rom.RomFiles.Add(new()
+                                {
+                                    FilePath = outRelPath,
+                                    Crc32 = await ComputeCrc32(outAbsPath),
+                                });
                             }
 
                             addedRoms++;
@@ -212,6 +217,18 @@ namespace RaSetMaker.Services
             progress.Report(progressInfo);
 
             return addedRoms;
+        }
+
+        private static async Task<uint> ComputeCrc32(string romPath)
+        {
+            if (Path.GetExtension(romPath) == ".zip")
+            {
+                using var archive = ZipFile.OpenRead(romPath);
+                return archive.Entries.First().Crc32;
+            }
+
+            using var file = File.OpenRead(romPath);
+            return await Patcher.ComputeChecksum(file);
         }
     }
 }

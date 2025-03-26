@@ -44,6 +44,8 @@ namespace RaSetMaker.Persistence
                     _model = ra2DatModel;
                 }
 
+                _model.InitParents();
+
                 bool modelChanged = MigrationFactory.ExecuteAll(_model);
                 if (modelChanged)
                 {
@@ -95,15 +97,13 @@ namespace RaSetMaker.Persistence
             var roms = GetSystems()
                 .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
-                .Where(r => r.FilePaths.Count > 0);
-
-            var outDir = new DirectoryInfo(UserConfig.OutputRomsDirectory);
+                .Where(r => r.RomFiles.Count > 0);
 
             foreach (var rom in roms)
             {
-                if (!rom.Exists(outDir.FullName))
+                if (!rom.Exists())
                 {
-                    rom.FilePaths.Clear();
+                    rom.RomFiles.Clear();
                     dataChanged = true;
                 }
             }

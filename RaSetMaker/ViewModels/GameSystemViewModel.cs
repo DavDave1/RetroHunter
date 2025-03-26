@@ -16,14 +16,16 @@ namespace RaSetMaker.ViewModels
 
         public readonly List<GameViewModel> Games;
 
-        public GameSystemViewModel(MainViewModel mainVm, GameSystem gameSystem, UserConfig config) : base(mainVm)
+        public GameSystemViewModel(MainViewModel mainVm, GameSystem gameSystem) : base(mainVm)
         {
             _gameSystem = gameSystem;
-            _config = config;
             IsChecked = gameSystem.IsChecked;
+
             Games = [.. _gameSystem
-                .GetGamesMatchingFilter(_config.GameTypesFilter)
-                .OrderBy(g => g.Name).Select(g => new GameViewModel(mainVm, g, config))];
+                .GetGamesMatchingFilter()
+                .OrderBy(g => g.Name)
+                .Select(g => new GameViewModel(mainVm, g))];
+
             Title = GameSystem.Games.Count == 0 ? GameSystem.Name : $"{GameSystem.Name} ({GetValidGamesCount()} / {Games.Count})";
         }
 
@@ -32,15 +34,8 @@ namespace RaSetMaker.ViewModels
             GameSystem.IsChecked = value;
         }
 
-
-
-        private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom(_config.OutputRomsDirectory)).Count();
-
-        private string SelectedForeground() => GameSystem.RaId == 0 ? "LightRed" : (GameSystem.Games.Count == 0 ? "Orange" : "White");
-
-        private string NormalForeground() => GameSystem.RaId == 0 ? "DarkRed" : (GameSystem.Games.Count == 0 ? "Orange" : "Black");
+        private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom()).Count();
 
         private readonly GameSystem _gameSystem;
-        private readonly UserConfig _config;
     }
 }

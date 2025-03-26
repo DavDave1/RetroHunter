@@ -30,13 +30,13 @@ public class Chdman(ILogger<Chdman> logger)
 
     public async Task<bool> CompressRom(UserConfig config, GameSystem system, Rom rom, IProgress<ChdmanProgress>? progress = null)
     {
-        var inputFile = rom.FilePaths.FirstOrDefault(p => Path.GetExtension(p) == ".cue");
+        var inputFile = rom.RomFiles.FirstOrDefault(rf => Path.GetExtension(rf.FilePath) == ".cue");
         CompressType compressType = CompressType.CD;
         var ext = ".cue";
 
         if (inputFile == null)
         {
-            inputFile = rom.FilePaths.FirstOrDefault(p => Path.GetExtension(p) == ".iso");
+            inputFile = rom.RomFiles.FirstOrDefault(rf => Path.GetExtension(rf.FilePath) == ".iso");
             ext = ".iso";
             compressType = CompressType.DVD;
         }
@@ -46,9 +46,9 @@ public class Chdman(ILogger<Chdman> logger)
             return false;
         }
 
-        var inAbsPath = Path.Combine(config.OutputRomsDirectory, inputFile);
+        var inAbsPath = Path.Combine(config.OutputRomsDirectory, inputFile.FilePath);
 
-        var outFilename = new FileInfo(inputFile).Name.Replace(ext, ".chd");
+        var outFilename = new FileInfo(inputFile.FilePath).Name.Replace(ext, ".chd");
         var outRelPath = Path.Combine(system.GetDirName(config.DirStructureStyle), outFilename);
         var outAbsPath = Path.Combine(config.OutputRomsDirectory, outRelPath);
 
@@ -59,9 +59,9 @@ public class Chdman(ILogger<Chdman> logger)
             return false;
         }
 
-        rom.FilePaths.ForEach(file => File.Delete(Path.Combine(config.OutputRomsDirectory, file)));
+        rom.RomFiles.ForEach(file => File.Delete(Path.Combine(config.OutputRomsDirectory, file.FilePath)));
 
-        rom.FilePaths = [outRelPath];
+        rom.RomFiles = [new() { FilePath = outRelPath, Crc32 = await RomPatcher.Patcher.GetSourceCrc32(outAbsPath) }];
 
         return true;
 

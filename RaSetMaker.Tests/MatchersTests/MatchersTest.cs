@@ -18,10 +18,10 @@ namespace RaSetMaker.Tests.MatchersTests
             return _model.Systems.First(s => s.GameSystemType == type);
         }
 
-        protected void AddRomWithHash(GameSystem system, string hash)
+        protected static void AddRomWithHash(GameSystem system, string hash)
         {
-            var game = new Game(system);
-            game.Roms.Add(new Rom(game)
+            var game = new Game();
+            game.Roms.Add(new Rom()
             {
                 Hash = hash
             });

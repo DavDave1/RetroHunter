@@ -29,32 +29,26 @@ namespace RaSetMaker.Models
 
         public DateTime LastUpdated { get; set; } = DateTime.UnixEpoch;
 
+        public List<Rom> Roms { get; set; } = [];
+
         [XmlIgnore]
         public GameSystem? GameSystem => Parent != null ? (GameSystem)Parent : null;
 
-        public bool HasValidRom(string basePath) => Roms.Any(r => r.Exists(basePath));
+        [XmlIgnore]
+        public Ra2DatModel? Root { get; private set; }
 
-        public List<Rom> Roms
-        {
-            get => _roms;
-            set
-            {
-                _roms = value;
-                foreach (var rom in _roms)
-                {
-                    rom.Parent = this;
-                }
-            }
-        }
+        public bool HasValidRom() => Roms.Any(r => r.Exists());
+
 
         public Game() : base()
         {
         }
 
-        public Game(GameSystem parent) : base(parent)
+        public void InitParents(Ra2DatModel root, ModelBase parent)
         {
+            Parent = parent;
+            Root = root;
+            Roms.ForEach(r => r.InitParents(this));
         }
-
-        private List<Rom> _roms = [];
     }
 }

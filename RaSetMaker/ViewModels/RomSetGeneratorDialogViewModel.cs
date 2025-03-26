@@ -34,10 +34,9 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
 
     public RomSetGeneratorDialogViewModel(Ra2DatContext context)
     {
-        _context = context;
         _romSetGenerator = new RomSetGenerator(context);
 
-        var gamesCount = context.GetCheckedSystems().SelectMany(s => s.GetGamesMatchingFilter(context.UserConfig.GameTypesFilter)).Count();
+        var gamesCount = context.GetCheckedSystems().SelectMany(s => s.GetGamesMatchingFilter()).Count();
 
         CurrentSystem = $"Building set for {gamesCount} games";
     }
@@ -89,6 +88,5 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
 
     private CancellationTokenSource? _cancellationTokenSrc;
 
-    private Ra2DatContext _context;
     private RomSetGenerator _romSetGenerator;
 }

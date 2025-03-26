@@ -28,12 +28,11 @@ namespace RaSetMaker.ViewModels
 
         public int ValidRomsCount { get; private set; }
 
-        public GameViewModel(MainViewModel mainVm, Game game, UserConfig userConfig) : base()
+        public GameViewModel(MainViewModel mainVm, Game game) : base()
         {
             Game = game;
             _mainVm = mainVm;
-            _userConfig = userConfig;
-            var romViewModels = Game.Roms.Select(r => new RomViewModel(mainVm, r, userConfig)).OrderBy(r => r.Title).ToList();
+            var romViewModels = Game.Roms.Select(r => new RomViewModel(mainVm, r)).OrderBy(r => r.Title).ToList();
             ValidRomsCount = romViewModels.Sum(rvm => rvm.IsRomValid ? 1 : 0);
             Roms = romViewModels;
             GameTypes = GameTypesToString();
@@ -57,13 +56,11 @@ namespace RaSetMaker.ViewModels
                 return;
             }
 
-            Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, r, _userConfig))];
+            Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, r))];
         }
 
         private string GameTypesToString() => string.Join("", Game.GameTypes.Select(t => $"[{t}]").Order());
 
         private MainViewModel _mainVm;
-
-        private UserConfig _userConfig;
     }
 }

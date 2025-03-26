@@ -7,10 +7,10 @@ namespace RaSetMaker.ViewModels
 {
     public partial class GameSystemCompanyViewModel : TreeViewItemModel
     {
-        public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems, UserConfig config) : base(mainVm)
+        public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems) : base(mainVm)
         {
             _company = company;
-            Children = [.. systems.Select(s => new GameSystemViewModel(mainVm, s, config))];
+            Children = [.. systems.Select(s => new GameSystemViewModel(mainVm, s))];
             IsChecked = Children.Any(c => c.IsChecked);
             Title = _company.ToString();
         }

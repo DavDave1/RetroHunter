@@ -243,7 +243,7 @@ public partial class MainViewModel : ViewModelBase
         var companyList = new List<GameSystemCompanyViewModel>();
         foreach (var company in Enum.GetValues<GameSystemCompany>())
         {
-            companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)], _dbContext.UserConfig));
+            companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)]));
         }
 
         CompanyList = companyList;
@@ -261,8 +261,8 @@ public partial class MainViewModel : ViewModelBase
     {
         if (vm is RomViewModel romViewModel)
         {
-            var sizeBefore = romViewModel.Rom.GetSize(_dbContext.UserConfig.OutputRomsDirectory);
-            using var progress = new ScopedTaskProgress(this, $"Compressing {romViewModel.RomName}", 100);
+            var sizeBefore = romViewModel.Rom.GetSize();
+            using var progress = new ScopedTaskProgress(this, $"Compressing {romViewModel.Rom.RaName}", 100);
 
             var sys = _dbContext.GetSystems().First(s => s.Games.FirstOrDefault(g => g.Roms.Contains(romViewModel.Rom)) != null);
             bool ok = await _chdman.CompressRom(_dbContext.UserConfig, sys, romViewModel.Rom, progress);
@@ -270,13 +270,13 @@ public partial class MainViewModel : ViewModelBase
 
             if (!ok)
             {
-                await App.ShowError("Failed to compress ROM", $"Failed to compress {romViewModel.RomName}");
+                await App.ShowError("Failed to compress ROM", $"Failed to compress {romViewModel.Rom.RaName}");
             }
             else
             {
                 await _dbContext.SaveChangesAsync();
-                var ratio = 100 * romViewModel.Rom.GetSize(_dbContext.UserConfig.OutputRomsDirectory) / (float)sizeBefore;
-                await App.ShowInfo("ROM compression completed", $"ROM {romViewModel.RomName} compressed successfully.\nCompression ratio: {ratio:F1}");
+                var ratio = 100 * romViewModel.Rom.GetSize() / (float)sizeBefore;
+                await App.ShowInfo("ROM compression completed", $"ROM {romViewModel.Rom.RaName} compressed successfully.\nCompression ratio: {ratio:F1}");
             }
 
         }

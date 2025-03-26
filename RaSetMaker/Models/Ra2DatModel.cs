@@ -21,5 +21,10 @@ namespace RaSetMaker.Models
                 Systems.Add(new(type));
             }
         }
+
+        public void InitParents()
+        {
+            Systems.ForEach(s => s.InitParents(this));
+        }
     }
 }

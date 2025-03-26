@@ -1,5 +1,4 @@
 ﻿
-using RaSetMaker.Utils;
 using RaSetMaker.Utils.Matchers;
 using System;
 using System.Collections.Generic;
@@ -31,19 +30,10 @@ namespace RaSetMaker.Models
         [XmlIgnore]
         public List<string> SupportedExtensions => GameSystemType.Extensions();
 
+        public List<Game> Games { get; set; } = [];
 
-        public List<Game> Games
-        {
-            get => _games;
-            set
-            {
-                _games = value;
-                foreach (var game in _games)
-                {
-                    game.Parent = this;
-                }
-            }
-        }
+        [XmlIgnore]
+        public Ra2DatModel? Root => Parent as Ra2DatModel;
 
         public GameSystem() : base()
         {
@@ -54,9 +44,9 @@ namespace RaSetMaker.Models
             GameSystemType = type;
         }
 
-        public IEnumerable<Game> GetGamesMatchingFilter(List<GameType> allowedTypes)
+        public IEnumerable<Game> GetGamesMatchingFilter()
         {
-            return Games.Where(g => g.GameTypes.Count == 0 || g.GameTypes.Intersect(allowedTypes).Any());
+            return Games.Where(g => g.GameTypes.Count == 0 || g.GameTypes.Intersect(Root!.UserConfig.GameTypesFilter).Any());
         }
 
         public string GetDirName(DirStructureStyle style) => GameSystemType.FolderName(style);
@@ -65,6 +55,11 @@ namespace RaSetMaker.Models
         {
             return (MatcherBase)Activator.CreateInstance(GameSystemType.Matcher(), this)!;
         }
-        private List<Game> _games = [];
+
+        public void InitParents(Ra2DatModel root)
+        {
+            Parent = root;
+            Games.ForEach(g => g.InitParents(root, this));
+        }
     }
 }
