@@ -1,9 +1,8 @@
 ﻿using RaSetMaker.Models;
 
-namespace RaSetMaker.Persistence.Migrations
+namespace RaSetMaker.Persistence.Migrations;
+
+public interface IMigration
 {
-    public interface IMigration
-    {
-        bool Execute(Ra2DatModel model);
-    }
+    bool Execute(Ra2DatModel model);
 }
