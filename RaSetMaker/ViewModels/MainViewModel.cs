@@ -260,7 +260,9 @@ public partial class MainViewModel : ViewModelBase
     public async Task ApplyPatch(RomViewModel romViewModel)
     {
         var rom = romViewModel.Rom;
-        var patchArchiveFile = Path.GetTempFileName();
+
+        var patchArchiveFileName = rom.PatchUrl.Substring(rom.PatchUrl.LastIndexOf('/') + 1);
+        var patchArchiveFile = Path.Combine(Path.GetTempPath(), patchArchiveFileName);
         var extractDir = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(patchArchiveFile));
         Directory.CreateDirectory(extractDir);
 
