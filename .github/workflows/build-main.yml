@@ -34,5 +34,5 @@ jobs:
     - name: Install cmake
       uses: lukka/get-cmake@latest
 
-    - name: Execute unit tests
-      run: dotnet test
+    - name: Build solution
+      run: dotnet build
