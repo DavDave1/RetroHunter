@@ -1,27 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RaSetMaker.Models;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RaSetMaker.ViewModels
 {
     public partial class RomViewModel : TreeViewItemModel
     {
-        public RomViewModel(MainViewModel mainVm, Rom rom) : base(mainVm)
+        public RomViewModel(MainViewModel mainVm, GameViewModel parent, Rom rom) : base(mainVm)
         {
             Rom = rom;
             Title = rom.RaName;
             _mainVm = mainVm;
+            Parent = parent;
+            IsRomValid = Rom.Exists();
         }
 
         [ObservableProperty]
         private Rom _rom;
 
-        public override string IconSrc => "avares://RaSetMaker/Assets/rom.png";
+        [ObservableProperty]
+        private bool _isRomValid;
 
-        public bool IsRomValid => Rom.Exists();
+        public GameViewModel Parent;
 
         public bool HasPatch => Rom.PatchUrl != string.Empty;
 
@@ -29,6 +30,8 @@ namespace RaSetMaker.ViewModels
         private async Task ApplyPatch()
         {
             await _mainVm.ApplyPatch(this);
+            IsRomValid = Rom.Exists();
+            Parent.UpdateStatus();
         }
 
         protected override bool CanCompress => true;

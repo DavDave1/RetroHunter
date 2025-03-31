@@ -5,29 +5,24 @@ namespace RomPatcher;
 public class Patcher(string patchFile, string sourceRom, string targetRom)
 {
 
-    public async Task<bool> ApplyPatch()
+    // Create patched rom and return its crc32 checksum
+    public async Task<uint> ApplyPatch()
     {
         var bps = await Bps.Create(patchFile);
 
         if (!bps.IsValid())
-        {
-            return false;
-        }
+            throw new ArgumentException("Invalid BPS file", patchFile);
 
         // Verify source
         using var source = File.OpenRead(sourceRom);
 
         var sourceChecksum = await ComputeChecksum(source);
         if (bps.SourceChecksum != sourceChecksum)
-        {
-            return false;
-        }
-
+            throw new ArgumentException("Invalid source ROM", sourceRom);
 
         // Prepare target
         using var target = File.Open(targetRom, FileMode.Create);
         target.Seek(0, SeekOrigin.Begin);
-
 
         BpsStream sourceStream = new BpsStream(source);
         BpsStream targetStream = new BpsStream(target);
@@ -38,7 +33,16 @@ public class Patcher(string patchFile, string sourceRom, string targetRom)
             await action.Apply(sourceStream, targetStream);
         }
 
-        return (await ComputeChecksum(target)) == bps.TargetChecksum;
+        uint targetChecksum = await ComputeChecksum(target);
+
+        if (targetChecksum != bps.TargetChecksum)
+        {
+            File.Delete(targetRom);
+            throw new Exception("Generated wrong invalid patched ROM");
+
+        }
+
+        return targetChecksum;
     }
 
     public static async Task<uint> GetSourceCrc32(string patchFile)

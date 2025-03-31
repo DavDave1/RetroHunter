@@ -22,7 +22,8 @@ public class RomPatcherTest
     {
         var target = "../../../TestRoms/patch/target.gba";
         var patcher = new Patcher(patch, source, target);
+        await patcher.ApplyPatch();
 
-        Assert.True(await patcher.ApplyPatch());
+        Assert.True(File.Exists(target));
     }
 }

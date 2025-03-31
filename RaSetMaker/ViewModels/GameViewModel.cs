@@ -32,12 +32,9 @@ namespace RaSetMaker.ViewModels
         {
             Game = game;
             _mainVm = mainVm;
-            var romViewModels = Game.Roms.Select(r => new RomViewModel(mainVm, r)).OrderBy(r => r.Title).ToList();
-            ValidRomsCount = romViewModels.Sum(rvm => rvm.IsRomValid ? 1 : 0);
-            Roms = romViewModels;
+            Roms = Game.Roms.Select(r => new RomViewModel(mainVm, this, r)).OrderBy(r => r.Title).ToList();
             GameTypes = GameTypesToString();
-            var iconSrc = ValidRomsCount == 0 ? "avares://RaSetMaker/Assets/error.png" : "avares://RaSetMaker/Assets/check.png";
-            StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
+            UpdateStatus();
         }
 
         public async Task LoadDetails(CancellationTokenSource ct)
@@ -56,7 +53,14 @@ namespace RaSetMaker.ViewModels
                 return;
             }
 
-            Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, r))];
+            Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, this, r))];
+        }
+
+        public void UpdateStatus()
+        {
+            ValidRomsCount = Roms.Sum(rvm => rvm.IsRomValid ? 1 : 0);
+            var iconSrc = ValidRomsCount == 0 ? "avares://RaSetMaker/Assets/error.png" : "avares://RaSetMaker/Assets/check.png";
+            StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
         }
 
         private string GameTypesToString() => string.Join("", Game.GameTypes.Select(t => $"[{t}]").Order());
