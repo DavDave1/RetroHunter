@@ -46,50 +46,25 @@ namespace RaSetMaker.Services
             return result;
         }
 
-        public async Task GenerateFromPatch(string srcRomFile, Rom targetRom, string patchFile)
+        public static async Task GenerateFromPatch(RomFile srcRomFile, Rom targetRom, string patchFile)
         {
-            bool isCompressed = Path.GetExtension(srcRomFile) == ".zip";
-            var actualSrcRomFile = srcRomFile;
+            using var romFileStream = srcRomFile.GetRomFileStream();
+            romFileStream.Open(RomFileStream.OpenMode.ExtractToTempFile);
 
-            if (isCompressed)
-            {
-                var zip = ZipFile.OpenRead(srcRomFile);
-
-                actualSrcRomFile = Path.GetTempFileName();
-
-                zip.Entries.First().ExtractToFile(actualSrcRomFile, true);
-            }
+            var srcStream = romFileStream.GetStream();
 
             var targetRomName = $"{targetRom.RaName}";
-            var systemDir = targetRom.Game!.GameSystem!.GetDirName(context.UserConfig.DirStructureStyle);
-            var targetRomPath = Path.Combine(context.UserConfig.OutputRomsDirectory, systemDir, targetRomName);
 
-            var patcher = new Patcher(patchFile, actualSrcRomFile, targetRomPath);
+            var targetRomFile = targetRom.AddRomFile(targetRomName);
+            var targetRomPath = targetRomFile.AbsolutePath();
+
+            var patcher = new Patcher(patchFile, srcStream, targetRomPath);
             uint targetChecksum = await patcher.ApplyPatch();
 
-            if (isCompressed)
+            if (srcRomFile.IsCompressed())
             {
-                var targetZippedRomPath = Path.ChangeExtension(targetRomPath, ".zip");
-
-                if (Path.Exists(targetZippedRomPath))
-                {
-                    File.Delete(targetZippedRomPath);
-                }
-
-                using var targetZippedRom = ZipFile.Open(targetZippedRomPath, ZipArchiveMode.Create);
-                targetZippedRom.CreateEntryFromFile(targetRomPath, targetRomName);
-
-                File.Delete(targetRomPath);
-
-                targetRomPath = targetZippedRomPath;
-
-                File.Delete(actualSrcRomFile);
+                targetRomFile.Compress();
             }
-
-            targetRom.RomFiles = [new () {
-                FilePath = Path.GetRelativePath(context.UserConfig.OutputRomsDirectory, targetRomPath),
-                Crc32 = targetChecksum}
-            ];
         }
 
         private int PrepareDirs(IProgress<RomSetGeneratorProgress> progress)

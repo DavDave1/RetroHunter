@@ -2,7 +2,7 @@
 
 namespace RomPatcher;
 
-public class Patcher(string patchFile, string sourceRom, string targetRom)
+public class Patcher(string patchFile, Stream source, string targetRom)
 {
 
     // Create patched rom and return its crc32 checksum
@@ -14,11 +14,9 @@ public class Patcher(string patchFile, string sourceRom, string targetRom)
             throw new ArgumentException("Invalid BPS file", patchFile);
 
         // Verify source
-        using var source = File.OpenRead(sourceRom);
-
         var sourceChecksum = await ComputeChecksum(source);
         if (bps.SourceChecksum != sourceChecksum)
-            throw new ArgumentException("Invalid source ROM", sourceRom);
+            throw new ArgumentException("Invalid source ROM");
 
         // Prepare target
         using var target = File.Open(targetRom, FileMode.Create);

@@ -4,16 +4,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DiscUtils.Vfs;
 using RaSetMaker.Models;
 using RaSetMaker.Persistence;
 using RaSetMaker.Services;
@@ -261,27 +257,19 @@ public partial class MainViewModel : ViewModelBase
     {
         var rom = romViewModel.Rom;
 
-        var patchArchiveFileName = rom.PatchUrl.Substring(rom.PatchUrl.LastIndexOf('/') + 1);
-        var patchArchiveFile = Path.Combine(Path.GetTempPath(), patchArchiveFileName);
-        var extractDir = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(patchArchiveFile));
-        Directory.CreateDirectory(extractDir);
-
         try
         {
             using ScopedTaskProgress progress = new(this, "Downloading patch file...");
-            // Download patch file
-            {
-                HttpClient client = new();
-                using var s = await client.GetStreamAsync(rom.PatchUrl);
-                using var fs = new FileStream(patchArchiveFile, FileMode.Create);
-                await s.CopyToAsync(fs);
-                fs.Close();
-            }
+
+            var patchArchiveFile = await _raClient.DownloadPatch(rom.PatchUrl);
+
+            var extractDir = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(patchArchiveFile));
+            Directory.CreateDirectory(extractDir);
 
             // Open file as archive
-            using (Stream stream = File.OpenRead(patchArchiveFile))
-            using (var reader = ReaderFactory.Open(stream))
             {
+                using Stream stream = File.OpenRead(patchArchiveFile);
+                using var reader = ReaderFactory.Open(stream);
                 while (reader.MoveToNextEntry())
                 {
                     if (!reader.Entry.IsDirectory)
@@ -295,7 +283,6 @@ public partial class MainViewModel : ViewModelBase
                 }
             }
 
-            var zip = ZipFile.OpenRead(patchArchiveFile);
             var patches = new DirectoryInfo(extractDir).EnumerateFiles("*.bps");
 
             // TODO: handle multi patch files
@@ -316,16 +303,22 @@ public partial class MainViewModel : ViewModelBase
             if (sourceRom == null)
             {
                 await App.ShowError("Failed to find source ROM", $"Failed to find source ROM for {rom.RaName}");
+
+                Directory.Delete(extractDir, true);
+                File.Delete(patchArchiveFile);
+
                 return;
             }
 
             progress.SetMessage("Applying patch...");
             var generator = new RomSetGenerator(_dbContext);
 
-            var outputDir = _dbContext.UserConfig.OutputRomsDirectory;
-            var romSrcPath = Path.Combine(outputDir, sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc).FilePath);
+            var romSrcPath = sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc);
 
-            await generator.GenerateFromPatch(romSrcPath, rom, patchFile);
+            await RomSetGenerator.GenerateFromPatch(romSrcPath, rom, patchFile);
+
+            Directory.Delete(extractDir, true);
+            File.Delete(patchArchiveFile);
 
             await App.ShowInfo("Patch applied", $"Succesfully created {rom.RaName} from patch");
         }
@@ -333,12 +326,6 @@ public partial class MainViewModel : ViewModelBase
         {
             await App.ShowError("Failed to apply patch", e.Message);
         }
-        finally
-        {
-            Directory.Delete(extractDir, true);
-            File.Delete(patchArchiveFile);
-        }
-
     }
 
     public async Task Compress(TreeViewItemModel vm)

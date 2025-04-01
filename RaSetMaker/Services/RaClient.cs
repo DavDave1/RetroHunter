@@ -1,6 +1,7 @@
 ﻿using RaSetMaker.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -70,6 +71,24 @@ namespace RaSetMaker.Services
                     rom.PatchUrl = raRom.PatchUrl ?? "";
                 }
             }
+
+        }
+
+        public async Task<string> DownloadPatch(string patchUrl)
+        {
+            var patchArchiveFileName = patchUrl.Substring(patchUrl.LastIndexOf('/') + 1);
+            var patchArchiveFilePath = Path.Combine(Path.GetTempPath(), patchArchiveFileName);
+
+            // Download patch file
+            {
+                HttpClient client = new();
+                using var s = await client.GetStreamAsync(patchUrl);
+                using var fs = new FileStream(patchArchiveFilePath, FileMode.Create);
+                await s.CopyToAsync(fs);
+                fs.Close();
+            }
+
+            return patchArchiveFilePath;
 
         }
 
