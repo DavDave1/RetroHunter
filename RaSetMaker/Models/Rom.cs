@@ -28,9 +28,9 @@ namespace RaSetMaker.Models
         {
         }
 
-        public RomFile AddRomFile(string filePath)
+        public RomFile AddRomFile(string filePath, uint crc32)
         {
-            var romFile = new RomFile { FilePath = filePath };
+            var romFile = new RomFile { FilePath = filePath, Crc32 = crc32 };
             romFile.SetParent(this);
             RomFiles.Add(romFile);
 

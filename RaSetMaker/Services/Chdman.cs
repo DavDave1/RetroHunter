@@ -46,13 +46,10 @@ public class Chdman(ILogger<Chdman> logger)
             return false;
         }
 
-        var inAbsPath = Path.Combine(config.OutputRomsDirectory, inputFile.FilePath);
+        var outFilename = new FileInfo(inputFile.AbsolutePath()).Name.Replace(ext, ".chd");
+        var outAbsPath = inputFile.AbsolutePath().Replace(ext, ".chd");
 
-        var outFilename = new FileInfo(inputFile.FilePath).Name.Replace(ext, ".chd");
-        var outRelPath = Path.Combine(system.GetDirName(config.DirStructureStyle), outFilename);
-        var outAbsPath = Path.Combine(config.OutputRomsDirectory, outRelPath);
-
-        bool ok = await Compress(compressType, inAbsPath, outAbsPath, progress);
+        bool ok = await Compress(compressType, inputFile.AbsolutePath(), outAbsPath, progress);
 
         if (!ok)
         {
@@ -61,7 +58,7 @@ public class Chdman(ILogger<Chdman> logger)
 
         rom.RomFiles.ForEach(file => File.Delete(Path.Combine(config.OutputRomsDirectory, file.FilePath)));
 
-        rom.RomFiles = [new() { FilePath = outRelPath, Crc32 = await RomPatcher.Patcher.GetSourceCrc32(outAbsPath) }];
+        rom.AddRomFile(outFilename, await RomPatcher.Patcher.GetSourceCrc32(outAbsPath));
 
         return true;
 

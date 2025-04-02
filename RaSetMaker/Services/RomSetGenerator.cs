@@ -55,11 +55,11 @@ namespace RaSetMaker.Services
 
             var targetRomName = $"{targetRom.RaName}";
 
-            var targetRomFile = targetRom.AddRomFile(targetRomName);
+            var targetRomFile = targetRom.AddRomFile(targetRomName, 0);
             var targetRomPath = targetRomFile.AbsolutePath();
 
             var patcher = new Patcher(patchFile, srcStream, targetRomPath);
-            uint targetChecksum = await patcher.ApplyPatch();
+            targetRomFile.Crc32 = await patcher.ApplyPatch();
 
             if (srcRomFile.IsCompressed())
             {
@@ -199,8 +199,8 @@ namespace RaSetMaker.Services
 
                             foreach (var romFile in romFiles.Select(f => new FileInfo(f)))
                             {
-                                var outRelPath = $"{gameSystemDir}/{romSubdir}/{romFile.Name}";
-                                var outAbsPath = $"{outDirInfo.FullName}{outRelPath}";
+                                var outRelPath = $"{romSubdir}/{romFile.Name}";
+                                var outAbsPath = $"{outDirInfo.FullName}{gameSystemDir}/{outRelPath}";
 
                                 var outFileInfo = new FileInfo(outAbsPath);
 
@@ -208,11 +208,7 @@ namespace RaSetMaker.Services
 
                                 romFile.MoveTo(outAbsPath, true);
                                 movedFiles.Add(file);
-                                rom.RomFiles.Add(new()
-                                {
-                                    FilePath = outRelPath,
-                                    Crc32 = await ComputeCrc32(outAbsPath),
-                                });
+                                rom.AddRomFile(outRelPath, await ComputeCrc32(outAbsPath));
                             }
 
                             addedRoms++;
