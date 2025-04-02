@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -27,21 +28,20 @@ namespace RaSetMaker.Persistence
 
         public IEnumerable<GameSystem> GetCheckedSystems() => _model.Systems.Where(s => s.IsChecked);
 
-        public void LoadModel(string xmlModelFilepath)
+        public async Task LoadModelAsync(string modelFilePath)
         {
-            FilePath = xmlModelFilepath;
-            var serializer = new XmlSerializer(typeof(Ra2DatModel));
+            FilePath = modelFilePath;
 
-            var finfo = new FileInfo(xmlModelFilepath);
-            if (finfo.Exists)
+            if (Path.Exists(modelFilePath))
             {
-                TextReader reader = new StreamReader(xmlModelFilepath);
-                var ra2DatModel = serializer.Deserialize(reader) as Ra2DatModel;
-                reader.Dispose();
-
-                if (ra2DatModel != null)
                 {
-                    _model = ra2DatModel;
+
+                    await using FileStream stream = File.OpenRead(modelFilePath);
+                    var model = await JsonSerializer.DeserializeAsync<Ra2DatModel>(stream);
+                    if (model != null)
+                    {
+                        _model = model;
+                    }
                 }
 
                 _model.InitParents();
@@ -49,26 +49,20 @@ namespace RaSetMaker.Persistence
                 bool modelChanged = MigrationFactory.ExecuteAll(_model);
                 if (modelChanged)
                 {
-                    SaveChanges();
+                    await SaveChangesAsync();
                 }
             }
         }
 
-        public void SaveChanges()
+        public async Task SaveChangesAsync()
         {
             if (FilePath == string.Empty)
             {
                 throw new InvalidOperationException("Model file path not set");
             }
 
-            var serializer = new XmlSerializer(typeof(Ra2DatModel));
-            using var writer = new StreamWriter(FilePath);
-            serializer.Serialize(writer, _model);
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await Task.Run(SaveChanges);
+            await using FileStream fileStream = File.Create(FilePath);
+            await JsonSerializer.SerializeAsync(fileStream, _model);
         }
 
         public void SyncSystems(IEnumerable<GameSystem> raSystems)

@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace RaSetMaker.Models
 {
@@ -15,7 +15,7 @@ namespace RaSetMaker.Models
 
         public string RaName { get; set; } = string.Empty;
 
-        [XmlIgnore]
+        [JsonIgnore]
         public Game? Game => Parent != null ? (Game)Parent : null;
 
         public long GetSize()

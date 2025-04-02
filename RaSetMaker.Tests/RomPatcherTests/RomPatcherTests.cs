@@ -21,7 +21,9 @@ public class RomPatcherTest
     public async Task ApplyPatch(string patch, string source)
     {
         var target = "../../../TestRoms/patch/target.gba";
-        var patcher = new Patcher(patch, source, target);
+
+        using var sourceStream = File.OpenRead(source);
+        var patcher = new Patcher(patch, sourceStream, target);
         await patcher.ApplyPatch();
 
         Assert.True(File.Exists(target));

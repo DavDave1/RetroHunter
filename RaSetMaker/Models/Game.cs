@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace RaSetMaker.Models
 {
@@ -31,10 +30,10 @@ namespace RaSetMaker.Models
 
         public List<Rom> Roms { get; set; } = [];
 
-        [XmlIgnore]
+        [JsonIgnore]
         public GameSystem? GameSystem => Parent != null ? (GameSystem)Parent : null;
 
-        [XmlIgnore]
+        [JsonIgnore]
         public Ra2DatModel? Root { get; private set; }
 
         public bool HasValidRom() => Roms.Any(r => r.Exists());

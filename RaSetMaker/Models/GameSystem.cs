@@ -3,7 +3,7 @@ using RaSetMaker.Utils.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 using static RaSetMaker.Models.GameSystemData;
 
 namespace RaSetMaker.Models
@@ -12,10 +12,10 @@ namespace RaSetMaker.Models
     {
         public GameSystemType GameSystemType { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public int RaId => (int)GameSystemType;
 
-        [XmlIgnore]
+        [JsonIgnore]
         public string Name => GameSystemType.Name();
 
         public string IconUrl { get; set; } = string.Empty;
@@ -24,15 +24,15 @@ namespace RaSetMaker.Models
 
         public DateTime LastUpdate { get; set; } = DateTime.UnixEpoch;
 
-        [XmlIgnore]
+        [JsonIgnore]
         public GameSystemCompany Company => GameSystemType.Company();
 
-        [XmlIgnore]
+        [JsonIgnore]
         public List<string> SupportedExtensions => GameSystemType.Extensions();
 
         public List<Game> Games { get; set; } = [];
 
-        [XmlIgnore]
+        [JsonIgnore]
         public Ra2DatModel? Root => Parent as Ra2DatModel;
 
         public GameSystem() : base()

@@ -86,7 +86,7 @@ public partial class MainViewModel : ViewModelBase
             AllowMultiple = false,
             Title = "Open RaSetMaker DB file",
             FileTypeFilter = [RaSetMakerDb],
-            SuggestedFileName = "RaSetMaker.xml",
+            SuggestedFileName = "RaSetMaker.json",
 
         };
         var result = await App.CurrentWindow().StorageProvider.OpenFilePickerAsync(opts);
@@ -95,7 +95,7 @@ public partial class MainViewModel : ViewModelBase
 
         if (dbFile != null)
         {
-            _dbContext.LoadModel(dbFile.Path.AbsolutePath);
+            await _dbContext.LoadModelAsync(dbFile.Path.AbsolutePath);
             _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
             await LoadModel();
         }
@@ -110,7 +110,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 Title = "Save RaSetMaker DB File As",
                 FileTypeChoices = [RaSetMakerDb],
-                SuggestedFileName = "RaSetMaker.xml",
+                SuggestedFileName = "RaSetMaker.json",
                 ShowOverwritePrompt = true,
             };
 
@@ -238,6 +238,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
     public async Task LoadModel()
     {
         await FetchUserProfile();
@@ -383,9 +384,9 @@ public partial class MainViewModel : ViewModelBase
 
     private static readonly FilePickerFileType RaSetMakerDb = new("RaSetMaker DB")
     {
-        Patterns = new[] { "*.xml" },
-        AppleUniformTypeIdentifiers = new[] { "public.xml" },
-        MimeTypes = new[] { "xml/*" }
+        Patterns = new[] { "*.json" },
+        AppleUniformTypeIdentifiers = new[] { "public.json" },
+        MimeTypes = new[] { "json/*" }
     };
 
     private Task? _loadingDetailsTask;

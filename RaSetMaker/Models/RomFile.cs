@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -61,8 +60,7 @@ namespace RaSetMaker.Models
             return Path.Combine(userConfig.OutputRomsDirectory, gameSystem.GetDirName(userConfig.DirStructureStyle));
         }
 
-
-        [XmlIgnore]
+        [JsonIgnore]
         private Rom? Rom => Parent as Rom;
     }
 
