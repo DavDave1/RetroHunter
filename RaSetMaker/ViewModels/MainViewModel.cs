@@ -140,6 +140,7 @@ public partial class MainViewModel : ViewModelBase
         if (!vm.WasCanceled)
         {
             _dbContext.ValidateRoms();
+            await _dbContext.SaveChangesAsync();
         }
 
         await LoadModel();
@@ -201,6 +202,8 @@ public partial class MainViewModel : ViewModelBase
                 $"removed {vm.Result.RemovedRoms} roms and added {vm.Result.AddedRoms} roms");
         }
 
+
+        await _dbContext.SaveChangesAsync();
         await LoadModel();
     }
 
@@ -321,6 +324,8 @@ public partial class MainViewModel : ViewModelBase
             File.Delete(patchArchiveFile);
 
             await App.ShowInfo("Patch applied", $"Succesfully created {rom.RaName} from patch");
+
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {
@@ -346,6 +351,7 @@ public partial class MainViewModel : ViewModelBase
             else
             {
                 await _dbContext.SaveChangesAsync();
+
                 var ratio = 100 * romViewModel.Rom.GetSize() / (float)sizeBefore;
                 await App.ShowInfo("ROM compression completed", $"ROM {romViewModel.Rom.RaName} compressed successfully.\nCompression ratio: {ratio:F1}");
             }
