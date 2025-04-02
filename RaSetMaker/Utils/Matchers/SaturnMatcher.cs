@@ -13,7 +13,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            if (!system.SupportedExtensions.Contains(file.Extension))
+            if (!MatchesExtension(file))
             {
                 return (null, [file.FullName]);
             }
@@ -28,7 +28,7 @@ namespace RaSetMaker.Utils.Matchers
             }
 
 
-            if (system.GameSystemType == GameSystemType.Saturn)
+            if (_gameSystem.GameSystemType == GameSystemType.Saturn)
             {
                 string identifier = Encoding.ASCII.GetString(volumeHeader.AsSpan()[..SATURN_IDENTIFIER.Length]);
                 if (identifier != SATURN_IDENTIFIER)
@@ -36,7 +36,7 @@ namespace RaSetMaker.Utils.Matchers
                     return (null, [file.FullName]);
                 }
             }
-            else if (system.GameSystemType == GameSystemType.SegaCD)
+            else if (_gameSystem.GameSystemType == GameSystemType.SegaCD)
             {
                 string identifier = Encoding.ASCII.GetString(volumeHeader.AsSpan()[..SEGACD_IDENTIFIER.Length]);
                 if (identifier != SEGACD_IDENTIFIER)
@@ -46,7 +46,7 @@ namespace RaSetMaker.Utils.Matchers
             }
             else
             {
-                throw new ArgumentException($"Invalid game system type {system.GameSystemType} for SegaSaturnCDMatcher");
+                throw new ArgumentException($"Invalid game system type {_gameSystem.GameSystemType} for SegaSaturnCDMatcher");
             }
 
             var hash = MD5.HashData(volumeHeader[..512]);
@@ -57,5 +57,7 @@ namespace RaSetMaker.Utils.Matchers
 
         private static readonly string SEGACD_IDENTIFIER = "SEGADISCSYSTEM";
         private static readonly string SATURN_IDENTIFIER = "SEGA SEGASATURN";
+
+        private readonly GameSystem _gameSystem = system;
     }
 }

@@ -37,18 +37,18 @@ namespace RaSetMaker.ViewModels
             UpdateStatus();
         }
 
-        public async Task LoadDetails(CancellationTokenSource ct)
+        public async Task LoadDetails(CancellationTokenSource? ct)
         {
             GameIcon = await ImageHelper.LoadFromWeb(new Uri(Game.IconUrl));
 
-            if (ct.IsCancellationRequested)
+            if (ct?.IsCancellationRequested ?? false)
             {
                 return;
             }
 
             await _mainVm.UpdateGameData(Game);
 
-            if (ct.IsCancellationRequested)
+            if (ct?.IsCancellationRequested ?? false)
             {
                 return;
             }

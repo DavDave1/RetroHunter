@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using RaSetMaker.Models;
 using RaSetMaker.Persistence;
 using RaSetMaker.Services;
@@ -209,7 +210,7 @@ public partial class MainViewModel : ViewModelBase
         {
             await SelectedGame.LoadDetails(_loadingDetailsCancellation);
 
-            if (_loadingDetailsCancellation.IsCancellationRequested)
+            if (_loadingDetailsCancellation?.IsCancellationRequested ?? false)
             {
                 return;
             }
@@ -237,7 +238,6 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
     public async Task LoadModel()
     {
         await FetchUserProfile();
@@ -388,9 +388,9 @@ public partial class MainViewModel : ViewModelBase
         MimeTypes = new[] { "xml/*" }
     };
 
-    private Task _loadingDetailsTask;
+    private Task? _loadingDetailsTask;
 
-    private CancellationTokenSource _loadingDetailsCancellation;
+    private CancellationTokenSource? _loadingDetailsCancellation;
 }
 
 internal class ScopedTaskProgress : IDisposable, IProgress<ChdmanProgress>

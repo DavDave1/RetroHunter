@@ -67,6 +67,8 @@ namespace RaSetMaker.Utils.Matchers
 
             return file.Length;
         }
+        
+        protected bool MatchesExtension(FileInfo file) => system.SupportedExtensions.Contains(file.Extension);
 
         private (Stream?, string) OpenArchive(FileInfo file, bool matchExtension = false)
         {

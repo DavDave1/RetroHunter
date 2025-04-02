@@ -12,7 +12,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            if (!system.SupportedExtensions.Contains(file.Extension))
+            if (!MatchesExtension(file))
             {
                 return (null, [file.FullName]);
             }
@@ -52,5 +52,6 @@ namespace RaSetMaker.Utils.Matchers
         }
 
         private static readonly string DC_IDENTIFIER = "SEGA SEGAKATANA ";
+
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using ZstdSharp.Unsafe;
 
 namespace RaSetMaker.Utils.Matchers
 {
@@ -11,7 +12,7 @@ namespace RaSetMaker.Utils.Matchers
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
-            if (!system.SupportedExtensions.Contains(file.Extension))
+            if (!MatchesExtension(file))
             {
                 return (null, [file.FullName]);
             }
