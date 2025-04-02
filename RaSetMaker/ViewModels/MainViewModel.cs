@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -61,6 +59,13 @@ public partial class MainViewModel : ViewModelBase
         _raClient = raClient;
         _chdman = chdman;
 
+        var systems = _dbContext.GetSystems().ToList();
+        var companyList = new List<GameSystemCompanyViewModel>();
+        foreach (var company in Enum.GetValues<GameSystemCompany>())
+        {
+            companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)]));
+        }
+        CompanyList = companyList;
     }
 
     /// <summary>
@@ -240,15 +245,9 @@ public partial class MainViewModel : ViewModelBase
         _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
         _chdman.SetChdManPath(_dbContext.UserConfig.ChdmanExePath);
 
-        var systems = _dbContext.GetSystems();
+        var systems = _dbContext.GetSystems().ToList();
+        CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));
 
-        var companyList = new List<GameSystemCompanyViewModel>();
-        foreach (var company in Enum.GetValues<GameSystemCompany>())
-        {
-            companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)]));
-        }
-
-        CompanyList = companyList;
         SelectedSystem = null;
         GamesList = [];
     }
