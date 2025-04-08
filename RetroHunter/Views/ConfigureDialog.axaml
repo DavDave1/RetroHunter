@@ -1,0 +1,156 @@
+<classic:ClassicWindow
+    x:Class="RetroHunter.Views.ConfigureDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classic="clr-namespace:Classic.Avalonia.Theme;assembly=Classic.Avalonia.Theme"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:RetroHunter.ViewModels"
+    Title="RetroHunter Configuration"
+    Width="400"
+    Height="500"
+    d:DesignHeight="500"
+    d:DesignWidth="400"
+    x:DataType="vm:ConfigureDialogViewModel"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Panel Width="400">
+        <DockPanel Margin="6,7">
+            <!--  Dialog buttons  -->
+            <StackPanel
+                Margin="0,5,0,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                Spacing="10">
+                <Button
+                    MinWidth="74"
+                    Command="{Binding SaveCommand}"
+                    Content="Ok"
+                    IsDefault="True" />
+                <Button
+                    MinWidth="74"
+                    Command="{Binding DiscardCommand}"
+                    Content="Cancel"
+                    IsCancel="True" />
+            </StackPanel>
+
+            <TabControl>
+                <TabItem Header="Retroachievement">
+                    <Grid
+                        Margin="10,7,11,6"
+                        ColumnDefinitions="Auto, *"
+                        RowDefinitions="Auto, Auto, Auto">
+                        <!--  Ra credentials config  -->
+                        <TextBlock
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="User Name:" />
+                        <TextBox
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            Text="{Binding UserName}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="API Key:" />
+                        <TextBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            Text="{Binding RaApiKey}" />
+                        <Button
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            HorizontalAlignment="Right"
+                            Command="{Binding TestLoginCommand}"
+                            Content="Test Login" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Generator">
+                    <Grid
+                        Margin="10,7,11,6"
+                        ColumnDefinitions="Auto, *"
+                        RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto">
+                        <!--  Directories config  -->
+                        <TextBlock
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="Roms Input Dir:" />
+                        <Grid
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            ColumnDefinitions="*, Auto">
+                            <TextBox Text="{Binding InputRomsDirectory}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding BrowseInputRomsDirectoryCommand}"
+                                Content="..." />
+                        </Grid>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="Roms Output Dir:" />
+                        <Grid
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            ColumnDefinitions="*, Auto">
+                            <TextBox Text="{Binding OutputRomsDirectory}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding BrowseOutputRomsDirectoryCommand}"
+                                Content="..." />
+                        </Grid>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="Dir Structure Style:" />
+                        <ComboBox
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            ItemsSource="{Binding DirStructureStylesList}"
+                            SelectedItem="{Binding SelectedDirStructureStyle}" />
+
+                        <TextBlock
+                            Grid.Row="3"
+                            Margin="0,0,10,5"
+                            VerticalAlignment="Center"
+                            Text="Games filter:" />
+                        <ListBox
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="0,0,0,5"
+                            ItemsSource="{Binding GameTypesList}"
+                            SelectedItems="{Binding SelectedGameTypesFilter}"
+                            SelectionMode="Multiple,Toggle" />
+                        <Separator Grid.Row="4" Grid.ColumnSpan="2" />
+                        <TextBlock
+                            Grid.Row="5"
+                            VerticalAlignment="Center"
+                            Text="Chdman Exe:" />
+                        <Grid
+                            Grid.Row="5"
+                            Grid.Column="1"
+                            Grid.ColumnDefinitions="*, Auto, Auto">
+                            <TextBox Text="{Binding ChdmanExePath}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding DetectChdmanCommand}"
+                                Content="Detect..." />
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Panel>
+</classic:ClassicWindow>

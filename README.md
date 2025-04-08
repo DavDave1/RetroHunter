@@ -1,14 +1,19 @@
-# RaSetMaker
+# RetroHunter
 
-RaSetMaker is a Desktop application that builds emulators rom sets by collecting games that have [Retroachievements](http://retroachievements.org/).
 
-RaSetMaker is build using the C# [AvaloniaUI](https://avaloniaui.net/) framework with a Win 98 inspired theme thanks to the [Classic.Avalonia](https://github.com/BAndysc/Classic.Avalonia) package.
+<div style="text-align: center;">
+<img src="docs/images/retro_hunter_main_screen.png" alt="application screenshot" width="500" height="auto">
+</div>
+
+RetroHunter is a Desktop application that builds emulators rom sets by collecting games that have [Retroachievements](http://retroachievements.org/).
+
+RetroHunter is built using the C# [AvaloniaUI](https://avaloniaui.net/) framework with a Win 98 inspired theme thanks to the [Classic.Avalonia](https://github.com/BAndysc/Classic.Avalonia) package.
 
 ## How it works
 
-RaSetMaker pulls games data and hashes from [Retroachievements](http://retroachievements.org/) and identifies Roms by following the Retroachievments [Games identification methods](https://docs.retroachievements.org/developer-docs/game-identification.html).
+RetroHunter pulls games data and hashes from [Retroachievements](http://retroachievements.org/) and identifies Roms by following the Retroachievments [Games identification methods](https://docs.retroachievements.org/developer-docs/game-identification.html).
 
-RaSetMaker parses roms from an input folder and builds a roms set into a user defined output folder. The output folder structure can be configured to follow the [EmuDeck](https://www.emudeck.com/) roms folder structure, for easy transfer of games to the Steam Deck
+RetroHunter parses roms from an input folder and builds a roms set into a user defined output folder. The output folder structure can be configured to follow the [EmuDeck](https://www.emudeck.com/) roms folder structure, for easy transfer of games to the Steam Deck
 
 
 ## Supported Platforms
@@ -19,7 +24,7 @@ RaSetMaker parses roms from an input folder and builds a roms set into a user de
 
 ## Supported systems
 
-RaSetMaker aims to support all game systems for which achievements are available on [Retroachievements](http://retroachievements.org/).
+RetroHunter aims to support all game systems for which achievements are available on [Retroachievements](http://retroachievements.org/).
 
 <details>
 <summary> 
@@ -81,14 +86,14 @@ RaSetMaker aims to support all game systems for which achievements are available
 
 ## How to build
 
-RaSetMaker requires .NET 9.0 and can be build on Windows and Linux (Verify Mac OS support).
+RetroHunter requires .NET 9.0 and can be build on Windows and Linux (Verify Mac OS support).
 
-RaSetMaker includes the [libchdr](https://github.com/rtissera/libchdr) C library as submodule dependency for reading compressed disk images in CHD format. Before building the RaSetMaker C# solution, you need to compile the libchdr libary by running the `build_libchdr.sh` script.
+RetroHunter includes the [libchdr](https://github.com/rtissera/libchdr) C library as submodule dependency for reading compressed disk images in CHD format. Before building the RetroHunter C# solution, you need to compile the libchdr libary by running the `build_libchdr.sh` script.
 
 
 ## Status
 
-[![Build Main](https://github.com/DavDave1/RaSetMaker/actions/workflows/build-main.yml/badge.svg)](https://github.com/DavDave1/RaSetMaker/actions/workflows/build-main.yml)
+[![Build Main](https://github.com/DavDave1/RetroHunter/actions/workflows/build-main.yml/badge.svg)](https://github.com/DavDave1/RetroHunter/actions/workflows/build-main.yml)
 
 
 ## TODOs

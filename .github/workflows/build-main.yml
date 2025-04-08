@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      Solution_Name: RaSetMaker.sln
-      Test_Project_Path: RaSetMaker.Tests.cspoj
+      Solution_Name: RetroHunter.sln
+      Test_Project_Path: RetroHunter.Tests.cspoj
 
     steps:
     - name: Checkout

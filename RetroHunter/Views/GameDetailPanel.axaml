@@ -1,0 +1,81 @@
+<UserControl
+    x:Class="RetroHunter.Views.GameDetailPanel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classicControls="clr-namespace:Classic.CommonControls;assembly=Classic.CommonControls.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Avalonia.Xaml.Interactivity"
+    xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:RetroHunter.Models"
+    xmlns:vm="clr-namespace:RetroHunter.ViewModels"
+    x:Name="DetailPanel"
+    d:DesignHeight="150"
+    d:DesignWidth="500"
+    x:DataType="vm:GameViewModel"
+    mc:Ignorable="d">
+    <Design.DataContext>
+        <vm:GameViewModel />
+    </Design.DataContext>
+
+    <Grid
+        Margin="8"
+        ColumnDefinitions="Auto, *"
+        RowDefinitions="Auto, *">
+        <TextBlock
+            Grid.ColumnSpan="2"
+            Margin="0,0,4,0"
+            HorizontalAlignment="Center"
+            FontWeight="Bold"
+            Text="{Binding Game.Name}" />
+
+        <Image
+            Grid.Row="1"
+            Width="128"
+            Height="128"
+            Margin="0,0,4,0"
+            Source="{Binding GameIcon}" />
+
+        <DataGrid
+            Grid.Row="1"
+            Grid.Column="1"
+            AutoGenerateColumns="False"
+            GridLinesVisibility="Horizontal"
+            HeadersVisibility="None"
+            IsReadOnly="True"
+            ItemsSource="{Binding Roms}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="Auto" Header="Status">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="vm:RomViewModel">
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Width="16"
+                                    Height="16"
+                                    IsVisible="{Binding !IsRomValid}"
+                                    Source="/Assets/error.png" />
+                                <Image
+                                    Width="16"
+                                    Height="16"
+                                    IsVisible="{Binding IsRomValid}"
+                                    Source="/Assets/check.png" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Rom.RaName}"
+                    Header="Name" />
+
+                <DataGridTemplateColumn Width="Auto" Header="Patch">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="vm:RomViewModel">
+                            <Button Command="{Binding ApplyPatchCommand}" IsVisible="{Binding HasPatch}">Apply Patch</Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

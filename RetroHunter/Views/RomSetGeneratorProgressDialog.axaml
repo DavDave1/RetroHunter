@@ -1,0 +1,47 @@
+<classic:ClassicWindow
+  x:Class="RetroHunter.Views.RomSetGeneratorProgressDialog"
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:classic="clr-namespace:Classic.Avalonia.Theme;assembly=Classic.Avalonia.Theme"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:vm="clr-namespace:RetroHunter.ViewModels"
+  Title="Generating Retroachievement Set"
+  Width="500"
+  Height="200"
+  d:DesignHeight="280"
+  d:DesignWidth="500"
+  x:DataType="vm:RomSetGeneratorDialogViewModel"
+  ExtendClientAreaChromeHints="NoChrome"
+  ExtendClientAreaToDecorationsHint="True"
+  WindowStartupLocation="CenterOwner"
+  mc:Ignorable="d">
+  <StackPanel
+    Margin="5"
+    VerticalAlignment="Center"
+    Orientation="Vertical"
+    Spacing="10">
+    <TextBlock HorizontalAlignment="Center" Text="{Binding CurrentSystem}" />
+    <TextBlock HorizontalAlignment="Center" Text="{Binding CurrentFile}" />
+    <ProgressBar Value="{Binding TotalProgress}" />
+    <ProgressBar Value="{Binding SystemProgress}" />
+    <StackPanel
+      HorizontalAlignment="Center"
+      Orientation="Horizontal"
+      Spacing="10">
+      <Button
+        MinWidth="74"
+        HorizontalAlignment="Center"
+        Command="{Binding StartCommand}"
+        Content="Start" />
+      <Button
+        MinWidth="74"
+        HorizontalAlignment="Center"
+        Command="{Binding CancelCommand}"
+        Content="Cancel" />
+    </StackPanel>
+    <ScrollViewer Height="100" IsVisible="{Binding TotalProgress}">
+      <ListBox ItemsSource="{Binding Exceptions}" />
+    </ScrollViewer>
+  </StackPanel>
+</classic:ClassicWindow>
