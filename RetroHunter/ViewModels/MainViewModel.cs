@@ -8,7 +8,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
 using RetroHunter.Models;
 using RetroHunter.Persistence;
 using RetroHunter.Services;
@@ -54,11 +53,12 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasSelectedGame = false;
 
-    public MainViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context)
+    public MainViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context, SettingsManager settingsManager)
     {
         _dbContext = context;
         _raClient = raClient;
         _chdman = chdman;
+        _settingsManager = settingsManager;
 
         var systems = _dbContext.GetSystems().ToList();
         var companyList = new List<GameSystemCompanyViewModel>();
@@ -244,7 +244,24 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public async Task LoadModel()
     {
-        await FetchUserProfile();
+        if (_dbContext.FilePath == string.Empty)
+        {
+            var dialog = new NewProjectDialog();
+
+            var vm = new NewProjectDialogViewModel(_settingsManager);
+            dialog.DataContext = vm;
+
+            await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
+
+            if (!vm.WasCanceled)
+            {
+                await _dbContext.LoadModelAsync(vm.ProjectFilePath);
+            }
+            else
+            {
+                App.CurrentWindow().Close();
+            }
+        }
 
         _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
         _chdman.SetChdManPath(_dbContext.UserConfig.ChdmanExePath);
@@ -254,6 +271,8 @@ public partial class MainViewModel : ViewModelBase
 
         SelectedSystem = null;
         GamesList = [];
+
+        await FetchUserProfile();
     }
 
     public async Task ApplyPatch(RomViewModel romViewModel)
@@ -387,6 +406,8 @@ public partial class MainViewModel : ViewModelBase
     private readonly Ra2DatContext _dbContext;
     private readonly RaClient _raClient;
     private readonly Chdman _chdman;
+
+    private readonly SettingsManager _settingsManager;
 
     private static readonly FilePickerFileType RaSetMakerDb = new("RetroHunter DB")
     {

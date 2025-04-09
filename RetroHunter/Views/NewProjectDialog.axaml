@@ -1,0 +1,50 @@
+<classic:ClassicWindow
+    x:Class="RetroHunter.Views.NewProjectDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classic="clr-namespace:Classic.Avalonia.Theme;assembly=Classic.Avalonia.Theme"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:RetroHunter.ViewModels"
+    Title="Welcome to Retro Hunter"
+    Width="400"
+    Height="350"
+    d:DesignHeight="350"
+    d:DesignWidth="400"
+    x:DataType="vm:NewProjectDialogViewModel"
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaToDecorationsHint="False"
+    SystemDecorations="BorderOnly"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <StackPanel
+        VerticalAlignment="Center"
+        Orientation="Vertical"
+        Spacing="10">
+        <Image Width="390" Source="/Assets/retro-hunter-splash.png" />
+        <StackPanel
+            HorizontalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="10">
+            <SplitButton
+                Width="100"
+                Height="50"
+                Command="{Binding OpenLatestCommand}"
+                Content="Open Latest">
+                <SplitButton.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuItem Command="{Binding OpenExistingCommand}" Header="Open Existing..." />
+                    </MenuFlyout>
+                </SplitButton.Flyout>
+            </SplitButton>
+            <Button
+                Width="100"
+                Height="50"
+                VerticalAlignment="Center"
+                Command="{Binding CreateNewCommand}">
+                New Project
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</classic:ClassicWindow>

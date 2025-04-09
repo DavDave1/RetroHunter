@@ -37,6 +37,7 @@ public partial class App : Application
         collection.AddSingleton<Ra2DatContext>();
         collection.AddSingleton<RaClient>();
         collection.AddSingleton<Chdman>();
+        collection.AddSingleton<SettingsManager>();
 
         collection.AddTransient<MainViewModel>();
         collection.AddTransient<ConfigureDialogViewModel>();

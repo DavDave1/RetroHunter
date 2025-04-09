@@ -1,13 +1,13 @@
 # RetroHunter
 
 
-<div style="text-align: center;">
-<img src="docs/images/retro_hunter_main_screen.png" alt="application screenshot" width="500" height="auto">
-</div>
-
 RetroHunter is a Desktop application that builds emulators rom sets by collecting games that have [Retroachievements](http://retroachievements.org/).
 
 RetroHunter is built using the C# [AvaloniaUI](https://avaloniaui.net/) framework with a Win 98 inspired theme thanks to the [Classic.Avalonia](https://github.com/BAndysc/Classic.Avalonia) package.
+
+<div style="text-align: center;">
+<img src="docs/images/retro_hunter_main_screen.png" alt="application screenshot" width="500" height="auto">
+</div>
 
 ## How it works
 
