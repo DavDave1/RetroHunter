@@ -305,17 +305,39 @@ public partial class MainViewModel : ViewModelBase
                 }
             }
 
-            var patches = new DirectoryInfo(extractDir).EnumerateFiles("*.bps");
+            var patches = new DirectoryInfo(extractDir)
+                .EnumerateFiles($"{Path.GetFileNameWithoutExtension(rom.RaName)}.bps");
 
-            // TODO: handle multi patch files
-            if (patches.Count() > 1)
+            if (!patches.Any())
             {
-                await App.ShowInfo("Multiple patch files found",
-                $"Multiple patch files found\n {string.Join('\n', patches.Select(p => p.FullName).Where(n => Path.GetExtension(n) == ".bps"))}");
-
+                patches = new DirectoryInfo(extractDir)
+                .EnumerateFiles("*.bps");
             }
 
-            var patchFile = patches.First().FullName;
+            var patchFile = "";
+            if (patches.Count() > 1)
+            {
+                var patchSelectVm = new PatchSelectViewModel([.. patches]);
+                var dialog = new PatchSelectDialog
+                {
+                    DataContext = patchSelectVm
+                };
+
+
+                await dialog.ShowDialog<PatchSelectViewModel?>(App.MainWindow());
+
+                if (patchSelectVm.SelectedPatch == null)
+                {
+                    return;
+                }
+
+                patchFile = patchSelectVm.SelectedPatch.FullName;
+
+            }
+            else
+            {
+                patchFile = patches.First().FullName;
+            }
 
             var sourceCrc = await RomPatcher.Patcher.GetSourceCrc32(patchFile);
 

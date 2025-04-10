@@ -1,0 +1,62 @@
+<classic:ClassicWindow
+    x:Class="RetroHunter.Views.PatchSelectDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classic="clr-namespace:Classic.Avalonia.Theme;assembly=Classic.Avalonia.Theme"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System.IO;assembly=System.Runtime"
+    xmlns:vm="clr-namespace:RetroHunter.ViewModels"
+    Title="Welcome to Retro Hunter"
+    Width="350"
+    Height="400"
+    d:DesignHeight="400"
+    d:DesignWidth="350"
+    x:DataType="vm:PatchSelectViewModel"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <DockPanel Margin="6,7">
+        <!--  Dialog buttons  -->
+        <StackPanel
+            Margin="0,5,0,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal"
+            Spacing="10">
+            <Button
+                MinWidth="74"
+                Command="{Binding SaveCommand}"
+                Content="Ok"
+                IsDefault="True" />
+            <Button
+                MinWidth="74"
+                Command="{Binding DiscardCommand}"
+                Content="Cancel"
+                IsCancel="True" />
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Please select patch file to be applied" />
+            <DataGrid
+                VerticalAlignment="Stretch"
+                AutoGenerateColumns="False"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="None"
+                IsReadOnly="True"
+                ItemsSource="{Binding Patches}"
+                SelectedItem="{Binding SelectedPatch}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        x:DataType="sys:FileInfo"
+                        Binding="{Binding Name}"
+                        Header="Title" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+
+
+    </DockPanel>
+</classic:ClassicWindow>
