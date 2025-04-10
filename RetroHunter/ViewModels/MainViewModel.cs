@@ -81,50 +81,18 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenDatabase()
     {
-        var opts = new FilePickerOpenOptions()
+        var dialog = new NewProjectDialog();
+
+        var vm = new NewProjectDialogViewModel(_settingsManager);
+        dialog.DataContext = vm;
+
+        await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
+
+        if (!vm.WasCanceled)
         {
-            AllowMultiple = false,
-            Title = "Open RetroHunter DB file",
-            FileTypeFilter = [RaSetMakerDb],
-            SuggestedFileName = "RetroHunter.json",
-
-        };
-        var result = await App.CurrentWindow().StorageProvider.OpenFilePickerAsync(opts);
-
-        var dbFile = result.FirstOrDefault();
-
-        if (dbFile != null)
-        {
-            await _dbContext.LoadModelAsync(dbFile.Path.AbsolutePath);
-            _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
+            await _dbContext.LoadModelAsync(vm.ProjectFilePath);
             await LoadModel();
         }
-    }
-
-    [RelayCommand]
-    private async Task SaveDatabase()
-    {
-        if (_dbContext.FilePath == string.Empty)
-        {
-            var opts = new FilePickerSaveOptions()
-            {
-                Title = "Save RetroHunter DB File As",
-                FileTypeChoices = [RaSetMakerDb],
-                SuggestedFileName = "RetroHunter.json",
-                ShowOverwritePrompt = true,
-            };
-
-            var dbFile = await App.CurrentWindow().StorageProvider.SaveFilePickerAsync(opts);
-
-            if (dbFile == null)
-            {
-                return;
-            }
-
-            _dbContext.FilePath = dbFile.Path.AbsolutePath;
-        }
-
-        await _dbContext.SaveChangesAsync();
     }
 
     [RelayCommand]
@@ -168,6 +136,7 @@ public partial class MainViewModel : ViewModelBase
                 progress.Step();
             }
 
+            await _dbContext.SaveChangesAsync();
             await App.ShowInfo("Data Fetching Successfull", "All sistems succesfully updated.");
 
         }

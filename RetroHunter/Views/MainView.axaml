@@ -39,10 +39,6 @@
                 Command="{Binding OpenDatabaseCommand}"
                 LargeIcon="/Assets/open-file.png"
                 Text="Open..." />
-            <classicControls:ToolBarButton
-                Command="{Binding SaveDatabaseCommand}"
-                LargeIcon="/Assets/save.png"
-                Text="Save..." />
             <Separator />
             <classicControls:ToolBarButton
                 Command="{Binding ConfigureCommand}"
