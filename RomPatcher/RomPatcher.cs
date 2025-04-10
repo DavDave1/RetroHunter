@@ -8,7 +8,7 @@ public class Patcher(string patchFile, Stream source, string targetRom)
     // Create patched rom and return its crc32 checksum
     public async Task<uint> ApplyPatch()
     {
-        var bps = await Bps.Create(patchFile);
+        using var bps = await Bps.Create(patchFile);
 
         if (!bps.IsValid())
             throw new ArgumentException("Invalid BPS file", patchFile);
@@ -22,8 +22,8 @@ public class Patcher(string patchFile, Stream source, string targetRom)
         using var target = File.Open(targetRom, FileMode.Create);
         target.Seek(0, SeekOrigin.Begin);
 
-        BpsStream sourceStream = new BpsStream(source);
-        BpsStream targetStream = new BpsStream(target);
+        var sourceStream = new BpsStream(source);
+        var targetStream = new BpsStream(target);
 
         while (bps.HasNext())
         {
@@ -45,7 +45,8 @@ public class Patcher(string patchFile, Stream source, string targetRom)
 
     public static async Task<uint> GetSourceCrc32(string patchFile)
     {
-        return (await Bps.Create(patchFile)).SourceChecksum;
+        using var bps = await Bps.Create(patchFile);
+        return bps.SourceChecksum;
     }
 
     public static async Task<uint> ComputeChecksum(Stream stream)

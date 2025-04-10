@@ -38,9 +38,11 @@ namespace RetroHunter.Models
                 File.Delete(compressedRomPath);
             }
 
-            using var archive = ZipArchive.Create();
-            archive.AddEntry(Path.GetFileName(uncompressedRomPath), uncompressedRomPath);
-            archive.SaveTo(compressedRomPath, CompressionType.Deflate);
+            {
+                using var archive = ZipArchive.Create();
+                archive.AddEntry(Path.GetFileName(uncompressedRomPath), uncompressedRomPath);
+                archive.SaveTo(compressedRomPath, CompressionType.Deflate);
+            }
 
             FilePath = Path.GetFileName(compressedRomPath);
 

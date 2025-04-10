@@ -338,13 +338,13 @@ public partial class MainViewModel : ViewModelBase
             var romSrcPath = sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc);
 
             await RomSetGenerator.GenerateFromPatch(romSrcPath, rom, patchFile);
+            await _dbContext.SaveChangesAsync();
 
             Directory.Delete(extractDir, true);
             File.Delete(patchArchiveFile);
 
             await App.ShowInfo("Patch applied", $"Succesfully created {rom.RaName} from patch");
 
-            await _dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {

@@ -51,20 +51,23 @@ namespace RetroHunter.Services
             using var romFileStream = srcRomFile.GetRomFileStream();
             romFileStream.Open(RomFileStream.OpenMode.ExtractToTempFile);
 
-            var srcStream = romFileStream.GetStream();
-
-            var targetRomName = $"{targetRom.RaName}";
-
-            var targetRomFile = targetRom.AddRomFile(targetRomName, 0);
-            var targetRomPath = targetRomFile.AbsolutePath();
-
-            var patcher = new Patcher(patchFile, srcStream, targetRomPath);
-            targetRomFile.Crc32 = await patcher.ApplyPatch();
-
-            if (srcRomFile.IsCompressed())
             {
-                targetRomFile.Compress();
+                using var srcStream = romFileStream.GetStream();
+
+                var targetRomName = $"{targetRom.RaName}";
+
+                var targetRomFile = targetRom.AddRomFile(targetRomName, 0);
+                var targetRomPath = targetRomFile.AbsolutePath();
+
+                var patcher = new Patcher(patchFile, srcStream, targetRomPath);
+                targetRomFile.Crc32 = await patcher.ApplyPatch();
+
+                if (srcRomFile.IsCompressed())
+                {
+                    targetRomFile.Compress();
+                }
             }
+         
         }
 
         private int PrepareDirs(IProgress<RomSetGeneratorProgress> progress)
