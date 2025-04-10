@@ -12,9 +12,6 @@
     d:DesignHeight="350"
     d:DesignWidth="400"
     x:DataType="vm:NewProjectDialogViewModel"
-    ExtendClientAreaChromeHints="NoChrome"
-    ExtendClientAreaToDecorationsHint="False"
-    SystemDecorations="BorderOnly"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 

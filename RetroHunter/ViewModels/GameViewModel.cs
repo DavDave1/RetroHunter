@@ -37,6 +37,9 @@ namespace RetroHunter.ViewModels
             UpdateStatus();
         }
 
+        public GameViewModel() : base()
+        { }
+
         public async Task LoadDetails(CancellationTokenSource? ct)
         {
             GameIcon = await ImageHelper.LoadFromWeb(new Uri(Game.IconUrl));
