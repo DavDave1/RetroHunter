@@ -90,12 +90,6 @@ RetroHunter requires .NET 9.0 and can be build on Windows and Linux (Verify Mac 
 
 RetroHunter includes the [libchdr](https://github.com/rtissera/libchdr) C library as submodule dependency for reading compressed disk images in CHD format. Before building the RetroHunter C# solution, you need to compile the libchdr libary by running the `build_libchdr.sh` script.
 
-
-## Status
-
-[![Build Main](https://github.com/DavDave1/RetroHunter/actions/workflows/build-main.yml/badge.svg)](https://github.com/DavDave1/RetroHunter/actions/workflows/build-main.yml)
-
-
 ## TODOs
 
 ### Systems
