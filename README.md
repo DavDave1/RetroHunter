@@ -1,7 +1,7 @@
 # RetroHunter
 
 
-RetroHunter is a Desktop application that builds emulators rom sets by collecting games that have [Retroachievements](http://retroachievements.org/).
+RetroHunter is a Desktop application that builds emulators rom sets by collecting games with [Retroachievements](http://retroachievements.org/).
 
 RetroHunter is built using the C# [AvaloniaUI](https://avaloniaui.net/) framework with a Win 98 inspired theme thanks to the [Classic.Avalonia](https://github.com/BAndysc/Classic.Avalonia) package.
 
@@ -99,9 +99,6 @@ RetroHunter includes the [libchdr](https://github.com/rtissera/libchdr) C librar
 ## TODOs
 
 ### Systems
-- [x] GameCube matcher
-- [x] PlayStation 2 matcher
-- [x] Dreamcast matcher
 - [ ] Support reading RZV format
 
 ### UI
@@ -109,7 +106,4 @@ RetroHunter includes the [libchdr](https://github.com/rtissera/libchdr) C librar
 
 
 ### Extra features
-- [ ] Support downloading and applying patches
-- [ ] Display RA user profile summary
 - [ ] Implement github actions to build, test and release
-- [ ] Implement compression to chd format
