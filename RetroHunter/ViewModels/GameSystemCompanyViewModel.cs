@@ -7,7 +7,7 @@ namespace RetroHunter.ViewModels;
 
 public partial class GameSystemCompanyViewModel : TreeViewItemModel
 {
-    public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems) : base(mainVm)
+    public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems) : base()
     {
         _company = company;
         Children = [.. systems.Select(s => new GameSystemViewModel(mainVm, s))];

@@ -343,29 +343,23 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    public async Task Compress(TreeViewItemModel vm)
+    public async Task Compress(Rom rom)
     {
-        if (vm is RomViewModel romViewModel)
+        using var progress = new ScopedTaskProgress(this, $"Compressing {rom.RaName}", 100);
+
+        try
         {
-            var sizeBefore = romViewModel.Rom.GetSize();
-            using var progress = new ScopedTaskProgress(this, $"Compressing {romViewModel.Rom.RaName}", 100);
+            var sizeBefore = rom.GetSize();
 
-            var sys = _dbContext.GetSystems().First(s => s.Games.FirstOrDefault(g => g.Roms.Contains(romViewModel.Rom)) != null);
-            bool ok = await _chdman.CompressRom(_dbContext.UserConfig, sys, romViewModel.Rom, progress);
+            await _chdman.CompressRom(_dbContext.UserConfig, rom, progress);
+            await _dbContext.SaveChangesAsync();
 
-
-            if (!ok)
-            {
-                await App.ShowError("Failed to compress ROM", $"Failed to compress {romViewModel.Rom.RaName}");
-            }
-            else
-            {
-                await _dbContext.SaveChangesAsync();
-
-                var ratio = 100 * romViewModel.Rom.GetSize() / (float)sizeBefore;
-                await App.ShowInfo("ROM compression completed", $"ROM {romViewModel.Rom.RaName} compressed successfully.\nCompression ratio: {ratio:F1}");
-            }
-
+            var ratio = 100 * rom.GetSize() / (float)sizeBefore;
+            await App.ShowInfo("ROM compression completed", $"ROM {rom.RaName} compressed successfully.\nCompression ratio: {ratio:F1}");
+        }
+        catch(Exception ex)
+        {
+            await App.ShowError($"Failed to compress {rom.RaName}", ex.Message);
         }
     }
 

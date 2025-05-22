@@ -24,6 +24,9 @@ namespace RetroHunter.ViewModels
         [ObservableProperty]
         private List<RomViewModel> _roms;
 
+        [ObservableProperty]
+        private bool _atLeastOnePatch;
+
         public Game Game { get; private set; }
 
         public int ValidRomsCount { get; private set; }
@@ -64,6 +67,7 @@ namespace RetroHunter.ViewModels
             ValidRomsCount = Roms.Sum(rvm => rvm.IsRomValid ? 1 : 0);
             var iconSrc = ValidRomsCount == 0 ? "avares://RetroHunter/Assets/error.png" : "avares://RetroHunter/Assets/check.png";
             StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
+            AtLeastOnePatch = Roms.Any(rvm => rvm.HasPatch);
         }
 
         private string GameTypesToString() => string.Join("", Game.GameTypes.Select(t => $"[{t}]").Order());

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RetroHunter.ViewModels
 {
-    public partial class TreeViewItemModel(MainViewModel mainVm) : ViewModelBase
+    public partial class TreeViewItemModel : ViewModelBase
     {
         [ObservableProperty]
         private string _title = string.Empty;
@@ -41,10 +41,5 @@ namespace RetroHunter.ViewModels
         protected virtual bool CanShowDetails => false;
         protected virtual bool CanCompress => false;
 
-        [RelayCommand]
-        private async Task Compress()
-        {
-            await mainVm.Compress(this);
-        }
     }
 }

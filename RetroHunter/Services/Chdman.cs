@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RetroHunter.Models;
@@ -28,8 +28,11 @@ public class Chdman(ILogger<Chdman> logger)
         _exePath = path;
     }
 
-    public async Task<bool> CompressRom(UserConfig config, GameSystem system, Rom rom, IProgress<ChdmanProgress>? progress = null)
+    public async Task CompressRom(UserConfig config, Rom rom, IProgress<ChdmanProgress>? progress = null)
     {
+        if (!Path.Exists(_exePath))
+            throw new Exception($"chdman exe not found at {_exePath}");
+
         var inputFile = rom.RomFiles.FirstOrDefault(rf => Path.GetExtension(rf.FilePath) == ".cue");
         CompressType compressType = CompressType.CD;
         var ext = ".cue";
@@ -42,29 +45,21 @@ public class Chdman(ILogger<Chdman> logger)
         }
 
         if (inputFile == null)
-        {
-            return false;
-        }
+            throw new ArgumentException("Unsupported input");
+        
 
         var outFilename = new FileInfo(inputFile.AbsolutePath()).Name.Replace(ext, ".chd");
         var outAbsPath = inputFile.AbsolutePath().Replace(ext, ".chd");
 
-        bool ok = await Compress(compressType, inputFile.AbsolutePath(), outAbsPath, progress);
-
-        if (!ok)
-        {
-            return false;
-        }
+        await Compress(compressType, inputFile.AbsolutePath(), outAbsPath, progress);
 
         rom.RomFiles.ForEach(file => File.Delete(Path.Combine(config.OutputRomsDirectory, file.FilePath)));
 
         rom.AddRomFile(outFilename, await RomPatcher.Patcher.GetSourceCrc32(outAbsPath));
 
-        return true;
-
     }
 
-    public async Task<bool> Compress(CompressType compressType, string inputPath, string outputPath, IProgress<ChdmanProgress>? progress = null)
+    public async Task Compress(CompressType compressType, string inputPath, string outputPath, IProgress<ChdmanProgress>? progress = null)
     {
         using var chdman = CreateProcess(compressType, inputPath, outputPath);
 
@@ -96,15 +91,14 @@ public class Chdman(ILogger<Chdman> logger)
         };
 
         if (!chdman.Start())
-        {
-            return false;
-        }
+            throw new Exception("Failed to start chdman process");
 
         chdman.BeginErrorReadLine();
 
         await chdman.WaitForExitAsync();
 
-        return chdman.ExitCode == 0;
+        if (chdman.ExitCode != 0)
+            throw new Exception($"Chdman ended with error {chdman.ExitCode}");
     }
 
     public bool Detect()

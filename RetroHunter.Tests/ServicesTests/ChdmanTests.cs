@@ -36,9 +36,7 @@ public class ChdmanTests
         var chdman = _serviceProvider.GetService<Chdman>()!;
         chdman.Detect();
 
-        bool ok = await chdman.Compress(Chdman.CompressType.CD, inputPath, outPath);
-        Assert.True(ok);
-
+        await chdman.Compress(Chdman.CompressType.CD, inputPath, outPath);
 
         Assert.True(File.Exists(outPath));
 

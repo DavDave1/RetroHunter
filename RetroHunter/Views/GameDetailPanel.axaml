@@ -71,13 +71,29 @@
                             Binding="{Binding Rom.RaName}"
                             Header="Name" />
 
-                        <DataGridTemplateColumn Width="Auto" Header="Patch">
+                        <DataGridTemplateColumn
+                            Width="Auto"
+                            Header="Patch"
+                            IsVisible="{Binding AtLeastOnePatch}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate DataType="vm:RomViewModel">
                                     <Button Command="{Binding ApplyPatchCommand}" IsVisible="{Binding HasPatch}">Apply Patch</Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="Auto" Header="Compressed">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="vm:RomViewModel">
+                                    <classicControls:ToolBarButton
+                                        Command="{Binding CompressCommand}"
+                                        LargeIcon="/Assets/rom-compressed.png"
+                                        Text="Compress..."
+                                        TextPlacement="Right" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
             </ScrollViewer>

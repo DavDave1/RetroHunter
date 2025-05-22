@@ -7,7 +7,7 @@ namespace RetroHunter.ViewModels
 {
     public partial class RomViewModel : TreeViewItemModel
     {
-        public RomViewModel(MainViewModel mainVm, GameViewModel parent, Rom rom) : base(mainVm)
+        public RomViewModel(MainViewModel mainVm, GameViewModel parent, Rom rom) : base()
         {
             Rom = rom;
             Title = rom.RaName;
@@ -32,6 +32,12 @@ namespace RetroHunter.ViewModels
             await _mainVm.ApplyPatch(this);
             IsRomValid = Rom.Exists();
             Parent.UpdateStatus();
+        }
+
+        [RelayCommand]
+        private async Task Compress()
+        {
+            await _mainVm.Compress(Rom);
         }
 
         protected override bool CanCompress => true;

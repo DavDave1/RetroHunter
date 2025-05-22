@@ -9,15 +9,15 @@ namespace RetroHunter.ViewModels
 {
     public partial class GameSystemViewModel : TreeViewItemModel
     {
-        public GameSystem GameSystem => _gameSystem;
+        public GameSystem GameSystem { get; private set; }
 
         [ObservableProperty]
         private List<GameViewModel> _games = [];
 
-        public GameSystemViewModel(MainViewModel mainVm, GameSystem gameSystem) : base(mainVm)
+        public GameSystemViewModel(MainViewModel mainVm, GameSystem gameSystem) : base()
         {
             _mainVm = mainVm;
-            _gameSystem = gameSystem;
+            GameSystem = gameSystem;
             RefreshModel(gameSystem);
         }
 
@@ -28,10 +28,10 @@ namespace RetroHunter.ViewModels
 
         public void RefreshModel(GameSystem system)
         {
-            _gameSystem = system;
-            IsChecked = _gameSystem.IsChecked;
+            GameSystem = system;
+            IsChecked = GameSystem.IsChecked;
 
-            Games = [.. _gameSystem
+            Games = [.. GameSystem
                 .GetGamesMatchingFilter()
                 .OrderBy(g => g.Name)
                 .Select(g => new GameViewModel(_mainVm, g))];
@@ -40,8 +40,6 @@ namespace RetroHunter.ViewModels
         }
 
         private int GetValidGamesCount() => Games.Where(g => g.Game.HasValidRom()).Count();
-
-        private GameSystem _gameSystem;
 
         private readonly MainViewModel _mainVm;
     }
