@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroHunter.Tests", "RetroH
 		{78F740BA-4769-49D1-80D0-26E67FA84C1F} = {78F740BA-4769-49D1-80D0-26E67FA84C1F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiskReader", "DiskReader\DiskReader.csproj", "{74784A29-85A6-440E-882A-CF49EB52FC34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiskReader", "DiskReader\DiskReader.csproj", "{74784A29-85A6-440E-882A-CF49EB52FC34}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomPatcher", "RomPatcher\RomPatcher.csproj", "{A20DD641-FF9D-4FB3-923D-5CA1641C9E8A}"
 EndProject
