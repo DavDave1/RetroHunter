@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace RetroHunter.Persistence
 {
@@ -22,6 +21,7 @@ namespace RetroHunter.Persistence
         public Ra2DatContext()
         {
             _model.InitGameSystems();
+            _model.InitParents();
         }
 
         public IEnumerable<GameSystem> GetSystems() => _model.Systems;
@@ -62,7 +62,8 @@ namespace RetroHunter.Persistence
             }
 
             await using FileStream fileStream = File.Create(FilePath);
-            await JsonSerializer.SerializeAsync(fileStream, _model);
+            
+            await JsonSerializer.SerializeAsync(fileStream, _model, _options);
         }
 
         public void SyncSystems(IEnumerable<GameSystem> raSystems)
@@ -106,5 +107,9 @@ namespace RetroHunter.Persistence
         }
 
         private Ra2DatModel _model = new();
+        JsonSerializerOptions _options = new()
+        {
+            WriteIndented = true
+        };
     }
 }

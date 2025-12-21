@@ -33,10 +33,12 @@ namespace RetroHunter.Utils.Matchers
             fileStream.Seek(BASE_HEADER_SIZE + 0x14, SeekOrigin.Begin);
 
             fileStream.ReadExactly(buffer);
-            var apploaderBodySize = BitConverter.ToUInt32(buffer.Reverse().ToArray());
+            buffer.Reverse();
+            var apploaderBodySize = BitConverter.ToUInt32(buffer.ToArray());
 
             fileStream.ReadExactly(buffer);
-            var apploaderTrailerSize = BitConverter.ToUInt32(buffer.Reverse().ToArray());
+            buffer.Reverse();
+            var apploaderTrailerSize = BitConverter.ToUInt32(buffer.ToArray());
 
             var diskHeaderSize = BASE_HEADER_SIZE + APPLOADER_HEADER_SIZE + apploaderBodySize + apploaderTrailerSize;
             diskHeaderSize = Math.Min(diskHeaderSize, MAX_HEADER_SIZEE);
@@ -46,7 +48,9 @@ namespace RetroHunter.Utils.Matchers
             fileStream.Seek(0, SeekOrigin.Begin);
             fileStream.ReadExactly(headerBuffer);
 
-            var dolInfoAddress = BitConverter.ToUInt32(headerBuffer[0x420..0x424].Reverse().ToArray());
+            var headerSize = headerBuffer[0x420..0x424];
+            headerSize.Reverse();
+            var dolInfoAddress = BitConverter.ToUInt32(headerSize.ToArray());
 
             fileStream.Seek(dolInfoAddress, SeekOrigin.Begin);
 
@@ -63,12 +67,16 @@ namespace RetroHunter.Utils.Matchers
                 var offsetStartIndex = i * 4;
                 var offsetEndIndex = offsetStartIndex + 4;
 
-                var dolOffset = BitConverter.ToUInt32(addrBuffer[offsetStartIndex..offsetEndIndex].Reverse().ToArray());
+                var offset = addrBuffer[offsetStartIndex..offsetEndIndex];
+                offset.Reverse();
+                var dolOffset = BitConverter.ToUInt32(offset.ToArray());
 
                 var sizeStartIndex = 0x90 + i * 4;
                 var sizeEndIndex = sizeStartIndex + 4;
 
-                var dolSize = BitConverter.ToUInt32(addrBuffer[sizeStartIndex..sizeEndIndex].Reverse().ToArray());
+                var size = addrBuffer[sizeStartIndex..sizeEndIndex];
+                size.Reverse();
+                var dolSize = BitConverter.ToUInt32(size.ToArray());
 
                 var dolBuffer = new byte[dolSize];
 
