@@ -15,19 +15,15 @@
     <PackageReference Include="DiscUtils.Iso9660" Version="0.16.13" />
     <PackageReference Include="DiscUtils.Streams" Version="0.16.13" />
   </ItemGroup>
-
-  <Target Condition="'$(IsLinux)'=='true'" Name="BuildLibchdrLinux" BeforeTargets="PreBuildEvent" >
+  <Target Condition="'$(IsLinux)'=='true'" Name="BuildLibchdrLinux" BeforeTargets="PreBuildEvent">
     <Exec Command="./build_libchdr.sh" />
   </Target>
-
   <Target Condition="'$(IsWindows)'=='true'" Name="BuildLibchdrWin" BeforeTargets="PreBuildEvent">
     <Exec Command="powershell -ExecutionPolicy Bypass -File build_libchdr.ps1" />
   </Target>
-
   <Target Name="LibchdrClean" BeforeTargets="CoreClean">
     <RemoveDir Directories="./libchdr/build/" />
   </Target>
-
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <ContentWithTargetPath Include="./libchdr/build/libchdr.so">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -45,13 +41,11 @@
       <TargetPath>libchdr.so.0.2</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
-
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <ContentWithTargetPath Include="./libchdr/build/libchdr.dll">
+    <ContentWithTargetPath Include="./libchdr/build/chdr.dll">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libchdr.dll</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
-
 </Project>
