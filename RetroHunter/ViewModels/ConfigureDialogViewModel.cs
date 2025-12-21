@@ -50,7 +50,7 @@ namespace RetroHunter.ViewModels
             OutputRomsDirectory = _context.UserConfig.OutputRomsDirectory;
             SelectedDirStructureStyle = _context.UserConfig.DirStructureStyle;
             SelectedGameTypesFilter = _context.UserConfig.GameTypesFilter;
-            ChdmanExePath = _context.UserConfig.ChdmanExePath;
+            ChdmanExePath = _chdman.ChdmanExePath;
         }
 
         [RelayCommand]
@@ -124,10 +124,14 @@ namespace RetroHunter.ViewModels
         [RelayCommand]
         private async Task DetectChdman()
         {
-
             if (!_chdman.Detect())
             {
                 await App.ShowError("Chdman not found", "Chdman not found in PATH");
+            }
+            else
+            {
+                await App.ShowInfo("Chdman detected", $"Chdman found at {_chdman.ChdmanExePath}");
+                ChdmanExePath = _chdman.ChdmanExePath;
             }
         }
 

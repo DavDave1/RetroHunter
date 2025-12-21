@@ -233,7 +233,7 @@ public partial class MainViewModel : ViewModelBase
         }
 
         _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
-        _chdman.SetChdManPath(_dbContext.UserConfig.ChdmanExePath);
+        _chdman.ChdmanExePath = _dbContext.UserConfig.ChdmanExePath;
 
         var systems = _dbContext.GetSystems().ToList();
         CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));

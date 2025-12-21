@@ -23,15 +23,12 @@ public class Chdman(ILogger<Chdman> logger)
         DVD
     }
 
-    public void SetChdManPath(string path)
-    {
-        _exePath = path;
-    }
+    public string ChdmanExePath { get; set; } = string.Empty;
 
     public async Task CompressRom(UserConfig config, Rom rom, IProgress<ChdmanProgress>? progress = null)
     {
-        if (!Path.Exists(_exePath))
-            throw new Exception($"chdman exe not found at {_exePath}");
+        if (!Path.Exists(ChdmanExePath))
+            throw new Exception($"chdman exe not found at {ChdmanExePath}");
 
         var inputFile = rom.RomFiles.FirstOrDefault(rf => Path.GetExtension(rf.FilePath) == ".cue");
         CompressType compressType = CompressType.CD;
@@ -103,7 +100,7 @@ public class Chdman(ILogger<Chdman> logger)
 
     public bool Detect()
     {
-        if (Path.Exists(_exePath))
+        if (Path.Exists(ChdmanExePath))
         {
             return true;
         }
@@ -126,7 +123,7 @@ public class Chdman(ILogger<Chdman> logger)
 
             if (File.Exists(fullPath))
             {
-                _exePath = fullPath;
+                ChdmanExePath = fullPath;
                 logger.LogInformation($"chdman exe found at {fullPath}");
                 return true;
             }
@@ -146,7 +143,7 @@ public class Chdman(ILogger<Chdman> logger)
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = _exePath,
+                FileName = ChdmanExePath,
                 Arguments = args,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -159,6 +156,4 @@ public class Chdman(ILogger<Chdman> logger)
 
         return chdman;
     }
-
-    private string _exePath = "";
 }
