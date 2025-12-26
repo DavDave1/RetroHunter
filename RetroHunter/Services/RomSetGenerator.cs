@@ -39,9 +39,12 @@ namespace RetroHunter.Services
             await Task.Run(() =>
             {
                 result.RemovedRoms = PrepareDirs(progress);
-            });
+            }, cancellationToken);
 
-            result.AddedRoms = await MatchToRom(progress, cancellationToken);
+            await Task.Run(async () =>
+            {
+                result.AddedRoms = await MatchToRom(progress, cancellationToken);
+            }, cancellationToken);
 
             return result;
         }
