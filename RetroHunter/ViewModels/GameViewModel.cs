@@ -1,4 +1,5 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RetroHunter.Models;
 using RetroHunter.Utils;
@@ -27,6 +28,12 @@ namespace RetroHunter.ViewModels
         [ObservableProperty]
         private bool _atLeastOnePatch;
 
+        [ObservableProperty]
+        private bool _atLeastOneLinkedRom;
+
+        [ObservableProperty]
+        private string _toolTipText;
+
         public Game Game { get; private set; }
 
         public int ValidRomsCount { get; private set; }
@@ -37,6 +44,7 @@ namespace RetroHunter.ViewModels
             _mainVm = mainVm;
             Roms = Game.Roms.Select(r => new RomViewModel(mainVm, this, r)).OrderBy(r => r.Title).ToList();
             GameTypes = GameTypesToString();
+            ToolTipText = "";
             UpdateStatus();
         }
 
@@ -65,7 +73,23 @@ namespace RetroHunter.ViewModels
         public void UpdateStatus()
         {
             ValidRomsCount = Roms.Sum(rvm => rvm.IsRomValid ? 1 : 0);
-            var iconSrc = ValidRomsCount == 0 ? "avares://RetroHunter/Assets/error.png" : "avares://RetroHunter/Assets/check.png";
+            AtLeastOneLinkedRom = Roms.Sum(rvm => rvm.IsRomLinked ? 1 : 0) > 0;
+
+            var iconSrc = "";
+            if (!AtLeastOneLinkedRom) {
+                iconSrc = "avares://RetroHunter/Assets/error.png";
+                ToolTipText = "No roms are linked to this game";
+            }
+            else if (ValidRomsCount == 0)
+            {
+                iconSrc = "avares://RetroHunter/Assets/warning.png";
+                ToolTipText = "Roms are linked, but rom files are missing at linked path";
+            }
+            else
+            {
+                iconSrc = "avares://RetroHunter/Assets/check.png";
+            }
+
             StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
             AtLeastOnePatch = Roms.Any(rvm => rvm.HasPatch);
         }
