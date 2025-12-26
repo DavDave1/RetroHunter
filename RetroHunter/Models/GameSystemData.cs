@@ -281,7 +281,7 @@ public static class GameSystemData
                 GameSystemType.ThreeDo => "3do",
                 GameSystemType.AmstradCPC => "amstradcpc",
                 GameSystemType.AppleII => "apple2",
-                GameSystemType.Arcade => "arcade",
+                GameSystemType.Arcade => "fbneo",
                 GameSystemType.Arcadia2001 => "arcadia",
                 GameSystemType.Arduboy => "arduboy",
                 GameSystemType.ColecoVision => "colecovision",
