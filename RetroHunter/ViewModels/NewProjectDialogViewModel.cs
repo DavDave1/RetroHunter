@@ -15,6 +15,9 @@ public partial class NewProjectDialogViewModel(SettingsManager settingsManager) 
     [ObservableProperty]
     private string _projectFilePath = "";
 
+    [ObservableProperty]
+    private bool _newProject;
+
     [RelayCommand]
     private async Task OpenExisting()
     {
@@ -52,6 +55,7 @@ public partial class NewProjectDialogViewModel(SettingsManager settingsManager) 
 
         if (result != null)
         {
+            NewProject = true;
             await UpdateLatestProjectPath(result.Path.AbsolutePath);
             App.CurrentWindow().Close();
         }

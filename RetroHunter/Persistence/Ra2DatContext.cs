@@ -28,11 +28,11 @@ namespace RetroHunter.Persistence
 
         public IEnumerable<GameSystem> GetCheckedSystems() => _model.Systems.Where(s => s.IsChecked);
 
-        public async Task LoadModelAsync(string modelFilePath)
+        public async Task LoadModelAsync(string modelFilePath, bool newProject)
         {
             FilePath = modelFilePath;
 
-            if (Path.Exists(modelFilePath))
+            if (Path.Exists(modelFilePath) && !newProject)
             {
                 {
 

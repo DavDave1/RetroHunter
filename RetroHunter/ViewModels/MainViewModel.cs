@@ -87,10 +87,9 @@ public partial class MainViewModel : ViewModelBase
         dialog.DataContext = vm;
 
         await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
-
         if (!vm.WasCanceled)
         {
-            await _dbContext.LoadModelAsync(vm.ProjectFilePath);
+            await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
             await LoadModel();
         }
     }
@@ -224,7 +223,7 @@ public partial class MainViewModel : ViewModelBase
 
             if (!vm.WasCanceled)
             {
-                await _dbContext.LoadModelAsync(vm.ProjectFilePath);
+                await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
             }
             else
             {

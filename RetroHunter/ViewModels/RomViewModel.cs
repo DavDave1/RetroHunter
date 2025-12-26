@@ -14,6 +14,7 @@ namespace RetroHunter.ViewModels
             _mainVm = mainVm;
             Parent = parent;
             IsRomValid = Rom.Exists();
+            IsRomLinked = Rom.RomFiles.Count > 0;
         }
 
         [ObservableProperty]
@@ -21,6 +22,9 @@ namespace RetroHunter.ViewModels
 
         [ObservableProperty]
         private bool _isRomValid;
+
+        [ObservableProperty]
+        private bool _isRomLinked;
 
         public GameViewModel Parent;
 
