@@ -81,16 +81,24 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenDatabase()
     {
-        var dialog = new NewProjectDialog();
-
-        var vm = new NewProjectDialogViewModel(_settingsManager);
-        dialog.DataContext = vm;
-
-        await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
-        if (!vm.WasCanceled)
+        try
         {
-            await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
-            await LoadModel();
+
+            var dialog = new NewProjectDialog();
+
+            var vm = new NewProjectDialogViewModel(_settingsManager);
+            dialog.DataContext = vm;
+
+            await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
+            if (!vm.WasCanceled)
+            {
+                await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
+                await LoadModel();
+            }
+        }
+        catch(Exception e)
+        {
+            await App.ShowError("Failed to load project", e.Message);
         }
     }
 
@@ -212,35 +220,42 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public async Task LoadModel()
     {
-        if (_dbContext.FilePath == string.Empty)
+        try
         {
-            var dialog = new NewProjectDialog();
-
-            var vm = new NewProjectDialogViewModel(_settingsManager);
-            dialog.DataContext = vm;
-
-            await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
-
-            if (!vm.WasCanceled)
+            if (_dbContext.FilePath == string.Empty)
             {
-                await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
+                var dialog = new NewProjectDialog();
+
+                var vm = new NewProjectDialogViewModel(_settingsManager);
+                dialog.DataContext = vm;
+
+                await dialog.ShowDialog<NewProjectDialogViewModel?>(App.MainWindow());
+
+                if (!vm.WasCanceled)
+                {
+                    await _dbContext.LoadModelAsync(vm.ProjectFilePath, vm.NewProject);
+                }
+                else
+                {
+                    App.CurrentWindow().Close();
+                }
             }
-            else
-            {
-                App.CurrentWindow().Close();
-            }
+
+            _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
+            _chdman.ChdmanExePath = _dbContext.UserConfig.ChdmanExePath;
+
+            var systems = _dbContext.GetSystems().ToList();
+            CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));
+
+            SelectedSystem = null;
+            GamesList = [];
+
+            await FetchUserProfile();
         }
-
-        _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
-        _chdman.ChdmanExePath = _dbContext.UserConfig.ChdmanExePath;
-
-        var systems = _dbContext.GetSystems().ToList();
-        CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));
-
-        SelectedSystem = null;
-        GamesList = [];
-
-        await FetchUserProfile();
+        catch (Exception e)
+        {
+            await App.ShowError("Failed to load project", e.Message);
+        }
     }
 
     public async Task ApplyPatch(RomViewModel romViewModel)

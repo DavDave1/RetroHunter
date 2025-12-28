@@ -67,6 +67,8 @@ namespace RetroHunter.ViewModels
                 return;
             }
 
+            UpdateStatus();
+
             Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, this, r))];
         }
 
