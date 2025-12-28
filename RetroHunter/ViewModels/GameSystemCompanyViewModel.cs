@@ -7,6 +7,8 @@ namespace RetroHunter.ViewModels;
 
 public partial class GameSystemCompanyViewModel : TreeViewItemModel
 {
+    public override string IconSrc { get => Company.IconUrl(); }
+
     public GameSystemCompanyViewModel(MainViewModel mainVm, GameSystemCompany company, List<GameSystem> systems) : base()
     {
         _company = company;

@@ -14,6 +14,8 @@ namespace RetroHunter.ViewModels
         [ObservableProperty]
         private List<GameViewModel> _games = [];
 
+        public override string IconSrc { get => GameSystem.GameSystemType.IconUrl(); }
+
         public GameSystemViewModel(MainViewModel mainVm, GameSystem gameSystem) : base()
         {
             _mainVm = mainVm;

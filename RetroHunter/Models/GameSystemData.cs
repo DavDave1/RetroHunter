@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using DiscUtils.Streams;
 using RetroHunter.Utils.Matchers;
 
 namespace RetroHunter.Models;
@@ -121,6 +122,82 @@ public static class GameSystemData
             GameSystemType.WonderSwan => "WonderSwan",
             _ => throw new Exception($"Unknown name for Game System {type}"),
         };
+    }
+
+    public static string IconUrl(this GameSystemType type)
+    {
+        return type switch
+        {
+            GameSystemType.GameBoy => "",
+            GameSystemType.GameBoyColor => "",
+            GameSystemType.GameBoyAdvance => "avares://RetroHunter/Assets/GameSystem/Gameboy Advance.png",
+            GameSystemType.Nes => "avares://RetroHunter/Assets/GameSystem/Nintendo NES.png",
+            GameSystemType.SuperNintendo => "avares://RetroHunter/Assets/GameSystem/Nintendo SNES.png",
+            GameSystemType.Nintendo64 => "avares://RetroHunter/Assets/GameSystem/Nintendo 64.png",
+            GameSystemType.GameCube => "avares://RetroHunter/Assets/GameSystem/Nintendo Gamecube.png",
+            GameSystemType.NintendoDS => "avares://RetroHunter/Assets/GameSystem/Nintendo DS.png",
+            GameSystemType.NintendoDSi => "avares://RetroHunter/Assets/GameSystem/Nintendo DS.png",
+            GameSystemType.PokemonMini => "",
+            GameSystemType.VirtualBoy => "",
+            GameSystemType.PlayStation => "",
+            GameSystemType.PlayStation2 => "avares://RetroHunter/Assets/GameSystem/Sony Playstation 2.png",
+            GameSystemType.Psp => "avares://RetroHunter/Assets/GameSystem/Sony Playstation Portable.png",
+            GameSystemType.Atari2600 => "",
+            GameSystemType.Atari7800 => "",
+            GameSystemType.AtariJaguar => "",
+            GameSystemType.AtariJaguarCD => "",
+            GameSystemType.AtariLynx => "",
+            GameSystemType.Sg1000 => "",
+            GameSystemType.MasterSystem => "",
+            GameSystemType.GameGear => "",
+            GameSystemType.Genesis => "avares://RetroHunter/Assets/GameSystem/Sega Genesis.png",
+            GameSystemType.SegaCD => "",
+            GameSystemType.Sega32x => "",
+            GameSystemType.Saturn => "avares://RetroHunter/Assets/GameSystem/Sega Saturn.png",
+            GameSystemType.Dreamcast => "avares://RetroHunter/Assets/GameSystem/Sega Dreamcast.png",
+            GameSystemType.PcEngine => "",
+            GameSystemType.PcEngineCD => "",
+            GameSystemType.Pc8000 => "",
+            GameSystemType.PcFx => "",
+            GameSystemType.NeoGeoCD => "avares://RetroHunter/Assets/GameSystem/SNK Neo Geo.png",
+            GameSystemType.NeoGeoPocket => "",
+            GameSystemType.ThreeDo => "",
+            GameSystemType.AmstradCPC => "",
+            GameSystemType.AppleII => "",
+            GameSystemType.Arcade => "avares://RetroHunter/Assets/GameSystem/MAME.png",
+            GameSystemType.Arcadia2001 => "",
+            GameSystemType.Arduboy => "",
+            GameSystemType.ColecoVision => "",
+            GameSystemType.ElektorTvGamesComputer => "",
+            GameSystemType.FairchildChannelF => "",
+            GameSystemType.Intellivision => "",
+            GameSystemType.IntertonVC4000 => "",
+            GameSystemType.MagnavoxOdyssey2 => "",
+            GameSystemType.MegaDuck => "",
+            GameSystemType.Msx => "",
+            GameSystemType.Uzebox => "",
+            GameSystemType.Vectrex => "",
+            GameSystemType.Wasm4 => "",
+            GameSystemType.Supervision => "",
+            GameSystemType.WonderSwan => "",
+            _ => throw new Exception($"Unknown name for Game System {type}"),
+        };
+    }
+
+    public static string IconUrl(this GameSystemCompany company)
+    {
+        return company switch
+        {
+            GameSystemCompany.Atari => "",
+            GameSystemCompany.Nintendo => "",
+            GameSystemCompany.Sega => "avares://RetroHunter/Assets/sega.png",
+            GameSystemCompany.Sony => "",
+            GameSystemCompany.NEC => "",
+            GameSystemCompany.SNK => "",
+            GameSystemCompany.Other => "",
+            _ => throw new NotImplementedException($"Unknown icon url for Game System Company {company}"),
+        };
+
     }
 
     public static GameSystemCompany Company(this GameSystemType type)
@@ -285,10 +362,10 @@ public static class GameSystemData
                 GameSystemType.Arcadia2001 => "arcadia",
                 GameSystemType.Arduboy => "arduboy",
                 GameSystemType.ColecoVision => "colecovision",
-                GameSystemType.ElektorTvGamesComputer => "unsupported_tvgamescomputer",
+                GameSystemType.ElektorTvGamesComputer => "tvgc",
                 GameSystemType.FairchildChannelF => "channelf",
                 GameSystemType.Intellivision => "intellivision",
-                GameSystemType.IntertonVC4000 => "unsupported_vc4000",
+                GameSystemType.IntertonVC4000 => "vc4000",
                 GameSystemType.MagnavoxOdyssey2 => "odyssey2",
                 GameSystemType.MegaDuck => "megaduck",
                 GameSystemType.Msx => "msx",
