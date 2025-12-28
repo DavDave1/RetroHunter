@@ -115,7 +115,7 @@ namespace RetroHunter.Services
                 .SelectMany(s => s.Games)
                 .SelectMany(g => g.Roms)
                 .SelectMany(r => r.RomFiles)
-                .Select(rf => new FileInfo(Path.Combine(outDirInfo.FullName, rf.FilePath)).FullName)
+                .Select(rf => new FileInfo(rf.AbsolutePath()).FullName)
                 .ToImmutableHashSet();
 
             // Iterate output dir recursively and move all files not linked to Roms to input
