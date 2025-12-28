@@ -68,7 +68,7 @@ public partial class App : Application
     {
         var desktop = Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 
-        return desktop!.Windows.First(w => w.IsActive);
+        return desktop!.Windows.FirstOrDefault(w => w.IsActive) ?? desktop!.Windows.First(w => w != desktop!.MainWindow);
 
     }
 
