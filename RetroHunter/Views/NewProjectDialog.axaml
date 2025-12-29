@@ -8,8 +8,8 @@
     xmlns:vm="clr-namespace:RetroHunter.ViewModels"
     Title="Welcome to Retro Hunter"
     Width="400"
-    Height="350"
-    d:DesignHeight="350"
+    Height="380"
+    d:DesignHeight="380"
     d:DesignWidth="400"
     x:DataType="vm:NewProjectDialogViewModel"
     WindowStartupLocation="CenterScreen"
@@ -19,22 +19,11 @@
         VerticalAlignment="Center"
         Orientation="Vertical"
         Spacing="10">
-        <Image Width="390" Source="/Assets/retro-hunter-splash.png" />
+        <Image Width="390" Source="/Assets/retro-hunter-splash-v2.png" />
         <StackPanel
             HorizontalAlignment="Center"
             Orientation="Horizontal"
             Spacing="10">
-            <SplitButton
-                Width="100"
-                Height="50"
-                Command="{Binding OpenLatestCommand}"
-                Content="Open Latest">
-                <SplitButton.Flyout>
-                    <MenuFlyout Placement="Bottom">
-                        <MenuItem Command="{Binding OpenExistingCommand}" Header="Open Existing..." />
-                    </MenuFlyout>
-                </SplitButton.Flyout>
-            </SplitButton>
             <Button
                 Width="100"
                 Height="50"
@@ -42,6 +31,22 @@
                 Command="{Binding CreateNewCommand}">
                 New Project
             </Button>
+            <SplitButton
+                Width="100"
+                Height="50"
+                Command="{Binding OpenLatestCommand}"
+                Content="Open Latest"
+                IsEnabled="True">
+                <SplitButton.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuItem
+                            Command="{Binding OpenExistingCommand}"
+                            Foreground="Black"
+                            Header="Open Existing..." />
+                    </MenuFlyout>
+                </SplitButton.Flyout>
+            </SplitButton>
+
         </StackPanel>
     </StackPanel>
 </classic:ClassicWindow>
