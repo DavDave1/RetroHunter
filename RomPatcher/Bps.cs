@@ -1,6 +1,9 @@
 
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 using System.IO.Hashing;
+using System.Text;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RomPatcher;
 
@@ -244,10 +247,25 @@ public class TargetCopyAction(ulong length, long targetOffset) : IAction
 
             tgt.stream.Seek(tgtPosition, SeekOrigin.Begin);
 
+            // Special handling of case in which patch is reading the last byte of target and writing it
+            // to target itself. This means that patch actually wants to append the same byte remaining times
+            // to the target. Append repeated bytes all at once to speed up patching.
+            if (readLength == 1)
+            {
+                await AppendLastByte(data[0], (int)remaining, tgt.stream);
+                tgt.relativeOffset += remaining;
+                break;
+            }
+
             await tgt.stream.WriteAsync(data);
             tgt.relativeOffset += readLength;
 
             remaining -= readLength;
         }
     }
+
+    private static async Task AppendLastByte(byte data, int count, Stream tgt)
+    {
+        await tgt.WriteAsync(Enumerable.Repeat(data, count).ToArray());
+    } 
 }

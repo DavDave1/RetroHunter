@@ -17,10 +17,10 @@ public class RomPatcherTest
     }
 
     [Theory]
-    [InlineData("../../../TestRoms/patch/test_patch.bps", "../../../TestRoms/patch/source.gba")]
+    [InlineData("../../../TestRoms/patch/test_patch.bps", "../../../TestRoms/patch/source.sfc")]
     public async Task ApplyPatch(string patch, string source)
     {
-        var target = "../../../TestRoms/patch/target.gba";
+        var target = "../../../TestRoms/patch/target.sfc";
 
         using var sourceStream = File.OpenRead(source);
         var patcher = new Patcher(patch, sourceStream, target);
