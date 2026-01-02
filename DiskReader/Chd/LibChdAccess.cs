@@ -1,7 +1,8 @@
 ﻿
+using DiskReader.BinCue;
 using System.Runtime.InteropServices;
 using System.Text;
-using DiskReader.BinCue;
+using static DiskReader.BinCue.Track;
 
 namespace DiskReader.Chd
 {
@@ -23,6 +24,14 @@ namespace DiskReader.Chd
             return header.hunkbytes;
         }
 
+        internal static bool IsDvd(UIntPtr chd_file)
+        {
+            byte[] metadataStr = new byte[256];
+            UInt32 resultLen = 0;
+
+            return GetMetadataInternal(chd_file, ChdConstants.DVD_METADATA_TAG, 0, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero) == 0;
+        }
+
         internal static Track? GetMetadata(UIntPtr chd_file, uint tack_index)
         {
             byte[] metadataStr = new byte[256];
@@ -36,10 +45,28 @@ namespace DiskReader.Chd
                 result = GetMetadataInternal(chd_file, ChdConstants.CDROM_TRACK_METADATA_TAG, tack_index, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero);
             }
 
-            // Failed, again, is this a GDROM
+            // Failed, is this a GDROM
             if (result != 0)
             {
                 result = GetMetadataInternal(chd_file, ChdConstants.GDROM_TRACK_METADATA_TAG, tack_index, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero);
+            }
+
+            // Failed, is this a DVD
+            if (result != 0)
+            {
+                result = GetMetadataInternal(chd_file, ChdConstants.DVD_METADATA_TAG, tack_index, metadataStr, (uint)metadataStr.Length, ref resultLen, UIntPtr.Zero, UIntPtr.Zero);
+                if (result == 0)
+                {
+                    ChdHeader header = GetHeader(chd_file);
+                    return new()
+                    {
+                        TrackNr = 0,
+                        TrackType = ETrackType.Mode1,
+                        TrackSize = (int)(header.hunkbytes * header.totalhunks),
+                        SectorSize = (int)header.hunkbytes,
+                        SessionNr = 1,
+                    };
+                }
             }
 
             if (result != 0)

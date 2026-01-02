@@ -12,6 +12,8 @@ namespace DiskReader.Chd
         public static uint CDROM_TRACK_METADATA_TAG = MakeTag('C', 'H', 'T', 'R');
         public static uint CDROM_TRACK_METADATA2_TAG = MakeTag('C', 'H', 'T', '2');
         public static uint GDROM_TRACK_METADATA_TAG = MakeTag('C', 'H', 'G', 'D');
+        public static uint HARD_DISK_METADATA_TAG = MakeTag('G', 'D', 'D', 'D');
+        public static uint DVD_METADATA_TAG = MakeTag('D', 'V', 'D', ' ');
 
         public const int CHD_CD_SECTOR_DATA_SIZE = 2352 + 96;
 
@@ -23,32 +25,32 @@ namespace DiskReader.Chd
     }
     internal unsafe struct ChdHeader
     {
-        UInt32 length;                        /* length of header data */
-        UInt32 version;                   /* drive format version */
-        UInt32 flags;                     /* flags field */
+        public UInt32 length;                        /* length of header data */
+        public UInt32 version;                   /* drive format version */
+        public UInt32 flags;                     /* flags field */
 
-        fixed UInt32 compression[4];                /* compression type */
+        public fixed UInt32 compression[4];                /* compression type */
         public UInt32 hunkbytes;                 /* number of bytes per hunk */
-        UInt32 totalhunks;                    /* total # of hunks represented */
-        UInt64 logicalbytes;              /* logical size of the data */
-        UInt64 metaoffset;                    /* offset in file of first metadata */
-        UInt64 mapoffset;                 /* TOOD V5 */
-        fixed byte md5[ChdConstants.CHD_MD5_BYTES];         /* overall MD5 checksum */
-        fixed byte parentmd5[ChdConstants.CHD_MD5_BYTES];   /* overall MD5 checksum of parent */
-        fixed byte sha1[ChdConstants.CHD_MD5_BYTES];       /* overall SHA1 checksum */
-        fixed byte rawsha1[ChdConstants.CHD_MD5_BYTES];    /* SHA1 checksum of raw data */
-        fixed byte parentsha1[ChdConstants.CHD_MD5_BYTES]; /* overall SHA1 checksum of parent */
-        UInt32 unitbytes;                 /* TODO V5 */
-        UInt64 unitcount;                 /* TODO V5 */
-        UInt32 hunkcount;                  /* TODO V5 */
+        public UInt32 totalhunks;                    /* total # of hunks represented */
+        public UInt64 logicalbytes;              /* logical size of the data */
+        public UInt64 metaoffset;                    /* offset in file of first metadata */
+        public UInt64 mapoffset;                 /* TOOD V5 */
+        public fixed byte md5[ChdConstants.CHD_MD5_BYTES];         /* overall MD5 checksum */
+        public fixed byte parentmd5[ChdConstants.CHD_MD5_BYTES];   /* overall MD5 checksum of parent */
+        public fixed byte sha1[ChdConstants.CHD_MD5_BYTES];       /* overall SHA1 checksum */
+        public fixed byte rawsha1[ChdConstants.CHD_MD5_BYTES];    /* SHA1 checksum of raw data */
+        public fixed byte parentsha1[ChdConstants.CHD_MD5_BYTES]; /* overall SHA1 checksum of parent */
+        public UInt32 unitbytes;                 /* TODO V5 */
+        public UInt64 unitcount;                 /* TODO V5 */
+        public UInt32 hunkcount;                  /* TODO V5 */
 
         /* map information */
-        UInt32 mapentrybytes;              /* length of each entry in a map (V5) */
-        UIntPtr rawmap;                   /* raw map data */
+        public UInt32 mapentrybytes;              /* length of each entry in a map (V5) */
+        public UIntPtr rawmap;                   /* raw map data */
 
-        UInt32 obsolete_cylinders;            /* obsolete field -- do not use! */
-        UInt32 obsolete_sectors;          /* obsolete field -- do not use! */
-        UInt32 obsolete_heads;                /* obsolete field -- do not use! */
-        UInt32 obsolete_hunksize;         /* obsolete field -- do not use! */
+        public UInt32 obsolete_cylinders;            /* obsolete field -- do not use! */
+        public UInt32 obsolete_sectors;          /* obsolete field -- do not use! */
+        public UInt32 obsolete_heads;                /* obsolete field -- do not use! */
+        public UInt32 obsolete_hunksize;         /* obsolete field -- do not use! */
     };
 }

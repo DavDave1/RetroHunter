@@ -43,7 +43,7 @@
     <ContentWithTargetPath Include="./libchdr/build/chdr.dll">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libchdr.dll</TargetPath>
+      <TargetPath>chdr.dll</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
 </Project>
