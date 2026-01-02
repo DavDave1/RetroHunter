@@ -147,6 +147,8 @@ namespace RetroHunter.Services
 
         private async Task<int> MatchToRom(IProgress<RomSetGeneratorProgress> progress, CancellationToken cancellationToken)
         {
+            var romsDict = context.GetRomsDictionary();
+
             RomSetGeneratorProgress progressInfo = new();
 
             var inDirInfo = new DirectoryInfo(context.UserConfig.InputRomsDirectory);
@@ -162,7 +164,7 @@ namespace RetroHunter.Services
             {
                 var gameSystemDir = system.GetDirName(dirStyle);
 
-                var matcher = matcherFactory.CreateMatcher(system, settingsManager.Settings);
+                var matcher = matcherFactory.CreateMatcher(romsDict, system, settingsManager.Settings);
 
                 HashSet<string> movedFiles = [];
 

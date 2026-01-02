@@ -10,7 +10,7 @@ using System.Text;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class JaguarCDMatcher(GameSystem system) : MatcherBase(system)
+    public class JaguarCDMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

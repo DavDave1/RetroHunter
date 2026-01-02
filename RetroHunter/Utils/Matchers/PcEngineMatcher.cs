@@ -7,7 +7,7 @@ using System.Text;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class PcEngineMatcher(GameSystem system) : HeaderSkipBySizeMatcher(system)
+    public class PcEngineMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : HeaderSkipBySizeMatcher(system, romsDictionary)
     {
         public override int MultipleSize => 131072;
     }

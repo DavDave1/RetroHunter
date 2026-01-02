@@ -28,6 +28,8 @@ namespace RetroHunter.Persistence
 
         public IEnumerable<GameSystem> GetCheckedSystems() => _model.Systems.Where(s => s.IsChecked);
 
+        public Dictionary<string, Rom> GetRomsDictionary()  => _model.Systems.SelectMany(s => s.Games).SelectMany(g => g.Roms).ToDictionary(r => r.Hash, r => r);
+
         public async Task LoadModelAsync(string modelFilePath, bool newProject)
         {
             FilePath = modelFilePath;

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class NdsMatcher(GameSystem system) : Md5Matcher(system)
+    public class NdsMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : Md5Matcher(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

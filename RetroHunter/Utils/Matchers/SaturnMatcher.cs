@@ -9,7 +9,7 @@ using static RetroHunter.Models.GameSystemData;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class SegaSaturnAndCDMatcher(GameSystem system) : MatcherBase(system)
+    public class SegaSaturnAndCDMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

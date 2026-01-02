@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 namespace RetroHunter.Utils.Matchers
 {
     // From https://github.com/RetroAchievements/rcheevos/blob/cd90a87e50458a1520b6eb46d4b2eb97661ad1e1/src/rhash/hash.c#L2287
-    public class GameCubeMatcher(GameSystem system, string dolphinToolExe) : MatcherBase(system)
+    public class GameCubeMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary, string dolphinToolExe) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

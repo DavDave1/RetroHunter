@@ -8,7 +8,7 @@ using ZstdSharp.Unsafe;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class ThreeDOMatcher(GameSystem system) : MatcherBase(system)
+    public class ThreeDOMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

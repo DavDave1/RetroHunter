@@ -7,7 +7,7 @@ using System.Text;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public abstract class HeaderSkipBySizeMatcher(GameSystem system) : Md5Matcher(system)
+    public abstract class HeaderSkipBySizeMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : Md5Matcher(system, romsDictionary)
     {
         public abstract int MultipleSize { get; }
 

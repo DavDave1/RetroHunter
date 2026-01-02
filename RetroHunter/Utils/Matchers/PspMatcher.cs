@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class PspMatcher(GameSystem system) : MatcherBase(system)
+    public class PspMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

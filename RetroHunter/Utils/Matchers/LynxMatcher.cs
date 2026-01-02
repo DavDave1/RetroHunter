@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class LynxMatcher(GameSystem system) : HeaderSkipByTagMatcher(system)
+    public class LynxMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : HeaderSkipByTagMatcher(system, romsDictionary)
     {
         // LYNX\0
         private static readonly byte[] HEADER_TAG = [0x4C, 0x59, 0x4E, 0x58, 0x00];

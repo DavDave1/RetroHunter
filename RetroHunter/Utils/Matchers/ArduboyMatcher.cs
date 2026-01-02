@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class ArduboyMatcher(GameSystem system) : Md5Matcher(system)
+    public class ArduboyMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : Md5Matcher(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class NesMatcher(GameSystem system) : HeaderSkipByTagMatcher(system)
+    public class NesMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : HeaderSkipByTagMatcher(system, romsDictionary)
     {
         private static readonly byte[] NES_HEADER_TAG = [0x4E, 0x45, 0x53, 0x1A];  // NES\1a
         private static readonly byte[] FDS_HEADER_TAG = [0x46, 0x44, 0x53, 0x1A];  // FDS\1a

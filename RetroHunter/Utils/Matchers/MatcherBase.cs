@@ -6,24 +6,13 @@ using System.Linq;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public abstract class MatcherBase(GameSystem system)
+    public abstract class MatcherBase(GameSystem system, Dictionary<string, Rom> romsDictionary)
     {
         public abstract (Rom?, List<string>) FindRom(FileInfo file);
 
         protected Rom? MatchRomByHash(string hash)
         {
-            foreach (var game in system.Games)
-            {
-                foreach (var rom in game.Roms)
-                {
-                    if (rom.Hash == hash)
-                    {
-                        return rom;
-                    }
-                }
-            }
-
-            return null;
+            return romsDictionary.GetValueOrDefault(hash);
         }
 
 
@@ -104,6 +93,8 @@ namespace RetroHunter.Utils.Matchers
         private static bool IsCompressed(FileInfo file) => file.Extension == ".zip";
 
         private static Dictionary<string, string> _archivesInnerExtensionCache = [];
+
+        private static Dictionary<string, Rom> _romsDictionary = [];
 
         private ZipArchive? _openArchive;
         private Stream? _openStream;

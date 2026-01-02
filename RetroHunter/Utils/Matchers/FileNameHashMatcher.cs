@@ -7,7 +7,7 @@ using System.Text;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class FileNameHashMatcher(GameSystem system) : MatcherBase(system)
+    public class FileNameHashMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {

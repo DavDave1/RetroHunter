@@ -5,7 +5,7 @@ using System.IO;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class N64Matcher(GameSystem system) : Md5Matcher(system)
+    public class N64Matcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : Md5Matcher(system, romsDictionary)
     {
         protected override string ComputeHash(Stream fileStream, string extension)
         {

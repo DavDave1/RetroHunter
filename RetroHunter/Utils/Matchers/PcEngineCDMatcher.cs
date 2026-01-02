@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace RetroHunter.Utils.Matchers
 {
-    public class PcEngineCDMatcher(GameSystem system) : MatcherBase(system)
+    public class PcEngineCDMatcher(GameSystem system, Dictionary<string, Rom> romsDictionary) : MatcherBase(system, romsDictionary)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
         {
