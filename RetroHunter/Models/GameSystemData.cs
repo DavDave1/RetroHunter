@@ -247,66 +247,6 @@ public static class GameSystemData
         };
     }
 
-    public static Type Matcher(this GameSystemType type)
-    {
-        return type switch
-        {
-            GameSystemType.GameBoy => typeof(Md5Matcher),
-            GameSystemType.GameBoyColor => typeof(Md5Matcher),
-            GameSystemType.GameBoyAdvance => typeof(Md5Matcher),
-            GameSystemType.Nes => typeof(NesMatcher),
-            GameSystemType.SuperNintendo => typeof(SnesMatcher),
-            GameSystemType.Nintendo64 => typeof(N64Matcher),
-            GameSystemType.GameCube => typeof(GameCubeMatcher),
-            GameSystemType.NintendoDS or
-            GameSystemType.NintendoDSi => typeof(NdsMatcher),
-            GameSystemType.PokemonMini => typeof(Md5Matcher),
-            GameSystemType.VirtualBoy => typeof(Md5Matcher),
-            GameSystemType.PlayStation => typeof(Ps1Matcher),
-            GameSystemType.PlayStation2 => typeof(Ps2Matcher),
-            GameSystemType.Psp => typeof(PspMatcher),
-            GameSystemType.Atari2600 => typeof(Md5Matcher),
-            GameSystemType.Atari7800 => typeof(Atari7800Matcher),
-            GameSystemType.AtariJaguar => typeof(Md5Matcher),
-            GameSystemType.AtariJaguarCD => typeof(JaguarCDMatcher),
-            GameSystemType.AtariLynx => typeof(LynxMatcher),
-            GameSystemType.Sg1000 => typeof(Md5Matcher),
-            GameSystemType.MasterSystem => typeof(Md5Matcher),
-            GameSystemType.GameGear => typeof(Md5Matcher),
-            GameSystemType.Genesis => typeof(Md5Matcher),
-            GameSystemType.Saturn or
-            GameSystemType.SegaCD => typeof(SegaSaturnAndCDMatcher),
-            GameSystemType.Sega32x => typeof(Md5Matcher),
-            GameSystemType.Dreamcast => typeof(DreamcastMatcher),
-            GameSystemType.PcEngine => typeof(PcEngineMatcher),
-            GameSystemType.PcEngineCD => typeof(PcEngineCDMatcher),
-            GameSystemType.Pc8000 => typeof(Md5Matcher),
-            GameSystemType.PcFx => typeof(PcFxMatcher),
-            GameSystemType.NeoGeoCD => typeof(NeoGeoCDMatcher),
-            GameSystemType.NeoGeoPocket => typeof(Md5Matcher),
-            GameSystemType.ThreeDo => typeof(ThreeDOMatcher),
-            GameSystemType.AmstradCPC => typeof(Md5Matcher),
-            GameSystemType.AppleII => typeof(Md5Matcher),
-            GameSystemType.Arcade => typeof(FileNameHashMatcher),
-            GameSystemType.Arcadia2001 => typeof(Md5Matcher),
-            GameSystemType.Arduboy => typeof(ArduboyMatcher),
-            GameSystemType.ColecoVision => typeof(Md5Matcher),
-            GameSystemType.ElektorTvGamesComputer => typeof(Md5Matcher),
-            GameSystemType.FairchildChannelF => typeof(Md5Matcher),
-            GameSystemType.Intellivision => typeof(Md5Matcher),
-            GameSystemType.IntertonVC4000 => typeof(Md5Matcher),
-            GameSystemType.MagnavoxOdyssey2 => typeof(Md5Matcher),
-            GameSystemType.MegaDuck => typeof(Md5Matcher),
-            GameSystemType.Msx => typeof(Md5Matcher),
-            GameSystemType.Uzebox => typeof(Md5Matcher),
-            GameSystemType.Vectrex => typeof(Md5Matcher),
-            GameSystemType.Wasm4 => typeof(Md5Matcher),
-            GameSystemType.Supervision => typeof(Md5Matcher),
-            GameSystemType.WonderSwan => typeof(Md5Matcher),
-            _ => throw new Exception($"Unknown matcher for Game System {type}"),
-        };
-    }
-
     public static string FolderName(this GameSystemType type, DirStructureStyle style)
     {
         return style switch
@@ -391,7 +331,7 @@ public static class GameSystemData
             GameSystemType.Nes => [".nes", ".fds"],
             GameSystemType.SuperNintendo => [".sfc", ".smc"],
             GameSystemType.Nintendo64 => [".d64", ".ndd", ".n64", ".v64", ".z64"],
-            GameSystemType.GameCube => [".iso"],
+            GameSystemType.GameCube => [".iso", ".gcz", ".rvz"],
             GameSystemType.NintendoDS or
             GameSystemType.NintendoDSi => [".nds"],
             GameSystemType.PokemonMini => [".min"],

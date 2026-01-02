@@ -75,7 +75,7 @@
                     <Grid
                         Margin="10,7,11,6"
                         ColumnDefinitions="Auto, *"
-                        RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto">
+                        RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
                         <!--  Directories config  -->
                         <TextBlock
                             Margin="0,0,10,5"
@@ -136,16 +136,32 @@
                         <Separator Grid.Row="4" Grid.ColumnSpan="2" />
                         <TextBlock
                             Grid.Row="5"
+                            Margin="0,0,0,5"
                             VerticalAlignment="Center"
                             Text="Chdman Exe:" />
                         <Grid
                             Grid.Row="5"
                             Grid.Column="1"
+                            Margin="0,0,0,5"
                             Grid.ColumnDefinitions="*, Auto, Auto">
                             <TextBox Text="{Binding ChdmanExePath}" />
                             <Button
                                 Grid.Column="2"
                                 Command="{Binding DetectChdmanCommand}"
+                                Content="Detect..." />
+                        </Grid>
+                        <TextBlock
+                            Grid.Row="6"
+                            VerticalAlignment="Center"
+                            Text="Dolphin Tool Exe:" />
+                        <Grid
+                            Grid.Row="6"
+                            Grid.Column="1"
+                            Grid.ColumnDefinitions="*, Auto, Auto">
+                            <TextBox Text="{Binding DolphinToolExePath}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding DetectDolphinToolCommand}"
                                 Content="Detect..." />
                         </Grid>
                     </Grid>

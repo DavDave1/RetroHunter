@@ -34,16 +34,23 @@ public partial class App : Application
 
         collection.AddLogging(builder => builder.AddConsole());
 
+        collection.AddSingleton<SettingsManager>();
         collection.AddSingleton<Ra2DatContext>();
         collection.AddSingleton<RaClient>();
-        collection.AddSingleton<Chdman>();
-        collection.AddSingleton<SettingsManager>();
+        collection.AddSingleton<CompressServiceFactory>();
+        collection.AddSingleton<MatcherFactory>();
+
+        collection.AddTransient<RomSetGenerator>();
 
         collection.AddTransient<MainViewModel>();
         collection.AddTransient<ConfigureDialogViewModel>();
+        collection.AddTransient<RomSetGeneratorDialogViewModel>();
 
         var services = collection.BuildServiceProvider();
         var vm = services.GetRequiredService<MainViewModel>();
+
+        var settingsManager = services.GetRequiredService<SettingsManager>();
+        Task.Run(settingsManager.Load);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

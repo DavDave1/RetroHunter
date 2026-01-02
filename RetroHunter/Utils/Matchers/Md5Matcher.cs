@@ -44,5 +44,6 @@ namespace RetroHunter.Utils.Matchers
 
         // filepath to md5 hash cache
         private static readonly Dictionary<string, string> _hashesCache = [];
+
     }
 }

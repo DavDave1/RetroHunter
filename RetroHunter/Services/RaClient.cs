@@ -9,22 +9,17 @@ using System.Threading.Tasks;
 
 namespace RetroHunter.Services
 {
-    public class RaClient
+    public class RaClient(SettingsManager settingsManager)
     {
-        public void SetApiKey(string apiKey)
+        public async Task<bool> TestLogin(string user, string apiKey)
         {
-            _apiKey = apiKey;
-        }
-
-        public async Task<bool> TestLogin(string user)
-        {
-            var response = await _client.GetAsync(GetUserProfileUri(user));
+            var response = await _client.GetAsync(TestLoginUri(user, apiKey));
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<RaUserProfile> GetUserProfile(string user)
+        public async Task<RaUserProfile> GetUserProfile()
         {
-            var response = await _client.GetAsync(GetUserProfileUri(user));
+            var response = await _client.GetAsync(GetUserProfileUri(settingsManager.Settings.RaName));
 
             if (response.IsSuccessStatusCode)
             {
@@ -34,7 +29,7 @@ namespace RetroHunter.Services
                 return userProfile;
             }
 
-            throw new Exception($"Failed to fetch profile for {user}, server responded {response.StatusCode}");
+            throw new Exception($"Failed to fetch profile for {settingsManager.Settings.RaName}, server responded {response.StatusCode}");
         }
 
         public async Task<List<Game>> FetchGames(GameSystem gameSystem)
@@ -114,16 +109,17 @@ namespace RetroHunter.Services
             }
         }
 
-        private string _apiKey = string.Empty;
+        private string ApiKey => settingsManager.Settings.RaApiKey;
 
         private readonly HttpClient _client = new();
 
+        private string TestLoginUri(string user, string apiKey) => $"{Constants.RA_BASE_URL}/API/API_GetUserProfile.php?u={user}&y={apiKey}";
 
-        private string GetUserProfileUri(string user) => $"{Constants.RA_BASE_URL}/API/API_GetUserProfile.php?u={user}&y={_apiKey}";
-        private string GetSystemsUri() => $"{Constants.RA_BASE_URL}/API/API_GetConsoleIDs.php?a=1&g=1&y={_apiKey}";
+        private string GetUserProfileUri(string user) => $"{Constants.RA_BASE_URL}/API/API_GetUserProfile.php?u={user}&y={ApiKey}";
+        private string GetSystemsUri() => $"{Constants.RA_BASE_URL}/API/API_GetConsoleIDs.php?a=1&g=1&y={ApiKey}";
 
-        private string GetGamesUri(int systemId) => $"{Constants.RA_BASE_URL}/API/API_GetGameList.php?i={systemId}&f=1&h=1&y={_apiKey}";
-        private string GetRomsUri(int gameId) => $"{Constants.RA_BASE_URL}/API/API_GetGameHashes.php?i={gameId}&y={_apiKey}";
+        private string GetGamesUri(int systemId) => $"{Constants.RA_BASE_URL}/API/API_GetGameList.php?i={systemId}&f=1&h=1&y={ApiKey}";
+        private string GetRomsUri(int gameId) => $"{Constants.RA_BASE_URL}/API/API_GetGameHashes.php?i={gameId}&y={ApiKey}";
     }
 
     internal class RaGameSystem

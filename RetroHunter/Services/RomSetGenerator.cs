@@ -30,7 +30,7 @@ namespace RetroHunter.Services
         public int RemovedRoms = 0;
     }
 
-    public class RomSetGenerator(Ra2DatContext context)
+    public class RomSetGenerator(Ra2DatContext context, MatcherFactory matcherFactory, SettingsManager settingsManager)
     {
         public async Task<RomSetGeneratorResult> GenerateSet(IProgress<RomSetGeneratorProgress> progress, CancellationToken cancellationToken)
         {
@@ -162,7 +162,7 @@ namespace RetroHunter.Services
             {
                 var gameSystemDir = system.GetDirName(dirStyle);
 
-                var matcher = system.CreateMatcher();
+                var matcher = matcherFactory.CreateMatcher(system, settingsManager.Settings);
 
                 HashSet<string> movedFiles = [];
 

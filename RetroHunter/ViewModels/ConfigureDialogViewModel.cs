@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using RetroHunter.Models;
 using RetroHunter.Persistence;
 using RetroHunter.Services;
+using RetroHunter.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,34 +38,37 @@ namespace RetroHunter.ViewModels
         [ObservableProperty]
         private string _chdmanExePath = string.Empty;
 
+        [ObservableProperty]
+        private string _dolphinToolExePath = string.Empty;
+
         public bool WasCanceled { get; private set; } = true;
 
-        public ConfigureDialogViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context)
+        public ConfigureDialogViewModel(RaClient raClient, Ra2DatContext context, SettingsManager settingsManager)
         {
             _raClient = raClient;
-            _chdman = chdman;
             _context = context;
-            UserName = _context.UserConfig.Name;
-            RaApiKey = _context.UserConfig.RaApiKey;
+            _settingsManager = settingsManager;
+            UserName = _settingsManager.Settings.RaName;
+            RaApiKey = _settingsManager.Settings.RaApiKey;
             InputRomsDirectory = _context.UserConfig.InputRomsDirectory;
             OutputRomsDirectory = _context.UserConfig.OutputRomsDirectory;
             SelectedDirStructureStyle = _context.UserConfig.DirStructureStyle;
             SelectedGameTypesFilter = _context.UserConfig.GameTypesFilter;
-            ChdmanExePath = _chdman.ChdmanExePath;
+            ChdmanExePath = _settingsManager.Settings.ChdmanExePath;
+            DolphinToolExePath  = _settingsManager.Settings.DolphinToolExePath;
         }
 
         [RelayCommand]
         public void Save()
         {
-            _context.UserConfig.Name = UserName;
-            _context.UserConfig.RaApiKey = RaApiKey;
+            _settingsManager.Settings.RaName = UserName;
+            _settingsManager.Settings.RaApiKey = RaApiKey;
+            _settingsManager.Settings.ChdmanExePath = ChdmanExePath;
+            _settingsManager.Settings.DolphinToolExePath = DolphinToolExePath;
             _context.UserConfig.InputRomsDirectory = InputRomsDirectory;
             _context.UserConfig.OutputRomsDirectory = OutputRomsDirectory;
             _context.UserConfig.DirStructureStyle = SelectedDirStructureStyle;
             _context.UserConfig.GameTypesFilter = SelectedGameTypesFilter;
-            _context.UserConfig.ChdmanExePath = ChdmanExePath;
-
-            _raClient.SetApiKey(_context.UserConfig.RaApiKey);
 
             WasCanceled = false;
             App.CurrentWindow().Close();
@@ -108,8 +112,7 @@ namespace RetroHunter.ViewModels
         [RelayCommand]
         private async Task TestLogin()
         {
-            _raClient.SetApiKey(RaApiKey);
-            bool loginResult = await _raClient.TestLogin(UserName);
+            bool loginResult = await _raClient.TestLogin(UserName, RaApiKey);
 
             if (loginResult)
             {
@@ -124,19 +127,35 @@ namespace RetroHunter.ViewModels
         [RelayCommand]
         private async Task DetectChdman()
         {
-            if (!_chdman.Detect())
+            var chdmanPath = DirUtils.FindTool("chdman");
+            if (string.IsNullOrEmpty(chdmanPath))
             {
                 await App.ShowError("Chdman not found", "Chdman not found in PATH");
             }
             else
             {
-                await App.ShowInfo("Chdman detected", $"Chdman found at {_chdman.ChdmanExePath}");
-                ChdmanExePath = _chdman.ChdmanExePath;
+                await App.ShowInfo("Chdman detected", $"Chdman found at {chdmanPath}");
+                ChdmanExePath = chdmanPath;
+            }
+        }
+
+        [RelayCommand]
+        private async Task DetectDolphinTool()
+        {
+            var dolphinToolPath = DirUtils.FindTool("DolphinTool");
+            if (string.IsNullOrEmpty(dolphinToolPath))
+            {
+                await App.ShowError("DolphinTool not found", "DolphinTool not found in PATH");
+            }
+            else
+            {
+                await App.ShowInfo("DolphinTool detected", $"DolphinTool found at {dolphinToolPath}");
+                DolphinToolExePath = dolphinToolPath;
             }
         }
 
         private readonly RaClient _raClient;
-        private readonly Chdman _chdman;
         private readonly Ra2DatContext _context;
+        private readonly SettingsManager _settingsManager;
     }
 }

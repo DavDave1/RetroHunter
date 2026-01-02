@@ -51,11 +51,6 @@ namespace RetroHunter.Models
 
         public string GetDirName(DirStructureStyle style) => GameSystemType.FolderName(style);
 
-        public MatcherBase CreateMatcher()
-        {
-            return (MatcherBase)Activator.CreateInstance(GameSystemType.Matcher(), this)!;
-        }
-
         public void InitParents(Ra2DatModel root)
         {
             Parent = root;

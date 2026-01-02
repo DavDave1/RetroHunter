@@ -1,6 +1,7 @@
 using RetroHunter.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,9 +9,47 @@ using System.Security.Cryptography;
 namespace RetroHunter.Utils.Matchers
 {
     // From https://github.com/RetroAchievements/rcheevos/blob/cd90a87e50458a1520b6eb46d4b2eb97661ad1e1/src/rhash/hash.c#L2287
-    public class GameCubeMatcher(GameSystem system) : MatcherBase(system)
+    public class GameCubeMatcher(GameSystem system, string dolphinToolExe) : MatcherBase(system)
     {
         public override (Rom?, List<string>) FindRom(FileInfo file)
+        {
+            if (File.Exists(dolphinToolExe))
+            {
+                return FindRomWithTool(file);
+            }
+
+            return FindRomOld(file);
+
+        }
+
+        private (Rom?, List<string>) FindRomWithTool(FileInfo file)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = dolphinToolExe,
+                    Arguments = string.Join(" ", ["verify", "-i", $"\"{file.FullName}\"", "-a", "rchash"]),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                },
+                EnableRaisingEvents = true
+            };
+
+            process.Start();
+            process.WaitForExit();
+
+            var hash =  process.StandardOutput.ReadLine() ?? "";
+
+            var rom = MatchRomByHash(hash);
+
+            return (rom, [file.FullName]);
+        }
+
+        // Old method for matching rom, only supports reading non compressed iso files
+        private (Rom?, List<string>) FindRomOld(FileInfo file)
         {
             var (fileStream, _) = Open(file, true);
 
@@ -33,15 +72,13 @@ namespace RetroHunter.Utils.Matchers
             fileStream.Seek(BASE_HEADER_SIZE + 0x14, SeekOrigin.Begin);
 
             fileStream.ReadExactly(buffer);
-            buffer.Reverse();
-            var apploaderBodySize = BitConverter.ToUInt32(buffer.ToArray());
+            var apploaderBodySize = BitConverter.ToUInt32(buffer.Reverse().ToArray());
 
             fileStream.ReadExactly(buffer);
-            buffer.Reverse();
-            var apploaderTrailerSize = BitConverter.ToUInt32(buffer.ToArray());
+            var apploaderTrailerSize = BitConverter.ToUInt32(buffer.Reverse().ToArray());
 
             var diskHeaderSize = BASE_HEADER_SIZE + APPLOADER_HEADER_SIZE + apploaderBodySize + apploaderTrailerSize;
-            diskHeaderSize = Math.Min(diskHeaderSize, MAX_HEADER_SIZEE);
+            diskHeaderSize = Math.Min(diskHeaderSize, MAX_HEADER_SIZE);
 
             var headerBuffer = new byte[diskHeaderSize];
 
@@ -49,8 +86,7 @@ namespace RetroHunter.Utils.Matchers
             fileStream.ReadExactly(headerBuffer);
 
             var headerSize = headerBuffer[0x420..0x424];
-            headerSize.Reverse();
-            var dolInfoAddress = BitConverter.ToUInt32(headerSize.ToArray());
+            var dolInfoAddress = BitConverter.ToUInt32(headerSize.Reverse().ToArray());
 
             fileStream.Seek(dolInfoAddress, SeekOrigin.Begin);
 
@@ -68,15 +104,13 @@ namespace RetroHunter.Utils.Matchers
                 var offsetEndIndex = offsetStartIndex + 4;
 
                 var offset = addrBuffer[offsetStartIndex..offsetEndIndex];
-                offset.Reverse();
-                var dolOffset = BitConverter.ToUInt32(offset.ToArray());
+                var dolOffset = BitConverter.ToUInt32(offset.Reverse().ToArray());
 
                 var sizeStartIndex = 0x90 + i * 4;
                 var sizeEndIndex = sizeStartIndex + 4;
 
                 var size = addrBuffer[sizeStartIndex..sizeEndIndex];
-                size.Reverse();
-                var dolSize = BitConverter.ToUInt32(size.ToArray());
+                var dolSize = BitConverter.ToUInt32(size.Reverse().ToArray());
 
                 var dolBuffer = new byte[dolSize];
 
@@ -102,12 +136,11 @@ namespace RetroHunter.Utils.Matchers
             return (rom, [file.FullName]);
         }
 
-
         private static readonly byte[] DISC_IDENTIFIER = [0xC2, 0x33, 0x9F, 0x3D];
         private const int BASE_HEADER_SIZE = 0x2440;
         private const int APPLOADER_HEADER_SIZE = 0x20;
 
-        private const int MAX_HEADER_SIZEE = 1024 * 1024;
+        private const int MAX_HEADER_SIZE = 1024 * 1024;
 
     }
 

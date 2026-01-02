@@ -64,9 +64,7 @@ public partial class NewProjectDialogViewModel(SettingsManager settingsManager) 
     [RelayCommand]
     private async Task OpenLatest()
     {
-        _settings = await settingsManager.Load();
-
-        ProjectFilePath = _settings.LatestDbPath;
+        ProjectFilePath = settingsManager.Settings.LatestDbPath;
         if (ProjectFilePath != string.Empty)
         {
 
@@ -87,9 +85,7 @@ public partial class NewProjectDialogViewModel(SettingsManager settingsManager) 
 
         ProjectFilePath = path;
         WasCanceled = false;
-        _settings.LatestDbPath = ProjectFilePath;
-        await settingsManager.Save(_settings);
+        settingsManager.Settings.LatestDbPath = ProjectFilePath;
+        await settingsManager.Save();
     }
-
-    private RetroHunterSettings _settings = new();
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using RetroHunter.Models;
 using RetroHunter.Persistence;
 using RetroHunter.Services;
@@ -53,12 +55,14 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasSelectedGame = false;
 
-    public MainViewModel(RaClient raClient, Chdman chdman, Ra2DatContext context, SettingsManager settingsManager)
+    public MainViewModel(IServiceProvider serviceProvider)
     {
-        _dbContext = context;
-        _raClient = raClient;
-        _chdman = chdman;
-        _settingsManager = settingsManager;
+        _serviceProvier = serviceProvider;
+        _dbContext = serviceProvider.GetService<Ra2DatContext>()!;
+        _raClient = serviceProvider.GetService<RaClient>()!;
+        _settingsManager = serviceProvider.GetService<SettingsManager>()!;
+        _compressFactory = serviceProvider.GetService<CompressServiceFactory>()!;
+        _matcherFactory = serviceProvider.GetService<MatcherFactory>()!;
 
         var systems = _dbContext.GetSystems().ToList();
         var companyList = new List<GameSystemCompanyViewModel>();
@@ -74,8 +78,9 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     public MainViewModel()
     {
+        _settingsManager = new(null);
         _dbContext = new();
-        _raClient = new();
+        _raClient = new(_settingsManager);
     }
 
     [RelayCommand]
@@ -107,13 +112,15 @@ public partial class MainViewModel : ViewModelBase
     {
         var dialog = new ConfigureDialog();
 
-        var vm = new ConfigureDialogViewModel(_raClient, _chdman, _dbContext);
+        var vm = new ConfigureDialogViewModel(_raClient, _dbContext, _settingsManager);
         dialog.DataContext = vm;
 
         await dialog.ShowDialog<ConfigureDialogViewModel?>(App.CurrentWindow());
 
         if (!vm.WasCanceled)
         {
+            await _settingsManager.Save();
+
             _dbContext.ValidateRoms();
             await _dbContext.SaveChangesAsync();
         }
@@ -158,7 +165,9 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public async Task GenerateSets()
     {
-        var vm = new RomSetGeneratorDialogViewModel(_dbContext);
+        var vm = _serviceProvier.GetService<RomSetGeneratorDialogViewModel>();
+        Debug.Assert(vm != null);
+
         var dialog = new RomSetGeneratorProgressDialog
         {
             DataContext = vm
@@ -200,14 +209,14 @@ public partial class MainViewModel : ViewModelBase
 
     public async Task FetchUserProfile()
     {
-        if (_dbContext.UserConfig.Name == string.Empty)
+        if (_settingsManager.Settings.RaName == string.Empty)
         {
             return;
         }
 
         try
         {
-            UserProfile = await _raClient.GetUserProfile(_dbContext.UserConfig.Name);
+            UserProfile = await _raClient.GetUserProfile();
             UserIcon = await ImageHelper.LoadFromWeb(new Uri(UserProfile.UserPic));
 
         }
@@ -240,9 +249,6 @@ public partial class MainViewModel : ViewModelBase
                     App.CurrentWindow().Close();
                 }
             }
-
-            _raClient.SetApiKey(_dbContext.UserConfig.RaApiKey);
-            _chdman.ChdmanExePath = _dbContext.UserConfig.ChdmanExePath;
 
             var systems = _dbContext.GetSystems().ToList();
             CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));
@@ -338,7 +344,7 @@ public partial class MainViewModel : ViewModelBase
             }
 
             progress.SetMessage("Applying patch...");
-            var generator = new RomSetGenerator(_dbContext);
+            var generator = new RomSetGenerator(_dbContext, _matcherFactory, _settingsManager);
 
             var romSrcPath = sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc);
 
@@ -365,7 +371,9 @@ public partial class MainViewModel : ViewModelBase
         {
             var sizeBefore = rom.GetSize();
 
-            await _chdman.CompressRom(_dbContext.UserConfig, rom, progress);
+            var compressor = _compressFactory.CreateCompressService(_settingsManager.Settings, rom);
+
+            await compressor.CompressRom(_dbContext.UserConfig, rom, progress);
             await _dbContext.SaveChangesAsync();
 
             var ratio = 100 * rom.GetSize() / (float)sizeBefore;
@@ -402,11 +410,12 @@ public partial class MainViewModel : ViewModelBase
         _loadingDetailsTask = Task.Run(LoadDetails);
     }
 
+    private readonly IServiceProvider _serviceProvier;
     private readonly Ra2DatContext _dbContext;
     private readonly RaClient _raClient;
-    private readonly Chdman _chdman;
-
     private readonly SettingsManager _settingsManager;
+    private readonly CompressServiceFactory _compressFactory;
+    private readonly MatcherFactory _matcherFactory;
 
     private static readonly FilePickerFileType RaSetMakerDb = new("RetroHunter DB")
     {
@@ -420,7 +429,7 @@ public partial class MainViewModel : ViewModelBase
     private CancellationTokenSource? _loadingDetailsCancellation;
 }
 
-internal class ScopedTaskProgress : IDisposable, IProgress<ChdmanProgress>
+internal class ScopedTaskProgress : IDisposable, IProgress<CompressProgress>
 {
     public ScopedTaskProgress(MainViewModel vm, string message, int count = 0)
     {
@@ -456,7 +465,7 @@ internal class ScopedTaskProgress : IDisposable, IProgress<ChdmanProgress>
         _vm.ProgressIndeterminate = false;
     }
 
-    public void Report(ChdmanProgress value)
+    public void Report(CompressProgress value)
     {
         _progress = value.Percent;
         _vm.ProgressValue = (int)_progress;

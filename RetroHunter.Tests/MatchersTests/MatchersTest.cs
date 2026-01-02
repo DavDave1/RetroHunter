@@ -1,5 +1,6 @@
 ﻿using RetroHunter.Models;
 using RetroHunter.Utils;
+using RetroHunter.Utils.Matchers;
 using static RetroHunter.Models.GameSystemData;
 
 namespace RetroHunter.Tests.MatchersTests
@@ -40,7 +41,7 @@ namespace RetroHunter.Tests.MatchersTests
 
             var sys = GetGameSystemByType(GameSystemType.Atari2600);
             AddRomWithHash(sys, expectedHash);
-            var matcher = sys.CreateMatcher();
+            var matcher = new Md5Matcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -61,7 +62,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Arduboy);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new ArduboyMatcher(sys);
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));
 
@@ -81,8 +82,8 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Arcade);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
-            Assert.NotNull(matcher);
+            var matcher = new FileNameHashMatcher(sys);
+
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
             Assert.NotNull(foundRom);
@@ -91,7 +92,7 @@ namespace RetroHunter.Tests.MatchersTests
 
         [Theory]
         [InlineData("../../../TestRoms/Animal Crossing (USA).iso", "4f69c7886162509baa0882062bb2e1c8")]
-        public void GameCubeHashMatch(string filePath, string expectedHash)
+        public void GameCubeHashMatchIso(string filePath, string expectedHash)
         {
             if (!Path.Exists(filePath))
             {
@@ -101,13 +102,35 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.GameCube);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            
+            var matcher = new GameCubeMatcher(sys, "");
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));
 
             Assert.NotNull(foundRom.Item1);
             Assert.Equal(expectedHash, foundRom.Item1.Hash);
 
+        }
+
+        [Theory]
+        [InlineData("../../../TestRoms/Animal Crossing (USA).rvz", "4f69c7886162509baa0882062bb2e1c8")]
+        public void GameCubeHashMatchCompressed(string filePath, string expectedHash)
+        {
+            if (!Path.Exists(filePath))
+            {
+                return;
+            }
+
+            var sys = GetGameSystemByType(GameSystemType.GameCube);
+            AddRomWithHash(sys, expectedHash);
+
+            var dolphinTool = DirUtils.FindTool("DolphinTool");
+            var matcher = new GameCubeMatcher(sys, dolphinTool);
+
+            var foundRom = matcher.FindRom(new FileInfo(filePath));
+
+            Assert.NotNull(foundRom.Item1);
+            Assert.Equal(expectedHash, foundRom.Item1.Hash);
         }
 
         [Theory]
@@ -122,8 +145,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Nintendo64);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
-            Assert.NotNull(matcher);
+            var matcher = new N64Matcher(sys);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
             Assert.NotNull(foundRom);
@@ -142,8 +164,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Nintendo64);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
-            Assert.NotNull(matcher);
+            var matcher = new N64Matcher(sys);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
             Assert.NotNull(foundRom);
@@ -162,8 +183,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.NintendoDS);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
-
+            var matcher = new NdsMatcher(sys);
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
             Assert.NotNull(foundRom);
@@ -182,7 +202,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Nes);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new NesMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -202,7 +222,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new Ps1Matcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -223,7 +243,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new Ps1Matcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -244,7 +264,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Psp);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new PspMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -265,7 +285,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SuperNintendo);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new SnesMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -286,7 +306,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.ThreeDo);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new ThreeDOMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -306,7 +326,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new DreamcastMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -327,7 +347,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new DreamcastMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -348,7 +368,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Dreamcast);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new DreamcastMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -369,7 +389,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PcEngineCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new PcEngineCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -389,7 +409,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PcFx);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new PcFxMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -409,7 +429,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.NeoGeoCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new NeoGeoCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -429,7 +449,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Saturn);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new SegaSaturnAndCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -449,7 +469,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.Saturn);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new SegaSaturnAndCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -469,7 +489,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SegaCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new SegaSaturnAndCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -489,7 +509,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.SegaCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new SegaSaturnAndCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -509,7 +529,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.PlayStation2);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new Ps2Matcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
@@ -529,7 +549,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.AtariJaguarCD);
             AddRomWithHash(sys, expectedHash);
 
-            var matcher = sys.CreateMatcher();
+            var matcher = new JaguarCDMatcher(sys);
 
             var (foundRom, _) = matcher.FindRom(new FileInfo(filePath));
 
