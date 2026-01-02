@@ -43,7 +43,7 @@ namespace RetroHunter.ViewModels
 
         public bool WasCanceled { get; private set; } = true;
 
-        public ConfigureDialogViewModel(RaClient raClient, Ra2DatContext context, SettingsManager settingsManager)
+        public ConfigureDialogViewModel(RaClient raClient, DbContext context, SettingsManager settingsManager)
         {
             _raClient = raClient;
             _context = context;
@@ -155,7 +155,7 @@ namespace RetroHunter.ViewModels
         }
 
         private readonly RaClient _raClient;
-        private readonly Ra2DatContext _context;
+        private readonly DbContext _context;
         private readonly SettingsManager _settingsManager;
     }
 }

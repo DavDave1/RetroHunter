@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RetroHunter.Persistence
 {
-    public class Ra2DatContext
+    public class DbContext
     {
         public UserConfig UserConfig
         {
@@ -18,7 +18,7 @@ namespace RetroHunter.Persistence
 
         public string FilePath { get; set; } = string.Empty;
 
-        public Ra2DatContext()
+        public DbContext()
         {
             _model.InitGameSystems();
             _model.InitParents();

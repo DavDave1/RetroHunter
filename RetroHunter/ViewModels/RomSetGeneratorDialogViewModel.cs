@@ -32,7 +32,7 @@ public partial class RomSetGeneratorDialogViewModel : ViewModelBase, IProgress<R
 
     public RomSetGeneratorResult Result { get; private set; } = new();
 
-    public RomSetGeneratorDialogViewModel(Ra2DatContext context, RomSetGenerator romSetGenerator)
+    public RomSetGeneratorDialogViewModel(DbContext context, RomSetGenerator romSetGenerator)
     {
         _romSetGenerator = romSetGenerator;
         var gamesCount = context.GetCheckedSystems().SelectMany(s => s.GetGamesMatchingFilter()).Count();

@@ -20,10 +20,10 @@ namespace RetroHunter.ViewModels
         private Bitmap? _statusIcon;
 
         [ObservableProperty]
-        private string _gameTypes;
+        private string _gameTypes = "";
 
         [ObservableProperty]
-        private List<RomViewModel> _roms;
+        private List<RomViewModel> _roms = [];
 
         [ObservableProperty]
         private bool _atLeastOnePatch;
@@ -32,7 +32,7 @@ namespace RetroHunter.ViewModels
         private bool _atLeastOneLinkedRom;
 
         [ObservableProperty]
-        private string _toolTipText;
+        private string _toolTipText = "";
 
         public Game Game { get; private set; }
 
@@ -49,7 +49,10 @@ namespace RetroHunter.ViewModels
         }
 
         public GameViewModel() : base()
-        { }
+        {
+            Game = new();
+            _mainVm = new();
+        }
 
         public async Task LoadDetails(CancellationTokenSource? ct)
         {

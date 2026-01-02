@@ -58,11 +58,9 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvier = serviceProvider;
-        _dbContext = serviceProvider.GetService<Ra2DatContext>()!;
+        _dbContext = serviceProvider.GetService<DbContext>()!;
         _raClient = serviceProvider.GetService<RaClient>()!;
         _settingsManager = serviceProvider.GetService<SettingsManager>()!;
-        _compressFactory = serviceProvider.GetService<CompressServiceFactory>()!;
-        _matcherFactory = serviceProvider.GetService<MatcherFactory>()!;
 
         var systems = _dbContext.GetSystems().ToList();
         var companyList = new List<GameSystemCompanyViewModel>();
@@ -344,8 +342,6 @@ public partial class MainViewModel : ViewModelBase
             }
 
             progress.SetMessage("Applying patch...");
-            var generator = new RomSetGenerator(_dbContext, _matcherFactory, _settingsManager);
-
             var romSrcPath = sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc);
 
             await RomSetGenerator.GenerateFromPatch(romSrcPath, rom, patchFile);
@@ -367,11 +363,14 @@ public partial class MainViewModel : ViewModelBase
     {
         using var progress = new ScopedTaskProgress(this, $"Compressing {rom.RaName}", 100);
 
+        var compressFactory = _serviceProvier.GetService<CompressServiceFactory>();
+        Debug.Assert(compressFactory != null);
+
         try
         {
             var sizeBefore = rom.GetSize();
 
-            var compressor = _compressFactory.CreateCompressService(_settingsManager.Settings, rom);
+            var compressor = compressFactory.CreateCompressService(_settingsManager.Settings, rom);
 
             await compressor.CompressRom(_dbContext.UserConfig, rom, progress);
             await _dbContext.SaveChangesAsync();
@@ -411,18 +410,9 @@ public partial class MainViewModel : ViewModelBase
     }
 
     private readonly IServiceProvider _serviceProvier;
-    private readonly Ra2DatContext _dbContext;
+    private readonly DbContext _dbContext;
     private readonly RaClient _raClient;
     private readonly SettingsManager _settingsManager;
-    private readonly CompressServiceFactory _compressFactory;
-    private readonly MatcherFactory _matcherFactory;
-
-    private static readonly FilePickerFileType RaSetMakerDb = new("RetroHunter DB")
-    {
-        Patterns = new[] { "*.json" },
-        AppleUniformTypeIdentifiers = new[] { "public.json" },
-        MimeTypes = new[] { "json/*" }
-    };
 
     private Task? _loadingDetailsTask;
 

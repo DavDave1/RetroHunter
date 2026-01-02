@@ -35,7 +35,7 @@ public partial class App : Application
         collection.AddLogging(builder => builder.AddConsole());
 
         collection.AddSingleton<SettingsManager>();
-        collection.AddSingleton<Ra2DatContext>();
+        collection.AddSingleton<DbContext>();
         collection.AddSingleton<RaClient>();
         collection.AddSingleton<CompressServiceFactory>();
         collection.AddSingleton<MatcherFactory>();

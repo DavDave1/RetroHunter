@@ -30,7 +30,7 @@ namespace RetroHunter.Services
         public int RemovedRoms = 0;
     }
 
-    public class RomSetGenerator(Ra2DatContext context, MatcherFactory matcherFactory, SettingsManager settingsManager)
+    public class RomSetGenerator(DbContext context, MatcherFactory matcherFactory, SettingsManager settingsManager)
     {
         public async Task<RomSetGeneratorResult> GenerateSet(IProgress<RomSetGeneratorProgress> progress, CancellationToken cancellationToken)
         {

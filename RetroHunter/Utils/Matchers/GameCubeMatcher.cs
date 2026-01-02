@@ -24,6 +24,11 @@ namespace RetroHunter.Utils.Matchers
 
         private (Rom?, List<string>) FindRomWithTool(FileInfo file)
         {
+            if (!system.SupportedExtensions.Contains(file.Extension))
+            {
+                return (null, [file.FullName]);
+            }
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
