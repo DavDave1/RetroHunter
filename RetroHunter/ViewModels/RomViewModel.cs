@@ -1,6 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RetroHunter.Models;
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RetroHunter.ViewModels
@@ -42,6 +47,13 @@ namespace RetroHunter.ViewModels
         private async Task Compress()
         {
             await _mainVm.Compress(Rom);
+        }
+
+        [RelayCommand]
+        private async Task OpenInExplorer()
+        {
+            var romDir = new FileInfo(Rom.RomFiles.First().AbsolutePath()).Directory;
+            await App.MainWindow().Launcher.LaunchDirectoryInfoAsync(romDir);
         }
 
         protected override bool CanCompress => true;

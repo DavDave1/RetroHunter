@@ -26,13 +26,10 @@ namespace RetroHunter.ViewModels
         private List<RomViewModel> _roms = [];
 
         [ObservableProperty]
-        private bool _atLeastOnePatch;
-
-        [ObservableProperty]
         private bool _atLeastOneLinkedRom;
 
         [ObservableProperty]
-        private string _toolTipText = "";
+        private string? _toolTipText;
 
         public Game Game { get; private set; }
 
@@ -86,10 +83,10 @@ namespace RetroHunter.ViewModels
             else
             {
                 iconSrc = "avares://RetroHunter/Assets/check.png";
+                ToolTipText = null;
             }
 
             StatusIcon = ImageHelper.LoadFromResource(new Uri(iconSrc));
-            AtLeastOnePatch = Roms.Any(rvm => rvm.HasPatch);
         }
 
         private string GameTypesToString() => string.Join("", Game.GameTypes.Select(t => $"[{t}]").Order());
