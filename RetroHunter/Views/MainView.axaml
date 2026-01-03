@@ -146,6 +146,9 @@
                     <Style Selector="DataGridRow">
                         <Setter x:DataType="vm:GameViewModel" Property="ToolTip.Tip" Value="{Binding ToolTipText}" />
                     </Style>
+                    <Style Selector="DataGridColumnHeader">
+                        <Setter Property="Foreground" Value="Black" />
+                    </Style>
                 </DataGrid.Styles>
 
                 <DataGrid.Columns>
@@ -166,7 +169,7 @@
                     <DataGridTextColumn
                         Width="Auto"
                         Binding="{Binding GameTypes}"
-                        Header="Types" />
+                        Header="Game Type" />
                 </DataGrid.Columns>
             </DataGrid>
 
