@@ -37,9 +37,9 @@ public class Chdman(ILogger? logger, string exePath) : ICompressService
         if (inputFile == null)
             throw new ArgumentException("Unsupported input");
         
-
-        var outFilename = new FileInfo(inputFile.AbsolutePath()).Name.Replace(ext, ".chd");
-        var outAbsPath = inputFile.AbsolutePath().Replace(ext, ".chd");
+        var inputFileInfo = new FileInfo(inputFile.AbsolutePath());
+        var outFilename = inputFileInfo.Name.Replace(ext, ".chd");
+        var outAbsPath = inputFileInfo.FullName.Replace(ext, ".chd");
 
         await Compress(compressType, inputFile.AbsolutePath(), outAbsPath, progress);
 

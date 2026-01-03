@@ -13,7 +13,7 @@ RetroHunter is built using the C# [AvaloniaUI](https://avaloniaui.net/) framewor
 - Create rom sets based on available retro achievements
 - Organize rom sets for easy integration with EmuDeck / Emulation Station folder structure
 - Automatically download and apply patches to roms
-- Compress disc based roms (iso) to best available format for each system
+- Compress disc based roms (iso) to best available format for each system (chd, rvz)
 
 ## Supported Platforms
 
