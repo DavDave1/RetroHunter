@@ -190,21 +190,6 @@ public partial class MainViewModel : ViewModelBase
         await LoadModel();
     }
 
-    public async Task LoadDetails()
-    {
-        if (SelectedGame != null)
-        {
-            await SelectedGame.LoadDetails(_loadingDetailsCancellation);
-
-            if (_loadingDetailsCancellation?.IsCancellationRequested ?? false)
-            {
-                return;
-            }
-            DetailGame = SelectedGame;
-        }
-    }
-
-
     public async Task FetchUserProfile()
     {
         if (_settingsManager.Settings.RaName == string.Empty)
@@ -340,6 +325,7 @@ public partial class MainViewModel : ViewModelBase
 
                 };
 
+                // Keep asking for rom file, until either a matching one is provided or user cancels the command
                 while (true)
                 {
                     var result = await App.CurrentWindow().StorageProvider.OpenFilePickerAsync(opts);
@@ -414,9 +400,9 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    public async Task UpdateGameData(Game game)
+    public async Task UpdateGameData(Game game, CancellationToken token)
     {
-        await _raClient.UpdateGame(game);
+        await _raClient.UpdateGame(game, token);
     }
 
     partial void OnSelectedSystemChanged(GameSystemViewModel? value)
@@ -426,18 +412,29 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedGameChanging(GameViewModel? value)
     {
-        _loadingDetailsCancellation?.Cancel();
+        _loadingDetailsCancellation.Cancel();
 
-        if (_loadingDetailsTask != null && !_loadingDetailsTask.IsCompleted)
-        {
-            _loadingDetailsTask.Wait();
-        }
+        //if (_loadingDetailsTask != null && !_loadingDetailsTask.IsCompleted)
+        //{
+        //    _loadingDetailsTask.Wait();
+        //}
 
         _loadingDetailsCancellation = new CancellationTokenSource();
 
         HasSelectedGame = value != null;
         _loadingDetailsTask = Task.Run(LoadDetails);
     }
+    private async Task LoadDetails()
+    {
+        if (SelectedGame != null)
+        {
+            await UpdateGameData(SelectedGame.Game, _loadingDetailsCancellation.Token);
+            await SelectedGame.LoadDetails(_loadingDetailsCancellation.Token);
+            DetailGame = SelectedGame;
+        }
+    }
+
+
 
     private readonly IServiceProvider _serviceProvier;
     private readonly DbContext _dbContext;
@@ -446,7 +443,7 @@ public partial class MainViewModel : ViewModelBase
 
     private Task? _loadingDetailsTask;
 
-    private CancellationTokenSource? _loadingDetailsCancellation;
+    private CancellationTokenSource _loadingDetailsCancellation = new();
 
 }
 

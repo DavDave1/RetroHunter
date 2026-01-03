@@ -54,25 +54,18 @@ namespace RetroHunter.ViewModels
             _mainVm = new();
         }
 
-        public async Task LoadDetails(CancellationTokenSource? ct)
+        public async Task LoadDetails(CancellationToken ct)
         {
-            GameIcon = await ImageHelper.LoadFromWeb(new Uri(Game.IconUrl));
-
-            if (ct?.IsCancellationRequested ?? false)
-            {
-                return;
-            }
-
-            await _mainVm.UpdateGameData(Game);
-
-            if (ct?.IsCancellationRequested ?? false)
-            {
-                return;
-            }
-
             UpdateStatus();
 
             Roms = [.. Game.Roms.Select(r => new RomViewModel(_mainVm, this, r))];
+
+            _ = Task.Run(async () => await LoadGameIcon(ct), ct);
+        }
+
+        async Task LoadGameIcon(CancellationToken ct)
+        {
+            GameIcon = await ImageHelper.LoadFromWeb(new Uri(Game.IconUrl), ct);
         }
 
         public void UpdateStatus()

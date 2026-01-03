@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -14,14 +15,14 @@ namespace RetroHunter.Utils
         {
             return new Bitmap(AssetLoader.Open(resourceUri));
         }
-        public static async Task<Bitmap?> LoadFromWeb(Uri url)
+        public static async Task<Bitmap?> LoadFromWeb(Uri url, CancellationToken ct = default)
         {
             using var httpClient = new HttpClient();
             try
             {
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url, ct);
                 response.EnsureSuccessStatusCode();
-                var data = await response.Content.ReadAsByteArrayAsync();
+                var data = await response.Content.ReadAsByteArrayAsync(ct);
                 return new Bitmap(new MemoryStream(data));
             }
             catch (HttpRequestException ex)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetroHunter.Services
@@ -52,9 +53,9 @@ namespace RetroHunter.Services
         }
 
 
-        public async Task UpdateGame(Game game)
+        public async Task UpdateGame(Game game, CancellationToken ct)
         {
-            var roms = await FetchGameRoms(game);
+            var roms = await FetchGameRoms(game, ct);
 
             foreach (var raRom in roms)
             {
@@ -87,19 +88,20 @@ namespace RetroHunter.Services
 
         }
 
-        private async Task<List<RaRom>> FetchGameRoms(Game game)
+        private async Task<List<RaRom>> FetchGameRoms(Game game, CancellationToken ct)
         {
             if (game.RaId == 0)
             {
                 throw new Exception($"Retroachievement ID for Game {game.Name} is not valid");
             }
 
-            var response = await _client.GetAsync(GetRomsUri(game.RaId));
+            var response = await _client.GetAsync(GetRomsUri(game.RaId), ct);
 
+            var  opts = new JsonSerializerOptions { };
             if (response.IsSuccessStatusCode)
             {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var raRomsResponse = await JsonSerializer.DeserializeAsync<RaRomResponse>(stream);
+                var stream = await response.Content.ReadAsStreamAsync(ct);
+                var raRomsResponse = await JsonSerializer.DeserializeAsync<RaRomResponse>(stream, opts, ct);
 
                 return raRomsResponse?.Results ?? [];
             }
@@ -244,11 +246,13 @@ namespace RetroHunter.Services
     internal class RaRom
     {
         public string Name { get; set; } = string.Empty;
-        public string MD5 { get; set; } = string.Empty;
+        public string MD5 { get => _md5 ; set => _md5 = value.ToLower(); }
 
         public List<string> Labels { get; set; } = [];
 
         public string? PatchUrl { get; set; }
+
+        private string _md5 = "";
 
     }
 }
