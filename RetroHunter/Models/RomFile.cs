@@ -1,10 +1,12 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Text.Json.Serialization;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using System;
+using System.IO;
+using System.IO.Hashing;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace RetroHunter.Models
 {
@@ -73,8 +75,6 @@ namespace RetroHunter.Models
         {
             ExtractToTempFile,
             StreamCompressed,
-
-
         }
 
         public Stream GetStream() => _fileStream!;
@@ -98,6 +98,7 @@ namespace RetroHunter.Models
                 _archiveReader = ZipArchive.Open(_archiveStream);
 
                 var entry = _archiveReader.Entries.First();
+                _crc32 = entry.Crc;
 
                 _isTempFile = openMode == OpenMode.ExtractToTempFile;
                 if (_isTempFile)
@@ -123,20 +124,11 @@ namespace RetroHunter.Models
             }
         }
 
-        private RomFile _romFile = rf;
-
-        private Stream? _fileStream;
-        private Stream? _archiveStream;
-        private ZipArchive? _archiveReader;
-
-        private bool _isTempFile;
-        private string _tempFolderPath = "";
-
-        public void Dispose()
+        public void Close()
         {
             if (_isTempFile)
             {
-                new DirectoryInfo(_tempFolderPath).Delete(true);
+                Directory.Delete(_tempFolderPath, true );
             }
 
             _fileStream?.Dispose();
@@ -147,6 +139,39 @@ namespace RetroHunter.Models
 
             _archiveStream?.Dispose();
             _archiveStream = null;
+
+        }
+
+        public async Task<uint> GetCrc32()
+        {
+            Open(OpenMode.StreamCompressed);
+
+            // If crc is not computed, compute it now.
+            // NOTE: for compressed files, CRC is always computed
+            if (_crc32 == -1)
+            {
+                var buffer = new byte[_fileStream!.Length];
+                await _fileStream!.ReadExactlyAsync(buffer);
+                _crc32 = Crc32.HashToUInt32(buffer);
+            }
+
+            Close();
+            return (uint) _crc32;
+        }
+
+        private RomFile _romFile = rf;
+
+        private Stream? _fileStream;
+        private Stream? _archiveStream;
+        private ZipArchive? _archiveReader;
+
+        private bool _isTempFile;
+        private string _tempFolderPath = "";
+        private long _crc32 = -1;
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

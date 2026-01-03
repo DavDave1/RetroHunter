@@ -272,46 +272,33 @@ public partial class MainViewModel : ViewModelBase
 
             var patchArchiveFile = await _raClient.DownloadPatch(rom.PatchUrl);
 
-            var extractDir = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(patchArchiveFile));
-            Directory.CreateDirectory(extractDir);
+            using var patchArchive = new ExtractedPatchArchive(patchArchiveFile);
 
-            // Open file as archive
+            await patchArchive.ExtractPatch();
+
+            var patches = patchArchive.FindPatchByName(rom.RaName, "bps");
+            if (!patches.Any())
             {
-                using Stream stream = File.OpenRead(patchArchiveFile);
-                using var reader = ReaderFactory.Open(stream);
-                while (reader.MoveToNextEntry())
-                {
-                    if (!reader.Entry.IsDirectory)
-                    {
-                        reader.WriteEntryToDirectory(extractDir, new ExtractionOptions()
-                        {
-                            ExtractFullPath = true,
-                            Overwrite = true
-                        });
-                    }
-                }
+                patches = patchArchive.FindPatchByExtension("bps"); 
             }
-
-            var patches = new DirectoryInfo(extractDir)
-                .EnumerateFiles($"{Path.GetFileNameWithoutExtension(rom.RaName)}.bps");
 
             if (!patches.Any())
             {
-                patches = new DirectoryInfo(extractDir)
-                .EnumerateFiles("*.bps");
+                await App.ShowError("Failed to find patch file", "Patch archive does not contain any supported patch file.\nSupported patch extensions are: .bps");
+                return;
             }
 
             var patchFile = "";
             if (patches.Count() > 1)
             {
-                var patchSelectVm = new PatchSelectViewModel([.. patches]);
+                var patchSelectVm = new PatchSelectViewModel(patches);
                 var dialog = new PatchSelectDialog
                 {
                     DataContext = patchSelectVm
                 };
 
 
-                await dialog.ShowDialog<PatchSelectViewModel?>(App.MainWindow());
+                await dialog.ShowDialog(App.MainWindow());
 
                 if (patchSelectVm.SelectedPatch == null)
                 {
@@ -329,26 +316,69 @@ public partial class MainViewModel : ViewModelBase
             var sourceCrc = await RomPatcher.Patcher.GetSourceCrc32(patchFile);
 
             // Find source rom
-            var sourceRom = rom.Game?.GameSystem?.Games.SelectMany(g => g.Roms).FirstOrDefault(r => r.RomFiles.Any(rf => rf.Crc32 == sourceCrc));
+            var sourceRomFile = rom.Game?.GameSystem?.Games
+                .SelectMany(g => g.Roms)
+                .SelectMany(r => r.RomFiles)
+                .Where(rf => rf.Crc32 == sourceCrc)
+                .FirstOrDefault();
 
-            if (sourceRom == null)
+            if (sourceRomFile == null)
             {
-                await App.ShowError("Failed to find source ROM", $"Failed to find source ROM for {rom.RaName}");
+                await App.ShowError("Failed to find source ROM", $"Failed to find source ROM for {rom.RaName}.\nPlease select manually");
 
-                Directory.Delete(extractDir, true);
-                File.Delete(patchArchiveFile);
+                var extensions = rom.Game!.GameSystem!.GameSystemType.Extensions().Select(e => $"*{e}");
+                var opts = new FilePickerOpenOptions()
+                {
+                    AllowMultiple = false,
+                    Title = $"Select ROM file for {rom.RaName}",
+                    FileTypeFilter = [new("Rom File")
+                        {
+                            Patterns = [.. extensions, "*.zip"],
+                            AppleUniformTypeIdentifiers = ["zip"],
+                            MimeTypes = ["application/*"]
+                        }],
 
-                return;
+                };
+
+                while (true)
+                {
+                    var result = await App.CurrentWindow().StorageProvider.OpenFilePickerAsync(opts);
+
+                    // user cancelled selection, end command
+                    if (result == null || result.Count == 0)
+                    {
+                        return;
+                    }
+
+                    // Create a temp RomFile object, just to open the related file stream.
+                    // Actual database objec will be created by RomSetGenerator
+                    var rf = new RomFile
+                    {
+                        FilePath = result.ElementAt(0).Path.LocalPath
+                    };
+
+                    using var romFileStream = rf.GetRomFileStream();
+                    romFileStream.Open(RomFileStream.OpenMode.StreamCompressed);
+
+                    var crc32 = await romFileStream.GetCrc32();
+
+                    // checksum matches, we end loop and start patching
+                    if (crc32 == sourceCrc)
+                    {
+                        sourceRomFile = rf;
+                        break;
+                    } 
+                    else
+                    {
+                        await App.ShowError("Failed to find source ROM", $"Selected source rom is not valid, please select another file.");
+                    }
+
+                }
             }
 
             progress.SetMessage("Applying patch...");
-            var romSrcPath = sourceRom.RomFiles.First(rf => rf.Crc32 == sourceCrc);
-
-            await RomSetGenerator.GenerateFromPatch(romSrcPath, rom, patchFile);
+            await RomSetGenerator.GenerateFromPatch(sourceRomFile, rom, patchFile);
             await _dbContext.SaveChangesAsync();
-
-            Directory.Delete(extractDir, true);
-            File.Delete(patchArchiveFile);
 
             await App.ShowInfo("Patch applied", $"Succesfully created {rom.RaName} from patch");
 
@@ -417,6 +447,7 @@ public partial class MainViewModel : ViewModelBase
     private Task? _loadingDetailsTask;
 
     private CancellationTokenSource? _loadingDetailsCancellation;
+
 }
 
 internal class ScopedTaskProgress : IDisposable, IProgress<CompressProgress>

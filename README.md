@@ -99,7 +99,6 @@ RetroHunter requires .NET 10.0 and can be build on Windows and Linux (Verify Mac
 ## TODOs
 
 ### Main features
-- [ ] Ask for rom file path if no base rom found when applying patch
 - [ ] Read roms from extra folder (!= input dir)
 - [ ] Cleanup tool to remove broken (missing files) or corrupted roms
 - [ ] Configuration Wizard when opening for 1st time

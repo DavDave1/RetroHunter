@@ -11,9 +11,9 @@ namespace RetroHunter.ViewModels
         private FileInfo? _selectedPatch;
 
         [ObservableProperty]
-        private List<FileInfo> _patches = [];
+        private IEnumerable<FileInfo> _patches = [];
 
-        public PatchSelectViewModel(List<FileInfo> patches)
+        public PatchSelectViewModel(IEnumerable<FileInfo> patches)
         {
             Patches = patches;
         }

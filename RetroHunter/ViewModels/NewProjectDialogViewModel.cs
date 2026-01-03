@@ -75,9 +75,9 @@ public partial class NewProjectDialogViewModel(SettingsManager settingsManager) 
 
     private static readonly FilePickerFileType RetroHunterDb = new("RetroHunter DB")
     {
-        Patterns = new[] { "*.json" },
-        AppleUniformTypeIdentifiers = new[] { "public.json" },
-        MimeTypes = new[] { "json/*" }
+        Patterns = ["*.json"],
+        AppleUniformTypeIdentifiers = ["public.json"],
+        MimeTypes = ["json/*"]
     };
 
     private async Task UpdateLatestProjectPath(string path)
