@@ -413,16 +413,10 @@ public partial class MainViewModel : ViewModelBase
     partial void OnSelectedGameChanging(GameViewModel? value)
     {
         _loadingDetailsCancellation.Cancel();
-
-        //if (_loadingDetailsTask != null && !_loadingDetailsTask.IsCompleted)
-        //{
-        //    _loadingDetailsTask.Wait();
-        //}
-
         _loadingDetailsCancellation = new CancellationTokenSource();
 
         HasSelectedGame = value != null;
-        _loadingDetailsTask = Task.Run(LoadDetails);
+        _ = Task.Run(LoadDetails);
     }
     private async Task LoadDetails()
     {

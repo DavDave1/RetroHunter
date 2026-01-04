@@ -75,7 +75,7 @@
                                         VerticalAlignment="Center"
                                         Text="{Binding Rom.RaName}">
                                         <TextBlock.ContextMenu>
-                                            <ContextMenu IsEnabled="True">
+                                            <ContextMenu>
                                                 <MenuItem
                                                     Command="{Binding ApplyPatchCommand}"
                                                     Foreground="Black"

@@ -38,133 +38,151 @@
             </StackPanel>
 
             <TabControl>
-                <TabItem Header="Retroachievement">
-                    <Grid
-                        Margin="10,7,11,6"
-                        ColumnDefinitions="Auto, *"
-                        RowDefinitions="Auto, Auto, Auto">
-                        <!--  Ra credentials config  -->
-                        <TextBlock
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="User Name:" />
-                        <TextBox
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            Text="{Binding UserName}" />
-                        <TextBlock
-                            Grid.Row="1"
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="API Key:" />
-                        <TextBox
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            Text="{Binding RaApiKey}" />
-                        <Button
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            HorizontalAlignment="Right"
-                            Command="{Binding TestLoginCommand}"
-                            Content="Test Login" />
-                    </Grid>
+                <TabItem Header="General">
+                    <StackPanel Margin="10,7,11,6">
+                        <HeaderedContentControl Header="Retroachivement credentials">
+                            <Grid
+                                Margin="10,7,11,6"
+                                ColumnDefinitions="Auto, *"
+                                RowDefinitions="Auto, Auto, Auto">
+                                <!--  Ra credentials config  -->
+                                <TextBlock
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="User Name:" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    Text="{Binding UserName}" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="API Key:" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    Text="{Binding RaApiKey}" />
+                                <Button
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding TestLoginCommand}"
+                                    Content="Test Login" />
+                            </Grid>
+                        </HeaderedContentControl>
+                    </StackPanel>
+
                 </TabItem>
                 <TabItem Header="Generator">
-                    <Grid
+                    <StackPanel
                         Margin="10,7,11,6"
-                        ColumnDefinitions="Auto, *"
-                        RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                        Orientation="Vertical"
+                        Spacing="6">
                         <!--  Directories config  -->
-                        <TextBlock
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="Roms Input Dir:" />
-                        <Grid
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            ColumnDefinitions="*, Auto">
-                            <TextBox Text="{Binding InputRomsDirectory}" />
-                            <Button
-                                Grid.Column="1"
-                                Command="{Binding BrowseInputRomsDirectoryCommand}"
-                                Content="..." />
-                        </Grid>
+                        <HeaderedContentControl Header="Directories configuration">
+                            <Grid
+                                Margin="10,7,11,6"
+                                ColumnDefinitions="Auto, *"
+                                RowDefinitions="Auto, Auto, Auto, Auto">
+                                <TextBlock
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Roms Input Dir:" />
+                                <Grid
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    ColumnDefinitions="*, Auto">
+                                    <TextBox Text="{Binding InputRomsDirectory}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Command="{Binding BrowseInputRomsDirectoryCommand}"
+                                        Content="..." />
+                                </Grid>
 
-                        <TextBlock
-                            Grid.Row="1"
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="Roms Output Dir:" />
-                        <Grid
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            ColumnDefinitions="*, Auto">
-                            <TextBox Text="{Binding OutputRomsDirectory}" />
-                            <Button
-                                Grid.Column="1"
-                                Command="{Binding BrowseOutputRomsDirectoryCommand}"
-                                Content="..." />
-                        </Grid>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Roms Output Dir:" />
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    ColumnDefinitions="*, Auto">
+                                    <TextBox Text="{Binding OutputRomsDirectory}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Command="{Binding BrowseOutputRomsDirectoryCommand}"
+                                        Content="..." />
+                                </Grid>
 
-                        <TextBlock
-                            Grid.Row="2"
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="Dir Structure Style:" />
-                        <ComboBox
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            ItemsSource="{Binding DirStructureStylesList}"
-                            SelectedItem="{Binding SelectedDirStructureStyle}" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Dir Structure Style:" />
+                                <ComboBox
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    ItemsSource="{Binding DirStructureStylesList}"
+                                    SelectedItem="{Binding SelectedDirStructureStyle}" />
 
-                        <TextBlock
-                            Grid.Row="3"
-                            Margin="0,0,10,5"
-                            VerticalAlignment="Center"
-                            Text="Games filter:" />
-                        <ListBox
-                            Grid.Row="3"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            ItemsSource="{Binding GameTypesList}"
-                            SelectedItems="{Binding SelectedGameTypesFilter}"
-                            SelectionMode="Multiple,Toggle" />
-                        <Separator Grid.Row="4" Grid.ColumnSpan="2" />
-                        <TextBlock
-                            Grid.Row="5"
-                            Margin="0,0,0,5"
-                            VerticalAlignment="Center"
-                            Text="Chdman Exe:" />
-                        <Grid
-                            Grid.Row="5"
-                            Grid.Column="1"
-                            Margin="0,0,0,5"
-                            Grid.ColumnDefinitions="*, Auto, Auto">
-                            <TextBox Text="{Binding ChdmanExePath}" />
-                            <Button
-                                Grid.Column="2"
-                                Command="{Binding DetectChdmanCommand}"
-                                Content="Detect..." />
-                        </Grid>
-                        <TextBlock
-                            Grid.Row="6"
-                            VerticalAlignment="Center"
-                            Text="Dolphin Tool Exe:" />
-                        <Grid
-                            Grid.Row="6"
-                            Grid.Column="1"
-                            Grid.ColumnDefinitions="*, Auto, Auto">
-                            <TextBox Text="{Binding DolphinToolExePath}" />
-                            <Button
-                                Grid.Column="2"
-                                Command="{Binding DetectDolphinToolCommand}"
-                                Content="Detect..." />
-                        </Grid>
-                    </Grid>
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Games filter:" />
+                                <ListBox
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    ItemsSource="{Binding GameTypesList}"
+                                    SelectedItems="{Binding SelectedGameTypesFilter}"
+                                    SelectionMode="Multiple,Toggle" />
+                            </Grid>
+                        </HeaderedContentControl>
+
+                        <HeaderedContentControl Header="Extra tools">
+                            <Grid
+                                Margin="10,7,11,6"
+                                ColumnDefinitions="Auto, *"
+                                RowDefinitions="Auto, Auto">
+
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    VerticalAlignment="Center"
+                                    Text="Chdman Exe:" />
+                                <Grid
+                                    Grid.Column="1"
+                                    Margin="0,0,0,5"
+                                    Grid.ColumnDefinitions="*, Auto, Auto">
+                                    <TextBox Text="{Binding ChdmanExePath}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        Command="{Binding DetectChdmanCommand}"
+                                        Content="Detect..." />
+                                </Grid>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    VerticalAlignment="Center"
+                                    Text="Dolphin Tool Exe:" />
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Grid.ColumnDefinitions="*, Auto, Auto">
+                                    <TextBox Text="{Binding DolphinToolExePath}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        Command="{Binding DetectDolphinToolCommand}"
+                                        Content="Detect..." />
+                                </Grid>
+                            </Grid>
+                        </HeaderedContentControl>
+
+                    </StackPanel>
                 </TabItem>
             </TabControl>
         </DockPanel>
