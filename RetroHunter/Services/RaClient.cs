@@ -234,7 +234,7 @@ namespace RetroHunter.Services
         public int Permissions { get; set; }
         public int Untracked { get; set; }
         public int ID { get; set; }
-        public bool UserWallActive { get; set; }
+        public int UserWallActive { get; set; }
         public string Motto { get; set; } = string.Empty;
     }
 
