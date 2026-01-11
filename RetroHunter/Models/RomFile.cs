@@ -21,7 +21,7 @@ namespace RetroHunter.Models
             Parent = rom;
         }
 
-        public string AbsolutePath() => Path.Combine(GetBasePath(), FilePath);
+        public string AbsolutePath() => new FileInfo(Path.Combine(GetBasePath(), FilePath)).FullName;
         public bool Exists() => Path.Exists(AbsolutePath());
 
         public long GetSize() => new FileInfo(AbsolutePath()).Length;

@@ -21,7 +21,7 @@ public class ChdmanTests(ITestOutputHelper outputHelper)
 
         var outPath = inInfo.FullName.Replace(inInfo.Extension, "_out.chd");
 
-        var chdmanPath = DirUtils.FindTool("chdman");
+        var chdmanPath = FileUtils.FindTool("chdman");
         Assert.NotEqual("", chdmanPath);
 
         var chdman = new Chdman(null, chdmanPath);

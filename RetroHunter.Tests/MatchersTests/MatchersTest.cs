@@ -127,7 +127,7 @@ namespace RetroHunter.Tests.MatchersTests
             var sys = GetGameSystemByType(GameSystemType.GameCube);
             AddRomWithHash(sys, expectedHash);
 
-            var dolphinTool = DirUtils.FindTool("DolphinTool");
+            var dolphinTool = FileUtils.FindTool("DolphinTool");
             var matcher = new GameCubeMatcher(sys, _dict, dolphinTool);
 
             var foundRom = matcher.FindRom(new FileInfo(filePath));

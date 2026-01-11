@@ -108,7 +108,7 @@ RetroHunter requires .NET 10.0 and can be build on Windows and Linux (Verify Mac
 - [ ] Final detailed report of added removed roms
 - [ ] Global report on roms found / missing
 - [ ] Batch compression tool
-- [ ] Command to remove existing rom
+- [x] Command to remove existing rom
 - [ ] Support PS2 CHD reading (Raw ISO filesystem on DVD)
 
 ### UI Features

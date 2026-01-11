@@ -1,10 +1,8 @@
 ﻿using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using RetroHunter.Utils;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace RetroHunter.ViewModels
 {
@@ -26,12 +24,15 @@ namespace RetroHunter.ViewModels
 
 
         [ObservableProperty]
-        private List<TreeViewItemModel> _children = [];
+        private ObservableCollection<TreeViewItemModel> _children = [];
 
         partial void OnIsCheckedChanged(bool value)
         {
-            Children.ForEach(c => c.IsChecked = value);
-            OnItemChecked(value);
+            foreach (var item in Children)
+            {
+                item.IsChecked = value;
+                item.OnItemChecked(value);
+            }
         }
 
         protected virtual void OnItemChecked(bool value)

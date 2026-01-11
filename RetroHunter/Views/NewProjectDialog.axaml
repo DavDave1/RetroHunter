@@ -36,6 +36,7 @@
                 Height="50"
                 Command="{Binding OpenLatestCommand}"
                 Content="Open Latest"
+                Foreground="Black"
                 IsEnabled="True">
                 <SplitButton.Flyout>
                     <MenuFlyout Placement="Bottom">
@@ -46,7 +47,6 @@
                     </MenuFlyout>
                 </SplitButton.Flyout>
             </SplitButton>
-
         </StackPanel>
     </StackPanel>
 </classic:ClassicWindow>

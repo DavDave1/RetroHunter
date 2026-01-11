@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using RetroHunter.Persistence;
 using RetroHunter.Services;
 using RetroHunter.Utils;
 using RetroHunter.Views;
-using SharpCompress.Common;
 using SharpCompress.Readers;
 
 namespace RetroHunter.ViewModels;
@@ -23,10 +21,10 @@ namespace RetroHunter.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     [ObservableProperty]
-    public List<GameSystemCompanyViewModel> _companyList = [];
+    public ObservableCollection<GameSystemCompanyViewModel> _companyList = [];
 
     [ObservableProperty]
-    private List<GameViewModel> _gamesList = [];
+    private ObservableCollection<GameViewModel> _gamesList = [];
 
     [ObservableProperty]
     private GameSystemViewModel? _selectedSystem;
@@ -63,7 +61,7 @@ public partial class MainViewModel : ViewModelBase
         _settingsManager = serviceProvider.GetService<SettingsManager>()!;
 
         var systems = _dbContext.GetSystems().ToList();
-        var companyList = new List<GameSystemCompanyViewModel>();
+        var companyList = new ObservableCollection<GameSystemCompanyViewModel>();
         foreach (var company in Enum.GetValues<GameSystemCompany>())
         {
             companyList.Add(new(this, company, [.. systems.Where(gs => gs.Company == company).OrderBy(gs => gs.Name)]));
@@ -76,9 +74,6 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     public MainViewModel()
     {
-        _settingsManager = new(null);
-        _dbContext = new();
-        _raClient = new(_settingsManager);
     }
 
     [RelayCommand]
@@ -212,6 +207,9 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public async Task LoadModel()
     {
+        if (Avalonia.Controls.Design.IsDesignMode)
+            return;
+
         try
         {
             if (_dbContext.FilePath == string.Empty)
@@ -234,7 +232,10 @@ public partial class MainViewModel : ViewModelBase
             }
 
             var systems = _dbContext.GetSystems().ToList();
-            CompanyList.ForEach(cvm => cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]));
+            foreach (var cvm in CompanyList)
+            {
+                cvm.RefreshModel([.. systems.Where(gs => gs.Company == cvm.Company).OrderBy(gs => gs.Name)]);
+            }
 
             SelectedSystem = null;
             GamesList = [];
@@ -407,7 +408,7 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedSystemChanged(GameSystemViewModel? value)
     {
-        GamesList = value?.Games.ToList() ?? [];
+        GamesList = value?.Games ?? [];
     }
 
     partial void OnSelectedGameChanging(GameViewModel? value)
@@ -428,14 +429,10 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-
-
-    private readonly IServiceProvider _serviceProvier;
-    private readonly DbContext _dbContext;
-    private readonly RaClient _raClient;
-    private readonly SettingsManager _settingsManager;
-
-    private Task? _loadingDetailsTask;
+    protected IServiceProvider _serviceProvier;
+    protected DbContext _dbContext;
+    protected RaClient _raClient;
+    protected SettingsManager _settingsManager;
 
     private CancellationTokenSource _loadingDetailsCancellation = new();
 

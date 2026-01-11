@@ -3,6 +3,7 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RetroHunter.Models;
+using RetroHunter.Utils;
 using System;
 using System.IO;
 using System.Linq;
@@ -40,6 +41,7 @@ namespace RetroHunter.ViewModels
         {
             await _mainVm.ApplyPatch(this);
             IsRomValid = Rom.Exists();
+            IsRomLinked = Rom.RomFiles.Count > 0;
             Parent.UpdateStatus();
         }
 
@@ -53,9 +55,28 @@ namespace RetroHunter.ViewModels
         private async Task OpenInExplorer()
         {
             var romDir = new FileInfo(Rom.RomFiles.First().AbsolutePath()).Directory;
-            await App.MainWindow().Launcher.LaunchDirectoryInfoAsync(romDir);
+            if (romDir != null)
+            {
+                await App.MainWindow().Launcher.LaunchDirectoryInfoAsync(romDir);
+            }
         }
 
+        [RelayCommand]
+        private async Task DeleteRom()
+        {
+            try
+            {
+                Rom.RomFiles.ForEach(rf => FileUtils.MoveToTrash(rf.AbsolutePath()));
+                Rom.RomFiles = [];
+                IsRomLinked = false;
+                IsRomValid = false;
+                Parent.UpdateStatus();
+            }
+            catch (Exception ex)
+            {
+                await App.ShowError("Failed to delete ROM file", $"Failed to move ${Rom.RaName} to trash:\n${ex.Message}");
+            }
+        }
         protected override bool CanCompress => true;
 
         private readonly MainViewModel _mainVm;

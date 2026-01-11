@@ -92,12 +92,16 @@
                                                             Height="32"
                                                             Source="/Assets/rom-compressed.png" />
                                                     </MenuItem.Icon>
-
                                                 </MenuItem>
                                                 <MenuItem
                                                     Command="{Binding OpenInExplorerCommand}"
                                                     Foreground="Black"
                                                     Header="Reveal in Explorer"
+                                                    IsEnabled="{Binding IsRomLinked}" />
+                                                <MenuItem
+                                                    Command="{Binding DeleteRomCommand}"
+                                                    Foreground="Black"
+                                                    Header="Delete"
                                                     IsEnabled="{Binding IsRomLinked}" />
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>

@@ -26,9 +26,17 @@ public class RetroHunterSettings
 
 }
 
-public class SettingsManager(ILogger<SettingsManager>? logger)
+interface ISettingsManager
 {
-    public RetroHunterSettings Settings = new();
+    public Task Load();
+    public Task Save();
+
+    public RetroHunterSettings Settings { get; set; }
+}
+
+public class SettingsManager(ILogger<SettingsManager>? logger) : ISettingsManager
+{
+    public RetroHunterSettings Settings { get; set; } = new();
 
     public async Task Load()
     {

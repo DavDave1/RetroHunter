@@ -127,7 +127,7 @@ namespace RetroHunter.ViewModels
         [RelayCommand]
         private async Task DetectChdman()
         {
-            var chdmanPath = DirUtils.FindTool("chdman");
+            var chdmanPath = FileUtils.FindTool("chdman");
             if (string.IsNullOrEmpty(chdmanPath))
             {
                 await App.ShowError("Chdman not found", "Chdman not found in PATH");
@@ -142,7 +142,7 @@ namespace RetroHunter.ViewModels
         [RelayCommand]
         private async Task DetectDolphinTool()
         {
-            var dolphinToolPath = DirUtils.FindTool("DolphinTool");
+            var dolphinToolPath = FileUtils.FindTool("DolphinTool");
             if (string.IsNullOrEmpty(dolphinToolPath))
             {
                 await App.ShowError("DolphinTool not found", "DolphinTool not found in PATH");

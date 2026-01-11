@@ -1,10 +1,9 @@
-﻿using Avalonia.Controls;
-using Avalonia.Media.Imaging;
+﻿using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RetroHunter.Models;
 using RetroHunter.Utils;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace RetroHunter.ViewModels
         private string _gameTypes = "";
 
         [ObservableProperty]
-        private List<RomViewModel> _roms = [];
+        private ObservableCollection<RomViewModel> _roms = [];
 
         [ObservableProperty]
         private bool _atLeastOneLinkedRom;
@@ -39,7 +38,7 @@ namespace RetroHunter.ViewModels
         {
             Game = game;
             _mainVm = mainVm;
-            Roms = Game.Roms.Select(r => new RomViewModel(mainVm, this, r)).OrderBy(r => r.Title).ToList();
+            Roms = [..Game.Roms.Select(r => new RomViewModel(mainVm, this, r)).OrderBy(r => r.Title)];
             GameTypes = GameTypesToString();
             ToolTipText = "";
             UpdateStatus();

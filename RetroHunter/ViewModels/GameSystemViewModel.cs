@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using RetroHunter.Models;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace RetroHunter.ViewModels
@@ -12,7 +12,7 @@ namespace RetroHunter.ViewModels
         public GameSystem GameSystem { get; private set; }
 
         [ObservableProperty]
-        private List<GameViewModel> _games = [];
+        private ObservableCollection<GameViewModel> _games = [];
 
         public override string IconSrc { get => GameSystem.GameSystemType.IconUrl(); }
 

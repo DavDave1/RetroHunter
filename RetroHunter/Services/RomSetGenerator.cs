@@ -106,7 +106,7 @@ namespace RetroHunter.Services
             {
                 if (expectedDirs.Contains(outSubDir.Name) == false)
                 {
-                    outSubDir.MoveTo(DirUtils.UniquePath($"{inDirInfo.FullName}/{outSubDir.Name}"));
+                    outSubDir.MoveTo(FileUtils.UniquePath($"{inDirInfo.FullName}/{outSubDir.Name}"));
                 }
             }
 
