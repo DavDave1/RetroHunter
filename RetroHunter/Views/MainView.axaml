@@ -44,7 +44,7 @@
             <Separator />
             <classicControls:ToolBarButton
                 Command="{Binding ConfigureCommand}"
-                LargeIcon="/Assets/settings.png"
+                LargeIcon="/Assets/settings_gear-4.png"
                 Text="Configure..." />
             <classicControls:ToolBarButton
                 Command="{Binding FetchRaDataCommand}"
@@ -54,7 +54,19 @@
                 Command="{Binding GenerateSetsCommand}"
                 LargeIcon="/Assets/scan.png"
                 Text="Generate..." />
+            <classicControls:ToolBarButton
+                Command="{Binding ShowReportCommand}"
+                LargeIcon="/Assets/report.png"
+                Text="Report..." />
             <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="*">
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Command="{Binding FetchUserProfile}"
+                            Foreground="Black"
+                            Header="Refresh" />
+                    </ContextMenu>
+                </Grid.ContextMenu>
                 <StackPanel
                     Grid.Column="1"
                     Margin="4"

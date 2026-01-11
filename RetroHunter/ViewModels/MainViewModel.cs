@@ -185,6 +185,7 @@ public partial class MainViewModel : ViewModelBase
         await LoadModel();
     }
 
+    [RelayCommand]
     public async Task FetchUserProfile()
     {
         if (_settingsManager.Settings.RaName == string.Empty)
@@ -200,7 +201,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            await App.ShowError("Failed to fetch user profile", ex.Message);
+            await App.ShowError("Failed to update user profile", ex.Message);
         }
     }
 
@@ -247,6 +248,9 @@ public partial class MainViewModel : ViewModelBase
             await App.ShowError("Failed to load project", e.Message);
         }
     }
+
+    [RelayCommand]
+    public async Task ShowReport() { }
 
     public async Task ApplyPatch(RomViewModel romViewModel)
     {
